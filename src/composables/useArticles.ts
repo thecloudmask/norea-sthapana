@@ -1,17 +1,13 @@
-import { 
-  collection, 
+import {
+  collection,
   getDoc,
-  getDocs,
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
+  addDoc,
+  updateDoc,
+  deleteDoc,
   onSnapshot,
-  doc, 
-  query, 
-  orderBy, 
-  Timestamp,
-  type DocumentData,
-  type Unsubscribe
+  doc,
+  query,
+  Timestamp
 } from 'firebase/firestore'
 import { ref } from 'vue'
 

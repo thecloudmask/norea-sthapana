@@ -93,9 +93,7 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   // Restore initAuth for compatibility and early initialization (empty now as onAuthStateChanged is global)
-  const initAuth = (firebaseAuth?: any) => {
-     // No-op, managed globally
-  }
+  const initAuth = () => {}
 
   const logout = async () => {
     await signOut(auth)

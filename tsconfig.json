@@ -4,7 +4,11 @@
     "useDefineForClassFields": true,
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "types": ["vite/client", "unplugin-vue-components/vite", "unplugin-auto-import/vite"],
+    "types": [
+      "vite/client",
+      "unplugin-vue-components/vite",
+      "unplugin-auto-import/vite"
+    ],
     "skipLibCheck": true,
 
     /* Bundler mode */
@@ -21,10 +25,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "~/*": ["src/*"]
+      "@/*": ["./src/*"],
+      "~/*": ["./src/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],

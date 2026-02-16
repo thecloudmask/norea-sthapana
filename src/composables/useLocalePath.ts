@@ -1,7 +1,7 @@
 import { useI18n } from 'vue-i18n'
 
 export const useLocalePath = () => {
-  const { locale, fallbackLocale } = useI18n()
+  const { locale } = useI18n()
   
   return (path: string) => {
     const currentLocale = locale.value

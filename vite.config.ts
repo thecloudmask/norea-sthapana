@@ -10,24 +10,24 @@ export default defineConfig({
   resolve: {
     alias: {
       '~': resolve(__dirname, './src'),
-      '@': resolve(__dirname, './src'),
-    },
+      '@': resolve(__dirname, './src')
+    }
   },
   plugins: [
     Vue(),
     Pages({
       dirs: 'src/pages',
-      exclude: ['**/components/*.vue'],
+      exclude: ['**/components/*.vue']
     }),
     Layouts({
       layoutsDirs: 'src/layouts',
-      defaultLayout: 'default',
+      defaultLayout: 'default'
     }),
     Components({
       dts: true,
       dirs: ['src/components'],
       deep: true,
-      directoryAsNamespace: false,
+      directoryAsNamespace: false
     }),
     AutoImport({
       imports: [
@@ -36,16 +36,24 @@ export default defineConfig({
         'vue-i18n',
         '@vueuse/core',
         {
-          '@unhead/vue': ['useHead'],
-        },
+          '@unhead/vue': ['useHead']
+        }
       ],
       dts: true,
-      dirs: [
-        'src/composables',
-        'src/stores',
-        'src/utils',
-      ],
-      vueTemplate: true,
-    }),
+      dirs: ['src/composables', 'src/stores', 'src/utils'],
+      vueTemplate: true
+    })
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vue: ['vue', 'vue-router', 'vue-i18n'],
+          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
+          charts: ['apexcharts', 'vue3-apexcharts'],
+          ui: ['@vueuse/core', '@unhead/vue']
+        }
+      }
+    }
+  }
 })

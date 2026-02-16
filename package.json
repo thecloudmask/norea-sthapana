@@ -10,6 +10,7 @@
   "dependencies": {
     "@unhead/vue": "^1.11.20",
     "@vueuse/core": "^10.9.0",
+    "add": "^2.0.6",
     "apexcharts": "^3.49.0",
     "chart.js": "^4.4.2",
     "class-variance-authority": "^0.7.0",
@@ -23,8 +24,10 @@
     "pinia": "^2.1.7",
     "radix-vue": "^1.8.3",
     "reka-ui": "^2.8.0",
+    "shadcn": "^3.8.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "toast": "^0.5.4",
     "vue": "^3.4.27",
     "vue-chartjs": "^5.3.1",
     "vue-i18n": "^9.13.1",

@@ -1,18 +1,16 @@
 import { ref } from 'vue'
-import { 
-  collection, 
-  addDoc, 
-  query, 
-  onSnapshot, 
-  doc, 
+import {
+  collection,
+  addDoc,
+  query,
+  onSnapshot,
+  doc,
   getDoc,
   updateDoc,
   deleteDoc,
   Timestamp,
-  increment,
   getDocs,
-  orderBy,
-  limit
+  orderBy
 } from 'firebase/firestore'
 
 import { db } from '~/utils/firebase'

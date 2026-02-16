@@ -14,10 +14,10 @@
         <!-- Header Section -->
         <div class="space-y-6">
           <!-- Top Breadcrumb -->
-          <NuxtLink to="/admin/projects" class="text-[11px] font-medium text-muted-foreground flex items-center gap-2 hover:text-primary transition-colors">
+          <RouterLink to="/admin/projects" class="text-[11px] font-medium text-muted-foreground flex items-center gap-2 hover:text-primary transition-colors">
             <ArrowLeftIcon class="h-3 w-3" /> 
             {{ $t('admin.back_to_projects') }}
-          </NuxtLink>
+          </RouterLink>
 
           <!-- Identity Row -->
           <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
@@ -59,12 +59,12 @@
           <!-- Secondary Action Toolbar -->
           <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
             <div class="flex items-center gap-2">
-              <NuxtLink :to="`/project/${project.id}`" target="_blank">
+              <RouterLink :to="`/project/${project.id}`" target="_blank">
                 <Button variant="ghost" size="sm" class="rounded-lg text-muted-foreground hover:text-primary transition-all font-medium text-xs">
                   <ExternalLinkIcon class="mr-2 h-4 w-4" />
                   View Public Page
                 </Button>
-              </NuxtLink>
+              </RouterLink>
               <Button variant="ghost" size="sm" class="rounded-lg text-muted-foreground hover:text-primary transition-all font-medium text-xs" @click="handleExportReport">
                 <DownloadIcon class="mr-2 h-4 w-4" />
                 {{ $t('admin.full_report') }}

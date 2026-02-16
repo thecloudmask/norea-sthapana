@@ -1,11 +1,9 @@
-import { 
-  collectionGroup, 
-  getDocs, 
-  query, 
-  orderBy, 
+import {
+  collectionGroup,
+  getDocs,
+  query,
   addDoc,
   collection,
-  Timestamp,
   serverTimestamp
 } from 'firebase/firestore'
 
