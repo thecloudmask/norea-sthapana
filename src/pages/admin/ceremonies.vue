@@ -83,7 +83,7 @@
                 </div>
             </div>
             <CardContent class="flex-1 p-6 space-y-4">
-                <p class="text-sm font-medium text-muted-foreground line-clamp-3 leading-relaxed font-khmer text-left">{{ item.content }}</p>
+                <p class="text-sm font-medium text-muted-foreground line-clamp-3 leading-relaxed font-khmer text-left">{{ stripHtml(item.content) }}</p>
                 <div class="grid grid-cols-2 gap-4 text-xs font-medium text-muted-foreground border-t border-border pt-4">
                     <div class="flex items-center gap-2">
                         <MapPinIcon class="h-3.5 w-3.5 text-primary" />
@@ -465,6 +465,12 @@ const formatDateRange = (start: any, end: any) => {
     
     // Check if same month and year to shorten if needed, but for now simple range
     return `${formatKhmerDate(startDate, 'dd')} - ${formattedEnd}`
+}
+
+const stripHtml = (html: string) => {
+    if (!html) return "";
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
 }
 </script>
 

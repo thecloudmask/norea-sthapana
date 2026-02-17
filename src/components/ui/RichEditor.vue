@@ -102,6 +102,18 @@
         <AlignRightIcon class="h-4 w-4" />
       </Button>
 
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        class="h-8 w-8 rounded-lg"
+        @click="editor.chain().focus().setTextAlign('justify').run()"
+        :class="{ 'bg-primary/20 text-primary': editor.isActive({ textAlign: 'justify' }) }"
+        title="Justify"
+      >
+        <AlignJustifyIcon class="h-4 w-4" />
+      </Button>
+
       <div class="w-[1px] h-4 bg-border mx-1"></div>
 
       <Button
@@ -149,6 +161,7 @@ import {
   AlignLeftIcon, 
   AlignCenterIcon, 
   AlignRightIcon, 
+  AlignJustifyIcon,
   UndoIcon, 
   RedoIcon 
 } from 'lucide-vue-next'
@@ -169,6 +182,7 @@ const editor = useEditor({
     Underline,
     TextAlign.configure({
       types: ['heading', 'paragraph'],
+      alignments: ['left', 'center', 'right', 'justify'],
     }),
     Placeholder.configure({
       placeholder: props.placeholder || 'Type something here...',
@@ -187,7 +201,7 @@ const editor = useEditor({
 // Sync with modelValue when it changes from outside
 watch(() => props.modelValue, (value) => {
   if (editor.value && editor.value.getHTML() !== value) {
-    editor.value.commands.setContent(value || '', false)
+    editor.value.commands.setContent(value || '', { emitUpdate: false })
   }
 })
 </script>

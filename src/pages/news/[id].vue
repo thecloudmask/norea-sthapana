@@ -38,9 +38,7 @@
           <!-- Main Content Card -->
           <div class="bg-card rounded-[2.5rem] shadow-2xl p-8 md:p-16 mb-12 border border-border ring-1 ring-border/5">
               <!-- Normal Content Body -->
-              <div class="prose prose-xl dark:prose-invert max-w-none font-khmer leading-loose text-foreground/90 font-medium whitespace-pre-wrap">
-                 {{ newsItem.content }}
-              </div>
+              <div class="prose prose-xl dark:prose-invert max-w-none font-khmer leading-loose text-foreground/90 font-medium rich-text-content" v-html="newsItem.content"></div>
 
               <!-- Share Section -->
               <div class="border-t border-border mt-16 pt-10 flex flex-col md:flex-row items-center justify-between gap-6 px-2">
@@ -148,3 +146,20 @@ const openLightbox = (url: string) => {
     showLightbox.value = true
 }
 </script>
+
+<style>
+.rich-text-content p {
+    margin-bottom: 1.5rem;
+    text-align: inherit;
+}
+.rich-text-content ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.rich-text-content ol {
+    list-style-type: decimal;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+</style>

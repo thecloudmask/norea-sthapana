@@ -75,7 +75,7 @@
         <CardContent class="flex-1 p-6 space-y-6">
            <div>
               <h3 class="text-xl font-semibold font-khmer text-foreground line-clamp-1 group-hover:text-primary transition-colors">{{ project.title }}</h3>
-              <p class="text-sm font-medium text-muted-foreground line-clamp-2 mt-2 leading-relaxed font-khmer">{{ project.description }}</p>
+              <p class="text-sm font-medium text-muted-foreground line-clamp-2 mt-2 leading-relaxed font-khmer">{{ stripHtml(project.description) }}</p>
            </div>
            
            <div class="space-y-4 bg-muted/30 p-4 rounded-2xl ring-1 ring-border">
@@ -445,6 +445,12 @@ onMounted(() => {
    console.log('📋 [Admin Projects] Fetching projects...')
    fetchProjects()
 })
+
+const stripHtml = (html: string) => {
+    if (!html) return "";
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+}
 </script>
 
 <route lang="yaml">
