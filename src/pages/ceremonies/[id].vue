@@ -68,17 +68,17 @@
               </div>
 
               <!-- Action Footer -->
-              <div class="bg-primary dark:bg-primary rounded-[2.5rem] p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-8">
+              <div class="bg-black dark:bg-white rounded-[2.5rem] p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-8">
                   <div class="space-y-1 text-center md:text-left">
-                      <h4 class="text-xl font-bold font-khmer">{{ $t('common.read_details') }}</h4>
-                      <p class="text-white/40 text-xs uppercase font-black tracking-widest">{{ $t('ceremonies.subtitle') }}</p>
+                      <h4 class="text-xl font-bold text-white dark:text-black font-khmer">{{ $t('common.read_details') }}</h4>
+                      <p class="text-white/40 dark:text-black text-xs uppercase font-black tracking-widest">{{ $t('ceremonies.subtitle') }}</p>
                   </div>
                   
                   <div class="flex flex-wrap justify-center gap-4">
-                      <Button variant="outline" size="icon" class="rounded-2xl transition-all hover:text-blue-500 hover:bg-blue-500/10 border-white/10 bg-white/5 text-white" @click="shareFacebook">
+                      <Button variant="outline" size="icon" class="rounded-2xl transition-all hover:text-blue-500 hover:bg-blue-500/10 border-primary bg-white/5 text-primary dark:border-primary dark:bg-primary/5 dark:text-primary" @click="shareFacebook">
                          <FacebookIcon class="h-5 w-5" />
                       </Button>
-                      <Button variant="outline" size="icon" class="rounded-2xl transition-all hover:text-primary hover:bg-primary/10 border-white/10 bg-white/5 text-white" @click="copyLink">
+                      <Button variant="outline" size="icon" class="rounded-2xl transition-all hover:text-primary hover:bg-primary/10 border-primary bg-white/5 text-primary dark:border-primary dark:bg-primary/5 dark:text-primary" @click="copyLink">
                          <LinkIcon class="h-5 w-5" />
                       </Button>
                       <div class="w-px h-10 bg-white/10 hidden md:block mx-2"></div>
