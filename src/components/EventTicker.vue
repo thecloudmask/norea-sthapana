@@ -1,39 +1,27 @@
 <template>
-  <div class="w-full bg-primary/95 backdrop-blur-sm text-white overflow-hidden relative border-b border-white/10">
-    <div class="flex items-center h-9">
-      <!-- Simple Label -->
-      <div class="flex-shrink-0 h-full px-4 md:px-6 flex items-center gap-1.5 bg-white/10">
-        <CalendarIcon class="h-3.5 w-3.5" />
-        <span class="text-[10px] font-bold uppercase tracking-[0.15em]">{{ $t('events.upcoming') }}</span>
+  <div class="w-full bg-primary text-white overflow-hidden relative border-b border-white/10 h-9 flex items-center">
+    <!-- Label -->
+    <div class="flex-shrink-0 h-full px-4 md:px-6 flex items-center gap-1.5 bg-white/10 relative z-20 shadow-[4px_0_8px_rgba(0,0,0,0.1)] backdrop-blur-md">
+      <CalendarIcon class="h-3.5 w-3.5" />
+      <span class="text-[10px] font-bold uppercase tracking-[0.15em] whitespace-nowrap">{{ $t('events.upcoming') }}</span>
+    </div>
+
+    <!-- Scrolling Track -->
+    <div class="flex-1 overflow-hidden relative h-full flex items-center">
+      <div v-if="upcomingEvents.length > 0" class="flex whitespace-nowrap h-full items-center marquee-container">
+        <!-- We use 3 copies to ensure a full screen is always covered even for short content -->
+        <div class="marquee-content flex items-center">
+          <template v-for="i in 4" :key="`set-${i}`">
+            <div v-for="event in upcomingEvents" :key="`e-${i}-${event.id}`" class="flex items-center gap-2 px-10">
+              <span class="text-xs font-semibold">{{ event.title }}</span>
+              <span class="text-[10px] opacity-40">•</span>
+              <span class="text-[10px] font-bold tracking-wider text-white/90">{{ formatDate(event.eventDate) }}</span>
+            </div>
+          </template>
+        </div>
       </div>
-      
-      <!-- Scrolling Content -->
-      <div class="flex-1 relative overflow-hidden">
-        <!-- Show events if available -->
-        <div 
-          v-if="upcomingEvents.length > 0"
-          class="flex gap-6 animate-scroll whitespace-nowrap py-2"
-          :style="{ animationDuration: `${scrollDuration}s` }"
-        >
-          <!-- Multiple sets for continuous loop -->
-          <template v-for="i in 12" :key="`set-${i}`">
-            <div v-for="event in upcomingEvents" :key="`event-${i}-${event.id}`" class="flex items-center gap-2 px-3">
-              <span class="text-xs font-medium">{{ event.title }}</span>
-              <span class="text-[10px] opacity-50">•</span>
-              <span class="text-[10px] font-semibold opacity-80">{{ formatDate(event.eventDate) }}</span>
-            </div>
-          </template>
-        </div>
-        
-        <!-- Fallback message when no events - also scrolling -->
-        <div v-else class="flex gap-6 animate-scroll whitespace-nowrap py-2" style="animation-duration: 40s;">
-          <!-- Multiple sets for continuous loop -->
-          <template v-for="i in 20" :key="`empty-${i}`">
-            <div class="flex items-center gap-2 px-3">
-              <span class="text-xs font-medium opacity-70">{{ $t('events.empty') }}</span>
-            </div>
-          </template>
-        </div>
+      <div v-else class="px-6 text-xs opacity-70 italic whitespace-nowrap">
+        {{ $t('events.empty') }}
       </div>
     </div>
   </div>
@@ -51,7 +39,6 @@ onMounted(() => {
   fetchArticles()
 })
 
-// Helper function to safely convert to Date
 const toDate = (dateValue: any): Date => {
   if (!dateValue) return new Date()
   if (dateValue instanceof Date) return dateValue
@@ -61,10 +48,8 @@ const toDate = (dateValue: any): Date => {
   return new Date(dateValue)
 }
 
-// Filter for upcoming events only
 const upcomingEvents = computed(() => {
   const now = new Date()
-  // Set now to start of day to include events happening today
   now.setHours(0, 0, 0, 0)
   
   return articles.value
@@ -78,32 +63,30 @@ const upcomingEvents = computed(() => {
       const dateB = toDate(b.eventDate)
       return dateA.getTime() - dateB.getTime()
     })
-    .slice(0, 5) // Show max 5 upcoming events
-})
-
-// Calculate scroll duration based on number of events
-const scrollDuration = computed(() => {
-  return Math.max(20, upcomingEvents.value.length * 8)
+    .slice(0, 10)
 })
 
 const formatDate = (date: any) => formatKhmerDate(date)
 </script>
 
 <style scoped>
-@keyframes scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+.marquee-container {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
 }
 
-.animate-scroll {
-  animation: scroll linear infinite;
+.marquee-content {
+  display: flex;
+  width: max-content;
+  animation: marquee 60s linear infinite;
+  will-change: transform;
 }
 
-.animate-scroll:hover {
+@keyframes marquee {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-25%, 0, 0); } /* We animate -25% because we have 4 sets (100% / 4) */
+}
+
+.marquee-container:hover .marquee-content {
   animation-play-state: paused;
 }
 </style>
