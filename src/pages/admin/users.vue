@@ -2,7 +2,7 @@
   <div class="container py-10 space-y-10 transition-colors duration-300">
     <div class="flex items-center justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-bold text-foreground font-khmer">
+        <h1 class="text-3xl font-semibold text-foreground font-khmer">
           {{ $t("admin.users.title") }}
         </h1>
         <p class="text-muted-foreground mt-1 font-medium">
@@ -11,7 +11,7 @@
       </div>
       <Button
         @click="showAddUserModal = true"
-        class="rounded-xl shadow-lg shadow-primary/20 font-bold h-11 px-6"
+        class="rounded-xl shadow-lg shadow-primary/20 font-semibold h-11 px-6"
       >
         <PlusIcon class="mr-2 h-4 w-4" />
         {{ $t("admin.users.add_new") }}
@@ -27,30 +27,30 @@
           <TableHeader class="bg-muted/50">
             <TableRow class="hover:bg-transparent border-b-border">
               <TableHead
-                class="font-bold text-[11px] uppercase tracking-[0.1em] text-muted-foreground/60 py-5 pl-8"
+                class="font-semibold text-[11px] uppercase tracking-[0.1em] text-muted-foreground/60 py-5 pl-8"
                 >{{ $t("admin.users.table_name") }}</TableHead
               >
               <TableHead
-                class="font-bold text-[11px] uppercase tracking-[0.1em] text-muted-foreground/60 py-5"
+                class="font-semibold text-[11px] uppercase tracking-[0.1em] text-muted-foreground/60 py-5"
                 >{{ $t("admin.users.table_phone") }}</TableHead
               >
               <TableHead
-                class="font-bold text-[11px] uppercase tracking-[0.1em] text-muted-foreground/60 py-5"
+                class="font-semibold text-[11px] uppercase tracking-[0.1em] text-muted-foreground/60 py-5"
                 >{{ $t("admin.users.table_role") }}</TableHead
               >
               <TableHead
                 :class="[
-                  'font-bold text-[11px] uppercase tracking-[0.1em] text-muted-foreground/60 py-5',
+                  'font-semibold text-[11px] uppercase tracking-[0.1em] text-muted-foreground/60 py-5',
                   km ? 'font-Kantumruy' : 'font-Popins',
                 ]"
                 >{{ $t("admin.users.table_status") }}</TableHead
               >
               <TableHead
-                class="font-bold text-[11px] uppercase tracking-[0.1em] text-muted-foreground/60 py-5"
+                class="font-semibold text-[11px] uppercase tracking-[0.1em] text-muted-foreground/60 py-5"
                 >{{ $t("admin.users.table_login") }}</TableHead
               >
               <TableHead
-                class="font-bold text-[11px] uppercase tracking-[0.1em] text-muted-foreground/60 py-5 text-right pr-8"
+                class="font-semibold text-[11px] uppercase tracking-[0.1em] text-muted-foreground/60 py-5 text-right pr-8"
                 >{{ $t("admin.users.table_action") }}</TableHead
               >
             </TableRow>
@@ -68,7 +68,7 @@
                   >
                     <AvatarImage v-if="u.photoURL" :src="u.photoURL" />
                     <AvatarFallback
-                      class="bg-muted text-muted-foreground font-black text-xs uppercase"
+                      class="bg-muted text-muted-foreground font-semibold text-xs uppercase"
                       >{{
                         u.displayName?.slice(0, 2).toUpperCase() || "U"
                       }}</AvatarFallback
@@ -81,7 +81,7 @@
                       {{ u.displayName }}
                       <span
                         v-if="u.role === 'super_admin'"
-                        class="inline-flex items-center rounded-md bg-red-500/10 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-red-600 ring-1 ring-inset ring-red-500/20"
+                        class="inline-flex items-center rounded-md bg-red-500/10 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-widest text-red-600 ring-1 ring-inset ring-red-500/20"
                         >Super</span
                       >
                     </span>
@@ -93,7 +93,7 @@
                 </div>
               </TableCell>
               <TableCell
-                class="py-5 text-sm font-bold text-muted-foreground tabular-nums text-left"
+                class="py-5 text-sm font-semibold text-muted-foreground tabular-nums text-left"
               >
                 {{ u.phoneNumber || "-" }}
               </TableCell>
@@ -108,7 +108,7 @@
                     'bg-muted text-muted-foreground hover:bg-muted/80 ring-1 ring-border':
                       u.role === 'staff',
                   }"
-                  class="uppercase text-[9px] font-black tracking-widest px-2.5 py-0.5 border-none"
+                  class="uppercase text-[9px] font-semibold tracking-widest px-2.5 py-0.5 border-none"
                 >
                   {{ $t("admin.users." + u.role) }}
                 </Badge>
@@ -124,13 +124,13 @@
                     class="size-2 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.3)]"
                   ></div>
                   <span
-                    class="text-[11px] font-black uppercase tracking-wide text-muted-foreground font-mono"
+                    class="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground font-mono"
                     >{{ $t("admin.users." + u.status) }}</span
                   >
                 </div>
               </TableCell>
               <TableCell
-                class="py-5 text-[11px] tabular-nums font-bold text-muted-foreground italic text-left"
+                class="py-5 text-[11px] tabular-nums font-semibold text-muted-foreground italic text-left"
               >
                 {{ formatDateTime(u.lastLoginAt) }}
               </TableCell>
@@ -162,14 +162,14 @@
                       class="w-48 bg-card border-border rounded-xl p-1 shadow-2xl"
                     >
                       <DropdownMenuLabel
-                        class="text-xs font-black uppercase tracking-widest text-muted-foreground p-3"
+                        class="text-xs font-semibold uppercase tracking-widest text-muted-foreground p-3"
                         >{{
                           $t("admin.users.account_management")
                         }}</DropdownMenuLabel
                       >
                       <DropdownMenuSeparator class="bg-border" />
                       <DropdownMenuSub>
-                        <DropdownMenuSubTrigger class="rounded-lg font-bold">{{
+                        <DropdownMenuSubTrigger class="rounded-lg font-semibold">{{
                           $t("admin.users.change_role")
                         }}</DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
@@ -178,18 +178,18 @@
                           >
                             <DropdownMenuItem
                               @click="updateUserRole(u, 'staff')"
-                              class="rounded-lg font-bold"
+                              class="rounded-lg font-semibold"
                               >{{ $t("admin.users.staff") }}</DropdownMenuItem
                             >
                             <DropdownMenuItem
                               @click="updateUserRole(u, 'admin')"
-                              class="rounded-lg font-bold"
+                              class="rounded-lg font-semibold"
                               >{{ $t("admin.users.admin") }}</DropdownMenuItem
                             >
                             <DropdownMenuItem
                               v-if="authStore.isSuperAdmin"
                               @click="updateUserRole(u, 'super_admin')"
-                              class="text-rose-600 font-black rounded-lg"
+                              class="text-rose-600 font-semibold rounded-lg"
                               >{{
                                 $t("admin.users.super_admin")
                               }}</DropdownMenuItem
@@ -201,13 +201,13 @@
                       <DropdownMenuItem
                         v-if="u.status !== 'active'"
                         @click="updateUserStatus(u, 'active')"
-                        class="text-emerald-600 font-bold rounded-lg cursor-pointer"
+                        class="text-emerald-600 font-semibold rounded-lg cursor-pointer"
                         >{{ $t("admin.users.set_active") }}</DropdownMenuItem
                       >
                       <DropdownMenuItem
                         v-if="u.status !== 'disabled'"
                         @click="updateUserStatus(u, 'disabled')"
-                        class="text-rose-600 font-bold rounded-lg cursor-pointer"
+                        class="text-rose-600 font-semibold rounded-lg cursor-pointer"
                         >{{
                           $t("admin.users.disable_account")
                         }}</DropdownMenuItem
@@ -301,10 +301,7 @@
                 class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80"
                 >Note ផ្ទៃក្នុង</Label
               >
-              <textarea
-                v-model="editForm.note"
-                class="flex min-h-[100px] w-full rounded-xl border border-border bg-muted/30 px-3 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 focus:bg-background transition-all resize-none font-normal"
-              ></textarea>
+              <RichEditor v-model="editForm.note" placeholder="Internal notes..." />
             </div>
             <DialogFooter class="flex flex-row gap-3 pt-4">
               <Button
@@ -379,6 +376,7 @@ import {
   PencilIcon,
   ShieldAlertIcon,
 } from "lucide-vue-next";
+import RichEditor from "@/components/ui/RichEditor.vue";
 import {
   collection,
   query,

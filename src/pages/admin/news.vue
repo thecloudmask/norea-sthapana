@@ -54,7 +54,7 @@
 
                 <!-- Type Badge -->
                 <div class="absolute top-4 left-4 drop-shadow-lg">
-                     <Badge class="text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 shadow-sm border-none ring-1 ring-black/5" :variant="item.type === 'event' ? 'default' : 'secondary'">
+                     <Badge class="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-1 shadow-sm border-none ring-1 ring-black/5" :variant="item.type === 'event' ? 'default' : 'secondary'">
                         {{ item.type === 'event' ? $t('admin.news.type_event') : $t('admin.news.type_news') }}
                      </Badge>
                 </div>
@@ -109,7 +109,7 @@
                         </SelectTrigger>
                         <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg">
                             <SelectItem value="news" class="rounded-lg font-normal">{{ $t('admin.news.type_news') }}</SelectItem>
-                            <SelectItem value="event" class="rounded-lg font-bold text-primary">{{ $t('admin.news.type_event') }}</SelectItem>
+                            <SelectItem value="event" class="rounded-lg font-semibold text-primary">{{ $t('admin.news.type_event') }}</SelectItem>
                         </SelectContent>
                     </Select>
                   </div>
@@ -122,11 +122,11 @@
 
                 <div class="grid gap-2">
                   <Label for="content" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">{{ $t('admin.news.news_content') }} *</Label>
-                  <Textarea id="content" v-model="formData.content" required :placeholder="$t('admin.news.placeholder_content')" rows="8" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all resize-none" />
+                  <RichEditor v-model="formData.content" :placeholder="$t('admin.news.placeholder_content')" />
                 </div>
                 
                 <div class="grid gap-2 pt-4 border-t border-border">
-                  <Label class="text-xs font-black uppercase tracking-widest text-muted-foreground/60">{{ $t('admin.forms.receipt') }}</Label>
+                  <Label class="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60">{{ $t('admin.forms.receipt') }}</Label>
                   <div class="flex flex-col gap-4">
                     <div class="flex items-center gap-3">
                        <Input type="file" accept="image/*" @change="handleImageUpload" :disabled="uploadingImage" class="rounded-xl border-border bg-muted/50 text-[10px]" />
@@ -187,7 +187,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import RichEditor from '@/components/ui/RichEditor.vue'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'

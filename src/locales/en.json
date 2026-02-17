@@ -8,7 +8,8 @@
     "reports": "Reports",
     "contact": "Contact",
     "donate": "Donate",
-    "donate_now": "Donate Now"
+    "donate_now": "Donate Now",
+    "more": "More"
   },
   "hero": {
     "title_start": "Join to build for",
@@ -16,6 +17,34 @@
     "subtitle": "\"Join the merit and track development projects.\"",
     "cta_donate": "Donate Now",
     "cta_projects": "View Projects"
+  },
+  "home": {
+    "dharma_title": "Dharma & Life Lessons",
+    "dharma_subtitle": "Buddhist wisdom, proverbs, and spiritual guidance for daily life."
+  },
+  "donation": {
+    "title": "Donate to Build",
+    "subtitle": "Join the merit for Buddhism and society",
+    "scan_qr": "Scan KHQR to Donate",
+    "bank_transfer": "Bank Transfer",
+    "account_name": "Account Name",
+    "account_number": "Account Number",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "close": "Close",
+    "thank_you": "Thank You",
+    "disclaimer": "All donations will be used transparently and recorded clearly for this project.",
+    "no_qr": "No QR Code",
+    "join_title": "Join Merit",
+    "scan_subtitle": "Scan to donate via KHQR",
+    "type_item": "Item",
+    "type_cash": "Cash",
+    "type_transfer": "Transfer",
+    "type_qr": "KHQR",
+    "type_aba": "ABA Bank",
+    "type_acleda": "ACLEDA Bank",
+    "type_wing": "Wing Bank",
+    "type_other_bank": "Other Bank"
   },
   "abbot": {
     "title_small": "The Abbot",
@@ -108,24 +137,10 @@
     "section7_title": "7. Contact Us",
     "section7_content": "If you have questions about the Terms of Use, please contact us:"
   },
-  "donation": {
-    "type_item": "Item",
-    "type_cash": "Cash",
-    "type_transfer": "Transfer",
-    "type_qr": "KHQR",
-    "type_aba": "ABA Bank",
-    "type_acleda": "ACLEDA Bank",
-    "type_wing": "Wing Bank",
-    "type_other_bank": "Other Bank",
-    "join_title": "Join Merit",
-    "scan_subtitle": "Scan to donate via KHQR",
-    "no_qr": "No QR available",
-    "thank_you": "Thank You",
-    "disclaimer": "All donations will be used transparently and recorded clearly for this project."
-  },
   "events": {
     "title": "Upcoming Ceremonies",
     "subtitle": "Upcoming Buddhist Ceremonies",
+    "upcoming": "Upcoming Events",
     "see_all": "See All Events",
     "location_default": "Main Hall",
     "empty": "No upcoming events scheduled."
@@ -147,6 +162,7 @@
     "title": "Buddhist Library",
     "subtitle": "Source of knowledge, Buddhist history, proverbs, and ceremony history",
     "search_placeholder": "Search articles...",
+    "see_all": "View All Library",
     "empty": "No articles found."
   },
   "common": {
@@ -311,18 +327,26 @@
       "placeholder_title": "Article title...",
       "placeholder_content": "Article content..."
     },
-    "ceremonies": {
-      "title": "Ceremony Management",
-      "subtitle": "Create and edit ceremonies and events",
-      "add_new": "Add New Ceremony",
-      "edit_ceremony": "Edit Ceremony",
-      "ceremony_title": "Ceremony Title",
-      "event_date": "Event Date",
-      "is_featured": "Featured Program",
-      "featured_badge": "Featured",
-      "placeholder_title": "Ceremony title...",
-      "placeholder_content": "Ceremony details..."
-    },
+      "ceremonies": {
+        "title": "Ceremony Management",
+        "subtitle": "Create and edit ceremonies and events",
+        "add_new": "Add New Ceremony",
+        "edit_ceremony": "Edit Ceremony",
+        "ceremony_title": "Ceremony Title",
+        "event_date": "Event Date",
+        "start_date": "Start Date",
+        "end_date": "End Date",
+        "multi_day_toggle": "Multi-day Event",
+        "is_featured": "Featured",
+        "featured_badge": "Special Event",
+        "placeholder_title": "Ceremony title... (e.g. Kathina)",
+        "placeholder_invitation": "Write the invitation content here...",
+        "placeholder_schedule": "Detailed schedule day by day...",
+        "placeholder_committee": "List of committee members and donors...",
+        "invitation_tab": "Invitation Body",
+        "schedule_tab": "Program/Schedule",
+        "committee_tab": "Committee/Donors"
+      },
     "news": {
       "title": "News Management",
       "subtitle": "Manage news and community updates",
@@ -376,7 +400,13 @@
         "theme_desc": "Customize the look and feel of the dashboard.",
         "dark_mode": "Dark Mode",
         "dark_mode_desc": "Switch between light and dark themes.",
-        "saving": "Saving..."
+        "saving": "Saving...",
+        "donation_info": "Donation Information",
+        "donation_info_desc": "Configure bank account and KHQR for public donations.",
+        "bank_name": "Bank Name",
+        "bank_account": "Account Number",
+        "account_name": "Account Name",
+        "qr_code_url": "QR Code Image URL"
     },
     "expense_categories": {
       "material": "Construction Material",

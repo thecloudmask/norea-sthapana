@@ -3,28 +3,28 @@
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="space-y-4">
-        <RouterLink to="/admin" class="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <RouterLink to="/admin" class="text-[11px] font-semibold uppercase tracking-wider text-primary flex items-center gap-2 hover:opacity-80 transition-opacity">
           <ArrowLeftIcon class="h-3.5 w-3.5" /> 
           {{ $t('admin.forms.back_to_dashboard') }}
         </RouterLink>
         <div>
-          <h1 class="text-3xl font-bold text-foreground font-khmer">{{ $t('admin.ceremonies.title') }}</h1>
+          <h1 class="text-3xl font-semibold text-foreground font-khmer">{{ $t('admin.ceremonies.title') }}</h1>
           <p class="text-muted-foreground mt-1 font-medium">{{ $t('admin.ceremonies.subtitle') }}</p>
         </div>
       </div>
       <div class="flex items-center gap-3">
         <Select v-model="statusFilter">
-          <SelectTrigger class="w-[150px] rounded-xl border-border h-11 bg-card shadow-sm font-bold">
+          <SelectTrigger class="w-[150px] rounded-xl border-border h-11 bg-card shadow-sm font-semibold">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg">
-            <SelectItem value="all" class="font-bold">ទាំងអស់ (All)</SelectItem>
-            <SelectItem value="published" class="font-bold text-emerald-600">Published</SelectItem>
-            <SelectItem value="draft" class="font-bold text-slate-500">Draft</SelectItem>
-            <SelectItem value="archived" class="font-bold text-orange-500">Archived</SelectItem>
+            <SelectItem value="all" class="font-semibold">ទាំងអស់ (All)</SelectItem>
+            <SelectItem value="published" class="font-semibold text-emerald-600">Published</SelectItem>
+            <SelectItem value="draft" class="font-semibold text-slate-500">Draft</SelectItem>
+            <SelectItem value="archived" class="font-semibold text-orange-500">Archived</SelectItem>
           </SelectContent>
         </Select>
-        <Button @click="openCreateModal" class="rounded-xl shadow-lg shadow-primary/20 font-bold h-11 px-6">
+        <Button @click="openCreateModal" class="rounded-xl shadow-lg shadow-primary/20 font-semibold h-11 px-6">
           <PlusIcon class="mr-2 h-4 w-4" />
           {{ $t('admin.ceremonies.add_new') }}
         </Button>
@@ -49,8 +49,8 @@
                 <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 pt-12 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div class="flex items-center justify-between">
                          <div class="space-y-1 min-w-0 pr-4 text-left">
-                            <span class="text-[10px] text-white/70 font-bold uppercase tracking-wider block">{{ formatDate(item.eventDate || item.createdAt) }}</span>
-                            <h3 class="text-lg font-bold text-white leading-tight font-khmer line-clamp-1 truncate">{{ item.title }}</h3>
+                            <span class="text-[10px] text-white/70 font-semibold uppercase tracking-wider block">{{ formatDate(item.eventDate || item.createdAt) }}</span>
+                            <h3 class="text-lg font-semibold text-white leading-tight font-khmer line-clamp-1 truncate">{{ item.title }}</h3>
                          </div>
                          <div class="flex gap-2 flex-shrink-0">
                              <Button variant="secondary" size="icon" class="h-9 w-9 bg-background text-foreground rounded-xl shadow-xl hover:bg-muted border-none" @click="openEditModal(item)">
@@ -68,7 +68,7 @@
                 <!-- Status Badge -->
                 <div class="absolute top-4 left-4 drop-shadow-lg flex flex-col gap-2">
                      <Badge 
-                        class="text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 shadow-sm border-none ring-1 ring-black/5"
+                        class="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-1 shadow-sm border-none ring-1 ring-black/5"
                         :class="{
                           'bg-emerald-500 text-white': item.status === 'published',
                           'bg-slate-500 text-white': item.status === 'draft', 
@@ -77,7 +77,7 @@
                      >
                         {{ item.status || 'draft' }}
                      </Badge>
-                     <Badge v-if="item.isFeatured" class="uppercase text-[9px] font-bold tracking-wider px-2.5 py-1 shadow-sm bg-orange-500 text-white border-none w-fit">
+                     <Badge v-if="item.isFeatured" class="uppercase text-[9px] font-semibold tracking-wider px-2.5 py-1 shadow-sm bg-orange-500 text-white border-none w-fit">
                         {{ $t('admin.ceremonies.featured_badge') }}
                      </Badge>
                 </div>
@@ -91,11 +91,11 @@
                     </div>
                     <div v-if="item.eventDate" class="flex items-center gap-2 justify-end">
                         <CalendarIcon class="h-3.5 w-3.5 text-primary" />
-                        <span>{{ formatDate(item.eventDate) }}</span>
+                        <span class="truncate">{{ formatDateRange(item.eventDate, item.endDate) }}</span>
                     </div>
-                    <div v-if="item.startTime" class="col-span-2 flex items-center gap-2 text-primary font-bold bg-primary/5 p-2 rounded-lg justify-center">
-                        <ClockIcon class="h-3.5 w-3.5" />
-                        <span>{{ item.startTime }} - {{ item.endTime || '...' }}</span>
+                    <div v-if="item.location" class="col-span-2 flex items-center gap-2 text-primary font-semibold bg-primary/5 p-2 rounded-lg justify-center overflow-hidden">
+                        <MapPinIcon class="h-3.5 w-3.5 flex-shrink-0" />
+                        <span class="truncate">{{ item.location }}</span>
                     </div>
                 </div>
             </CardContent>
@@ -107,7 +107,7 @@
               <ImageIcon class="w-10 h-10" />
            </div>
            <p class="font-extrabold text-foreground text-lg">មិនទាន់មានកម្មវិធីបុណ្យ</p>
-           <Button @click="openCreateModal" variant="outline" class="mt-4 rounded-xl border-border bg-background/50 font-bold">
+           <Button @click="openCreateModal" variant="outline" class="mt-4 rounded-xl border-border bg-background/50 font-semibold">
               {{ $t('admin.ceremonies.add_new') }}
            </Button>
         </div>
@@ -141,15 +141,27 @@
                             </SelectTrigger>
                             <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg">
                                 <SelectItem value="draft" class="rounded-lg font-normal text-slate-600">Draft (ព្រាង)</SelectItem>
-                                <SelectItem value="published" class="rounded-lg font-bold text-emerald-600">Published (ផ្សាយ)</SelectItem>
+                                <SelectItem value="published" class="rounded-lg font-semibold text-emerald-600">Published (ផ្សាយ)</SelectItem>
                                 <SelectItem value="archived" class="rounded-lg font-normal text-orange-600">Archived (រក្សាទុក)</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="eventDate" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">{{ $t('admin.ceremonies.event_date') }} *</Label>
-                        <Input id="eventDate" type="date" v-model="eventDateInput" required class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11" />
+                        <Label class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80 flex items-center justify-between">
+                            {{ $t('admin.ceremonies.event_date') }} *
+                            <div class="flex items-center gap-2 cursor-pointer" @click="isMultiDay = !isMultiDay">
+                                <span class="text-[10px] text-primary/60">{{ isMultiDay ? 'Multi-day' : 'Single day' }}</span>
+                                <div class="w-7 h-4 rounded-full bg-muted relative transition-colors" :class="{'bg-primary/20': isMultiDay}">
+                                    <div class="absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-transform" :class="{'translate-x-3': isMultiDay}"></div>
+                                </div>
+                            </div>
+                        </Label>
+                        <div class="grid grid-cols-2 gap-2" v-if="isMultiDay">
+                             <Input type="date" v-model="eventDateInput" required class="rounded-xl border-border bg-muted/30 font-normal h-11" />
+                             <Input type="date" v-model="endDateInput" required class="rounded-xl border-border bg-muted/30 font-normal h-11" />
+                        </div>
+                        <Input v-else id="eventDate" type="date" v-model="eventDateInput" required class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11" />
                     </div>
                 </div>
 
@@ -158,29 +170,47 @@
                     <Input id="location" v-model="formData.location" placeholder="Ex: Main Hall, Stupa..." class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11" />
                 </div>
 
-                <div class="grid grid-cols-2 gap-6">
-                     <div class="grid gap-2">
-                        <Label for="startTime" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">ម៉ោងចាប់ផ្តើម (Start Time)</Label>
-                        <Input id="startTime" type="time" v-model="formData.startTime" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11" />
-                    </div>
-                    <div class="grid gap-2">
-                        <Label for="endTime" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">ម៉ោងបញ្ចប់ (End Time)</Label>
-                        <Input id="endTime" type="time" v-model="formData.endTime" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11" />
-                    </div>
-                </div>
 
-                <div class="grid gap-2">
-                  <Label for="content" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">{{ $t('admin.library.article_content') }} *</Label>
-                  <Textarea id="content" v-model="formData.content" required :placeholder="$t('admin.ceremonies.placeholder_content')" rows="6" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all resize-none" />
+
+                <!-- Detailed Sections with Tabs -->
+                <div class="space-y-4 border-t border-border pt-6">
+                    <div class="flex items-center gap-6 border-b border-border">
+                        <button 
+                            v-for="tab in ['invitation', 'schedule', 'committee']" 
+                            :key="tab"
+                            type="button"
+                            @click="activeTab = tab"
+                            class="pb-3 text-xs font-semibold uppercase tracking-widest transition-all relative"
+                            :class="activeTab === tab ? 'text-primary' : 'text-muted-foreground/60 hover:text-muted-foreground'"
+                        >
+                            {{ $t(`admin.ceremonies.${tab}_tab`) }}
+                            <div v-if="activeTab === tab" class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full transition-all"></div>
+                        </button>
+                    </div>
+
+                    <div class="mt-4">
+                        <div v-show="activeTab === 'invitation'" class="space-y-2 animate-in fade-in duration-300">
+                             <Label class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">{{ $t('admin.ceremonies.invitation_tab') }} *</Label>
+                             <RichEditor v-model="formData.content" :placeholder="$t('admin.ceremonies.placeholder_invitation')" />
+                        </div>
+                        <div v-show="activeTab === 'schedule'" class="space-y-2 animate-in fade-in duration-300">
+                             <Label class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">{{ $t('admin.ceremonies.schedule_tab') }}</Label>
+                             <RichEditor v-model="formData.schedule" :placeholder="$t('admin.ceremonies.placeholder_schedule')" />
+                        </div>
+                        <div v-show="activeTab === 'committee'" class="space-y-2 animate-in fade-in duration-300">
+                             <Label class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">{{ $t('admin.ceremonies.committee_tab') }}</Label>
+                             <RichEditor v-model="formData.committee" :placeholder="$t('admin.ceremonies.placeholder_committee')" />
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="flex items-center space-x-3 py-2">
+                <div class="flex items-center space-x-3 py-2 border-t border-border pt-6">
                     <input type="checkbox" id="isFeatured" v-model="formData.isFeatured" class="size-5 rounded-lg border-border bg-muted/30 text-primary focus:ring-primary ring-offset-background" />
                     <Label for="isFeatured" class="font-khmer font-medium text-foreground">{{ $t('admin.ceremonies.is_featured') }}</Label>
                 </div>
 
                 <div class="grid gap-2 pt-4 border-t border-border">
-                  <Label class="text-xs font-black uppercase tracking-widest text-muted-foreground/60">{{ $t('admin.forms.receipt') }}</Label>
+                  <Label class="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60">{{ $t('admin.forms.receipt') }}</Label>
                   <div class="flex flex-col gap-4">
                     <div class="flex items-center gap-3">
                        <Input type="file" accept="image/*" @change="handleImageUpload" :disabled="uploadingImage" class="rounded-xl border-border bg-muted/50 text-[10px]" />
@@ -236,13 +266,13 @@
 <script setup lang="ts">
 
 import { ref, computed, onMounted } from 'vue'
-import { PlusIcon, PencilIcon, TrashIcon, ImageIcon, CalendarIcon, ArrowLeftIcon, MapPinIcon, ClockIcon } from 'lucide-vue-next'
+import { PlusIcon, PencilIcon, TrashIcon, ImageIcon, CalendarIcon, ArrowLeftIcon, MapPinIcon } from 'lucide-vue-next'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import RichEditor from '@/components/ui/RichEditor.vue'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useArticles } from '~/composables/useArticles'
@@ -261,21 +291,25 @@ const uploadingImage = ref(false)
 const isEditing = ref(false)
 const editingId = ref<string | null>(null)
 const itemToDelete = ref<any>(null)
+const activeTab = ref('invitation')
 
 const formData = ref({
   title: '',
   content: '',
+  schedule: '',
+  committee: '',
   category: 'ceremony',
   eventDate: null as Date | null,
+  endDate: null as Date | null,
   imageUrl: '',
   isFeatured: false,
   status: 'draft' as 'draft' | 'published' | 'archived',
-  location: '',
-  startTime: '',
-  endTime: ''
+  location: ''
 })
 
 const eventDateInput = ref('')
+const endDateInput = ref('')
+const isMultiDay = ref(false)
 
 // Filter only ceremony articles
 const ceremonies = computed(() => {
@@ -299,40 +333,54 @@ onMounted(() => {
 const openCreateModal = () => {
   isEditing.value = false
   editingId.value = null
+  activeTab.value = 'invitation'
   formData.value = {
     title: '',
     content: '',
+    schedule: '',
+    committee: '',
     category: 'ceremony',
     eventDate: null,
+    endDate: null,
     imageUrl: '',
     isFeatured: false,
     status: 'draft',
-    location: '',
-    startTime: '',
-    endTime: ''
+    location: ''
   }
   eventDateInput.value = ''
+  endDateInput.value = ''
+  isMultiDay.value = false
   showCreateModal.value = true
 }
 
 const openEditModal = (item: any) => {
   isEditing.value = true
   editingId.value = item.id
+  activeTab.value = 'invitation'
   formData.value = {
     title: item.title,
     content: item.content,
+    schedule: item.schedule || '',
+    committee: item.committee || '',
     category: 'ceremony',
     eventDate: item.eventDate,
+    endDate: item.endDate || null,
     imageUrl: item.imageUrl || '',
     isFeatured: item.isFeatured || false,
     status: item.status || 'draft',
-    location: item.location || '',
-    startTime: item.startTime || '',
-    endTime: item.endTime || ''
+    location: item.location || ''
   }
   if (item.eventDate) {
     const date = item.eventDate.toDate ? item.eventDate.toDate() : new Date(item.eventDate)
     eventDateInput.value = date.toISOString().split('T')[0]
+  }
+  if (item.endDate) {
+    const date = item.endDate.toDate ? item.endDate.toDate() : new Date(item.endDate)
+    endDateInput.value = date.toISOString().split('T')[0]
+    isMultiDay.value = true
+  } else {
+    endDateInput.value = ''
+    isMultiDay.value = false
   }
   showCreateModal.value = true
 }
@@ -358,7 +406,8 @@ const handleSave = async () => {
     const data = {
       ...formData.value,
       category: 'ceremony' as const,
-      eventDate: eventDateInput.value ? new Date(eventDateInput.value) : null
+      eventDate: eventDateInput.value ? new Date(eventDateInput.value) : null,
+      endDate: isMultiDay.value && endDateInput.value ? new Date(endDateInput.value) : null
     }
 
     if (isEditing.value && editingId.value) {
@@ -400,6 +449,22 @@ const formatDate = (date: any) => {
   if (!date) return ''
   const d = date.toDate ? date.toDate() : new Date(date)
   return formatKhmerDate(d, 'dd/MM/yyyy')
+}
+
+const formatDateRange = (start: any, end: any) => {
+    if (!start) return ''
+    const startDate = start.toDate ? start.toDate() : new Date(start)
+    const formattedStart = formatKhmerDate(startDate, 'dd/MM/yyyy')
+    
+    if (!end) return formattedStart
+    
+    const endDate = end.toDate ? end.toDate() : new Date(end)
+    const formattedEnd = formatKhmerDate(endDate, 'dd/MM/yyyy')
+    
+    if (formattedStart === formattedEnd) return formattedStart
+    
+    // Check if same month and year to shorten if needed, but for now simple range
+    return `${formatKhmerDate(startDate, 'dd')} - ${formattedEnd}`
 }
 </script>
 

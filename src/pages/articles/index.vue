@@ -4,7 +4,7 @@
     <div class="bg-primary pt-24 pb-16 text-center text-white px-4 relative overflow-hidden">
         <div class="absolute inset-0 bg-black/10 pointer-events-none"></div>
         <div class="relative z-10 animate-in fade-in slide-in-from-top-4 duration-700">
-           <h1 class="text-3xl md:text-5xl font-black mb-4 font-khmer uppercase tracking-tight">{{ $t('library.title') }}</h1>
+           <h1 class="text-3xl md:text-5xl font-bold mb-4 font-khmer uppercase tracking-tight">{{ $t('library.title') }}</h1>
            <p class="text-white/80 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
               {{ $t('library.subtitle') }}
            </p>
@@ -25,7 +25,7 @@
                 </div>
                 <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
                     <Button 
-                       v-for="cat in ['all', 'buddhist_history', 'history', 'proverb']"
+                       v-for="cat in (['all', 'proverb', 'history', 'buddhist_history', 'general'] as const)"
                        :key="cat"
                        variant="outline" 
                        :class="[
@@ -34,7 +34,7 @@
                             : 'bg-background hover:bg-muted border-border text-muted-foreground'
                        ]"
                        @click="selectedCategory = cat"
-                       class="rounded-xl px-6 h-12 font-black uppercase tracking-widest text-[10px] transition-all"
+                       class="rounded-xl px-6 h-12 font-semibold uppercase tracking-widest text-[10px] transition-all whitespace-nowrap"
                     >
                        {{ cat === 'all' ? $t('common.filter_all') : $t(`admin.library.${cat}`) }}
                     </Button>
@@ -55,23 +55,23 @@
                        <div v-else class="w-full h-full flex items-center justify-center text-muted-foreground/20">
                            <BookOpenIcon class="h-16 w-16" />
                        </div>
-                       <Badge class="absolute top-4 right-4 bg-background/90 text-foreground shadow-sm hover:bg-background border-none uppercase text-[9px] font-black tracking-widest px-3 py-1.5 backdrop-blur-md">
+                       <Badge class="absolute top-4 right-4 bg-background/90 text-foreground shadow-sm hover:bg-background border-none uppercase text-[9px] font-semibold tracking-widest px-3 py-1.5 backdrop-blur-md">
                            {{ getCategoryLabel(article.category) }}
                        </Badge>
                    </div>
                    <CardContent class="flex-1 p-8 flex flex-col text-left">
-                       <h3 class="text-xl md:text-2xl font-black font-khmer mb-4 group-hover:text-primary transition-colors line-clamp-2 leading-snug text-foreground">
+                       <h3 class="text-xl md:text-2xl font-semibold font-khmer mb-4 group-hover:text-primary transition-colors line-clamp-2 leading-snug text-foreground">
                            {{ article.title }}
                        </h3>
                        <p class="text-muted-foreground line-clamp-3 text-sm font-medium leading-relaxed mb-8 flex-1">
-                           {{ article.content }}
+                           {{ stripHtml(article.content) }}
                        </p>
                        <div class="flex items-center justify-between pt-6 border-t border-border">
-                            <div class="flex items-center text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest tabular-nums italic">
+                            <div class="flex items-center text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest tabular-nums italic">
                                 <CalendarIcon class="h-3.5 w-3.5 mr-2 opacity-50" />
                                 {{ formatDate(article.createdAt) }}
                             </div>
-                            <span class="text-primary font-black uppercase tracking-widest text-[10px] flex items-center gap-2 group-hover:gap-3 transition-all">
+                            <span class="text-primary font-semibold uppercase tracking-widest text-[10px] flex items-center gap-2 group-hover:gap-3 transition-all">
                                 {{ $t('common.read_more') }}
                                 <ArrowRightIcon class="h-3 w-3" />
                             </span>
@@ -85,8 +85,8 @@
            <div class="size-20 rounded-full bg-muted flex items-center justify-center text-muted-foreground/20 mx-auto mb-6">
                 <SearchXIcon class="h-10 w-10" />
            </div>
-           <p class="text-muted-foreground font-bold text-lg mb-6">{{ $t('library.empty') }}</p>
-           <Button variant="outline" @click="selectedCategory = 'all'; searchQuery = ''" class="rounded-xl border-border px-8 font-black uppercase tracking-widest text-[10px] h-12 hover:bg-muted bg-background/50">
+           <p class="text-muted-foreground font-semibold text-lg mb-6">{{ $t('library.empty') }}</p>
+           <Button variant="outline" @click="selectedCategory = 'all'; searchQuery = ''" class="rounded-xl border-border px-8 font-semibold uppercase tracking-widest text-[10px] h-12 hover:bg-muted bg-background/50">
                 {{ $t('common.reset_filters') }}
            </Button>
        </div>
@@ -98,25 +98,28 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { SearchIcon, BookOpenIcon, CalendarIcon, SearchXIcon, ArrowRightIcon } from 'lucide-vue-next'
+import { formatKhmerDate } from '~/utils/date'
+import { useArticles } from '~/composables/useArticles'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { useI18n } from 'vue-i18n'
-import { formatKhmerDate } from '~/utils/date'
-import { useArticles } from '~/composables/useArticles'
 
 const { articles, loading, fetchArticles } = useArticles()
-
 const searchQuery = ref('')
 const selectedCategory = ref<string>('all')
 
+const route = useRoute()
+const router = useRouter()
+
 onMounted(() => {
     fetchArticles()
-    // Redirect if category is ceremony (since it has its own page now)
-    const route = useRoute()
-    const router = useRouter()
-    if (route.query.category === 'ceremony') {
+    if (route.query.category) {
+        selectedCategory.value = route.query.category as string
+    }
+    // Redirect if category is ceremony
+    if (selectedCategory.value === 'ceremony') {
         router.push('/ceremonies')
     }
 })
@@ -149,6 +152,12 @@ const getCategoryLabel = (cat: string) => {
         case 'buddhist_history': return t('admin.library.buddhist_history')
         default: return t('admin.library.general')
     }
+}
+
+const stripHtml = (html: string) => {
+    if (!html) return "";
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
 }
 
 const formatDate = (date: any) => formatKhmerDate(date)

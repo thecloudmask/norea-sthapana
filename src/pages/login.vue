@@ -8,7 +8,7 @@
     <ClientOnly v-else>
       <Card v-if="!authStore.isAuthenticated" class="w-full max-w-[400px]">
         <CardHeader class="space-y-1 text-center">
-          <CardTitle class="text-2xl font-bold">{{ $t('login.title') }}</CardTitle>
+          <CardTitle class="text-2xl font-semibold">{{ $t('login.title') }}</CardTitle>
           <CardDescription>
             {{ $t('login.description') }}
           </CardDescription>

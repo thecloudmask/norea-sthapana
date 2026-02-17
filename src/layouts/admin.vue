@@ -1,6 +1,6 @@
 <template>
   <SidebarProvider>
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" variant="inset">
       <!-- Sidebar Header / Logo -->
       <SidebarHeader>
         <SidebarMenu>
@@ -116,40 +116,41 @@
               </DropdownMenu>
             </SidebarMenuItem>
          </SidebarMenu>
+
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
 
     <!-- Main Content Inset -->
     <SidebarInset>
-      <header class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 border-b px-4">
+      <header class="flex h-16 shrink-0 items-center gap-2 border-b px-4 sticky top-0 bg-background/80 backdrop-blur-md z-20">
         <div class="flex items-center gap-2">
           <SidebarTrigger class="-ml-1" />
-          <Separator orientation="vertical" class="mr-2 h-4" />
-          <Breadcrumb>
+          <Separator orientation="vertical" class="mr-2 h-4 hidden sm:block" />
+          <Breadcrumb class="hidden sm:block">
              <BreadcrumbList>
-                <BreadcrumbItem class="hidden md:block">
+                <BreadcrumbItem>
                    <BreadcrumbLink to="/admin">Admin</BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator class="hidden md:block" />
+                <BreadcrumbSeparator />
                 <BreadcrumbItem>
                    <BreadcrumbPage>{{ currentPage }}</BreadcrumbPage>
                 </BreadcrumbItem>
              </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <div class="ml-auto flex items-center gap-4">
+        <div class="ml-auto flex items-center gap-2 md:gap-4">
              <!-- Language Switcher -->
              <LanguageSwitcher />
              <ThemeSwitcher />
              
-             <div class="hidden md:flex items-center text-base font-medium text-muted-foreground bg-muted/30 px-4 py-2 rounded-xl border border-border/50">
+             <div class="hidden lg:flex items-center text-sm font-medium text-muted-foreground bg-muted/30 px-4 py-2 rounded-xl border border-border/50">
                   <ClockIcon class="mr-2 h-4 w-4" />
                   <span class="tabular-nums">{{ currentTime }}</span>
               </div>
         </div>
       </header>
-      <div class="flex flex-1 flex-col gap-4 p-4 pt-0 overflow-y-auto">
+      <div class="flex flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8 overflow-y-auto">
         <RouterView />
       </div>
     </SidebarInset>

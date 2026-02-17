@@ -8,7 +8,11 @@ export const useSettings = () => {
         templeName: 'វត្តនរាធិបតី (Wat Narea)',
         address: 'ភូមិ..., ឃុំ..., ស្រុក..., ខេត្ត...',
         contactPhone: '012 345 678',
-        email: 'info@watnarea.org'
+        email: 'info@watnarea.org',
+        bankName: '',
+        bankAccountNumber: '',
+        bankAccountName: '',
+        qrCodeUrl: ''
     })
 
     const fetchSettings = async () => {

@@ -1,6 +1,7 @@
 <template>
   <div class="relative flex min-h-screen flex-col bg-background transition-colors duration-500">
     <Navbar />
+    <EventTicker />
     <main class="flex-1">
       <RouterView />
     </main>
@@ -8,7 +9,7 @@
       <!-- Decorator -->
       <div class="absolute top-0 left-0 w-full h-1 bg-primary/10"></div>
       
-      <div class="container mx-auto px-6 md:px-4 relative z-10 text-left">
+      <div class="w-full px-4 md:px-6 relative z-10 text-left">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 lg:gap-16 mb-12">
           
           <!-- Brand Column -->
@@ -154,8 +155,14 @@
         </div>
 
         <!-- Copyright -->
-        <div class="pt-8 md:pt-10 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6 text-xs font-black uppercase tracking-widest text-muted-foreground/40 italic text-center md:text-left">
-          <p>&copy; {{ new Date().getFullYear() }} {{ $t('app.name') }}. {{ $t('footer.copyright') }}</p>
+        <div class="pt-8 md:pt-10 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6 text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground/60 text-center md:text-left">
+          <div class="flex flex-col gap-1">
+            <p>&copy; {{ new Date().getFullYear() }} {{ $t('app.name') }}. {{ $t('footer.copyright') }}</p>
+            <p class="text-[10px] opacity-70">
+              Developed by <span class="text-primary not-italic">Ren Theara</span> • 
+              <a href="tel:+85598583828" class="hover:text-primary transition-colors not-italic">098 583 828</a>
+            </p>
+          </div>
           <div class="flex flex-wrap justify-center md:justify-end gap-6 md:gap-8">
             <RouterLink to="/privacy-policy" class="hover:text-primary transition-colors">{{ $t('footer.privacy_policy') }}</RouterLink>
             <RouterLink to="/terms-of-use" class="hover:text-primary transition-colors">{{ $t('footer.terms_of_use') }}</RouterLink>
@@ -168,6 +175,6 @@
 
 <script setup lang="ts">
 import { FacebookIcon, SendIcon, YoutubeIcon, MapPinIcon, PhoneIcon, MailIcon } from 'lucide-vue-next'
-
+import EventTicker from '~/components/EventTicker.vue'
 
 </script>

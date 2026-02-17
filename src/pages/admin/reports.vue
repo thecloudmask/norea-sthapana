@@ -73,7 +73,7 @@
             <CardDescription class="text-sm font-medium text-muted-foreground mt-2 leading-relaxed font-khmer">{{ report.description }}</CardDescription>
           </CardHeader>
           <CardFooter class="p-4 pt-0">
-            <Button variant="ghost" class="w-full h-14 rounded-2xl justify-between group px-6 bg-muted/30 font-bold uppercase tracking-widest text-[10px] hover:bg-primary/10 hover:text-primary transition-all" @click="handleExport(report.id)">
+            <Button variant="ghost" class="w-full h-14 rounded-2xl justify-between group px-6 bg-muted/30 font-semibold uppercase tracking-widest text-[10px] hover:bg-primary/10 hover:text-primary transition-all" @click="handleExport(report.id)">
               <span>Download CSV</span>
               <DownloadIcon class="h-4 w-4 transition-transform group-hover:translate-y-1" />
             </Button>

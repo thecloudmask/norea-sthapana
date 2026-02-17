@@ -52,6 +52,108 @@
                     </Button>
                 </CardFooter>
             </Card>
+
+            <!-- Donation Information Card -->
+            <Card class="bg-card border-none shadow-sm ring-1 ring-border rounded-2xl overflow-hidden">
+                <CardHeader class="border-b border-border bg-muted/30 pb-6 pt-6 px-8">
+                    <CardTitle class="text-xl font-medium text-foreground font-khmer tracking-tight">{{ t('admin.settings.donation_info') }}</CardTitle>
+                    <CardDescription class="text-foreground/70 font-medium mt-2 font-khmer text-sm">
+                        {{ t('admin.settings.donation_info_desc') }}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent class="p-8 space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="grid gap-4">
+                            <Label for="bankName" class="text-sm font-medium text-foreground/70 ml-1 font-khmer">{{ t('admin.settings.bank_name') }}</Label>
+                            <Input id="bankName" v-model="form.bankName" placeholder="ABA Bank" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-12 px-5" />
+                        </div>
+                         <div class="grid gap-4">
+                            <Label for="bankAccountName" class="text-sm font-medium text-foreground/70 ml-1 font-khmer">{{ t('admin.settings.account_name') }}</Label>
+                            <Input id="bankAccountName" v-model="form.bankAccountName" placeholder="WAT NAREA..." class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-12 px-5" />
+                        </div>
+                    </div>
+                    <div class="grid gap-4">
+                         <Label for="bankAccountNumber" class="text-sm font-medium text-foreground/70 ml-1 font-khmer">{{ t('admin.settings.bank_account') }}</Label>
+                         <Input id="bankAccountNumber" v-model="form.bankAccountNumber" placeholder="000 123 456" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-12 px-5 font-mono" />
+                    </div>
+                     <div class="grid gap-4">
+                        <Label for="qrCodeUrl" class="text-sm font-medium text-foreground/70 ml-1 font-khmer">{{ t('admin.settings.qr_code_url') }}</Label>
+                        
+                        <div class="flex flex-col gap-4">
+                            <!-- QR Code Preview & Upload Area -->
+                            <div class="flex flex-col sm:flex-row items-start gap-6 p-6 rounded-2xl bg-muted/20 border border-dashed border-border/60">
+                                <div class="relative size-40 rounded-xl bg-background border border-border shadow-inner overflow-hidden flex items-center justify-center group flex-shrink-0">
+                                    <img 
+                                        v-if="form.qrCodeUrl" 
+                                        :src="form.qrCodeUrl" 
+                                        alt="QR Preview" 
+                                        class="w-full h-full object-cover transition-transform group-hover:scale-105"
+                                    />
+                                    <div v-else class="flex flex-col items-center justify-center text-muted-foreground/30 gap-2">
+                                        <QrCodeIcon class="size-12" />
+                                        <span class="text-[10px] uppercase font-semibold tracking-widest">No Image</span>
+                                    </div>
+                                    
+                                    <!-- Overlay Remove Button -->
+                                    <button 
+                                        v-if="form.qrCodeUrl" 
+                                        type="button" 
+                                        @click="form.qrCodeUrl = ''" 
+                                        class="absolute top-2 right-2 size-8 rounded-full bg-rose-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-rose-600"
+                                    >
+                                        <TrashIcon class="size-4" />
+                                    </button>
+                                </div>
+
+                                <div class="flex flex-col gap-3 justify-center">
+                                    <div class="space-y-1">
+                                        <h4 class="text-sm font-semibold text-foreground font-khmer">{{ t('admin.qr_code') }}</h4>
+                                        <p class="text-xs text-muted-foreground leading-relaxed">{{ t('admin.qr_code_subtitle') }}</p>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-3">
+                                        <Button 
+                                            type="button" 
+                                            variant="outline" 
+                                            class="rounded-xl h-10 px-4 border-border bg-background hover:bg-muted text-xs font-semibold transition-all"
+                                            @click="qrInput?.click()"
+                                            :disabled="uploadingImage"
+                                        >
+                                            <span v-if="uploadingImage" class="mr-2 h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
+                                            <UploadCloudIcon v-else class="mr-2 h-4 w-4 text-primary" />
+                                            {{ uploadingImage ? 'Uploading...' : t('admin.change_qr') }}
+                                        </Button>
+                                        <input 
+                                            ref="qrInput" 
+                                            type="file" 
+                                            accept="image/*" 
+                                            class="hidden" 
+                                            @change="handleImageUpload" 
+                                        />
+                                        <span v-if="form.qrCodeUrl" class="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+                                            <CheckCircleIcon class="size-3" />
+                                            Image Uploaded
+                                        </span>
+                                    </div>
+                                    <p class="text-[10px] text-muted-foreground/60 italic">Recommended: 1:1 Aspect Ratio (Square), PNG or JPG</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Manual URL Fallback -->
+                            <div class="grid gap-2">
+                                <Label for="manualUrl" class="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 ml-1">Or Manual URL</Label>
+                                <Input id="manualUrl" v-model="form.qrCodeUrl" placeholder="https://res.cloudinary.com/..." class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-10 px-4 text-xs" />
+                            </div>
+                        </div>
+                    </div>
+                </CardContent>
+                <CardFooter class="p-8 pt-4 flex justify-end bg-muted/10 border-t border-border/50">
+                    <Button :disabled="loading" @click="handleSave" class="rounded-xl h-11 px-8 font-medium bg-primary text-white hover:bg-orange-600 transition-all active:scale-95 shadow-sm">
+                        <span v-if="loading" class="mr-3 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                        {{ loading ? t('admin.settings.saving') : t('admin.forms.save_changes') }}
+                    </Button>
+                </CardFooter>
+            </Card>
         </TabsContent>
 
         <TabsContent value="appearance" class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
@@ -105,22 +207,31 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { SunIcon, MoonIcon, MonitorIcon } from 'lucide-vue-next'
+import { SunIcon, MoonIcon, MonitorIcon, QrCodeIcon, UploadCloudIcon, TrashIcon, CheckCircleIcon } from 'lucide-vue-next'
 import { useSettings } from '~/composables/useSettings'
+import { useCloudinary } from '~/composables/useCloudinary'
 import { useI18n } from 'vue-i18n'
 import { useColorMode } from '@vueuse/core'
-
-
+import { useToast } from '@/components/ui/toast/use-toast'
 
 const { t } = useI18n()
 const { settings, fetchSettings, saveSettings, loading } = useSettings()
+const { uploadImage } = useCloudinary()
+const { toast } = useToast()
 const colorMode = useColorMode()
+
+const uploadingImage = ref(false)
+const qrInput = ref<HTMLInputElement | null>(null)
 
 const form = ref({
     templeName: '',
     address: '',
     contactPhone: '',
-    email: ''
+    email: '',
+    bankName: '',
+    bankAccountNumber: '',
+    bankAccountName: '',
+    qrCodeUrl: ''
 })
 
 onMounted(async () => {
@@ -130,7 +241,11 @@ onMounted(async () => {
             templeName: settings.value.templeName || '',
             address: settings.value.address || '',
             contactPhone: settings.value.contactPhone || '',
-            email: settings.value.email || ''
+            email: settings.value.email || '',
+            bankName: settings.value.bankName || '',
+            bankAccountNumber: settings.value.bankAccountNumber || '',
+            bankAccountName: settings.value.bankAccountName || '',
+            qrCodeUrl: settings.value.qrCodeUrl || ''
         }
     }
 })
@@ -145,15 +260,52 @@ const toggleDarkMode = (checked: boolean) => {
     setTheme(checked ? 'dark' : 'light')
 }
 
+const handleImageUpload = async (event: Event) => {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    if (!file) return
+
+    uploadingImage.value = true
+    try {
+        const url = await uploadImage(file)
+        form.value.qrCodeUrl = url
+        toast({
+            title: "ជោគជ័យ",
+            description: "រូបភាព QR ត្រូវបានបង្ហោះរួចរាល់",
+            duration: 3000
+        })
+    } catch (e: any) {
+        console.error('Upload failed', e)
+        toast({
+            title: "បរាជ័យ",
+            description: e.message || "ការបង្ហោះរូបភាពមានបញ្ហា",
+            variant: "destructive",
+            duration: 3000
+        })
+    } finally {
+        uploadingImage.value = false
+        input.value = ''
+    }
+}
+
 const handleSave = async () => {
     try {
         await saveSettings(form.value)
-        // Success notification logic could be added here
-    } catch (e) {
+        toast({
+            title: "ជោគជ័យ",
+            description: "ការផ្លាស់ប្តូរត្រូវបានរក្សាទុក",
+            duration: 3000
+        })
+    } catch (e: any) {
         console.error('Save failed', e)
+        toast({
+            title: "បរាជ័យ",
+            description: "មិនអាចរក្សាទុកការផ្លាស់ប្តូរបានទេ",
+            variant: "destructive",
+            duration: 3000
+        })
     }
-}
-</script>
+}</script>
 
 <route lang="yaml">
 meta:

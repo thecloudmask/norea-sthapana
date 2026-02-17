@@ -107,7 +107,7 @@
           <!-- Overview Chart -->
           <Card class="col-span-full lg:col-span-4 rounded-3xl border-none ring-1 ring-border bg-card shadow-sm overflow-hidden">
             <CardHeader class="pb-10">
-              <CardTitle class="text-2xl font-black text-foreground uppercase tracking-tight">{{ $t('admin.revenue_trend') }}</CardTitle>
+              <CardTitle class="text-2xl font-semibold text-foreground uppercase tracking-tight">{{ $t('admin.revenue_trend') }}</CardTitle>
               <CardDescription class="font-medium text-muted-foreground">{{ $t('admin.revenue_trend_subtitle') }}</CardDescription>
             </CardHeader>
             <CardContent class="pb-8 overflow-hidden">
@@ -122,7 +122,7 @@
                    />
                    <div v-else class="h-full flex flex-col items-center justify-center text-muted-foreground/30 gap-4">
                         <RefreshCwIcon class="size-10 animate-spin opacity-20" />
-                        <span class="text-xs font-black uppercase tracking-widest">កំពុងទាញទិន្នន័យ...</span>
+                        <span class="text-xs font-semibold uppercase tracking-widest">កំពុងទាញទិន្នន័យ...</span>
                    </div>
                  </div>
                </div>
@@ -134,7 +134,7 @@
             <CardHeader class="pb-8 pt-8">
               <div class="flex items-center justify-between">
                 <div>
-                  <CardTitle class="text-2xl font-black text-foreground uppercase tracking-tight">{{ $t('admin.recent_donors') }}</CardTitle>
+                  <CardTitle class="text-2xl font-semibold text-foreground uppercase tracking-tight">{{ $t('admin.recent_donors') }}</CardTitle>
                   <CardDescription class="mt-1 font-medium text-muted-foreground">
                     {{ $t('admin.recent_donors_subtitle') }}
                   </CardDescription>
@@ -149,17 +149,17 @@
                  <div v-for="(d, i) in recentDonations" :key="i" class="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border/50 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all group ring-1 ring-border/5">
                     <Avatar class="h-12 w-12 rounded-xl ring-2 ring-background border border-border shadow-inner">
                        <AvatarImage :src="d.avatar" alt="Avatar" />
-                       <AvatarFallback class="text-xs font-black bg-muted text-muted-foreground/60 uppercase tracking-widest">{{ d.initials }}</AvatarFallback>
+                       <AvatarFallback class="text-xs font-semibold bg-muted text-muted-foreground/60 uppercase tracking-widest">{{ d.initials }}</AvatarFallback>
                     </Avatar>
                     <div class="flex-1 min-w-0 flex flex-col text-left">
-                       <p class="text-sm font-black text-foreground truncate tracking-tight font-khmer">{{ d.donorName }}</p>
-                       <p class="text-[9px] text-muted-foreground/60 font-black uppercase tracking-widest mt-0.5 italic">{{ d.paymentMethod || 'CASH' }}</p>
+                       <p class="text-sm font-semibold text-foreground truncate tracking-tight font-khmer">{{ d.donorName }}</p>
+                       <p class="text-[9px] text-muted-foreground/60 font-semibold uppercase tracking-widest mt-0.5 italic">{{ d.paymentMethod || 'CASH' }}</p>
                     </div>
                     <div class="text-right">
-                       <div class="text-lg font-black tabular-nums tracking-tighter" :class="Number(d.amount) > 0 ? 'text-emerald-500' : 'text-rose-500'">
-                          <span class="text-[10px] font-black mr-1 opacity-60">{{ d.currency === 'KHR' ? '៛' : '$' }}</span>{{ Number(d.amount).toLocaleString() }}
+                       <div class="text-lg font-semibold tabular-nums tracking-tighter" :class="Number(d.amount) > 0 ? 'text-emerald-500' : 'text-rose-500'">
+                          <span class="text-[10px] font-semibold mr-1 opacity-60">{{ d.currency === 'KHR' ? '៛' : '$' }}</span>{{ Number(d.amount).toLocaleString() }}
                        </div>
-                       <div class="text-[9px] text-muted-foreground/30 font-black tabular-nums uppercase tracking-widest italic">{{ formatDateShort(d.createdAt) }}</div>
+                       <div class="text-[9px] text-muted-foreground/30 font-semibold tabular-nums uppercase tracking-widest italic">{{ formatDateShort(d.createdAt) }}</div>
                     </div>
                  </div>
                  
@@ -168,12 +168,12 @@
                     <div class="size-20 rounded-full bg-card border-2 border-dashed border-border flex items-center justify-center">
                       <FolderOpenIcon class="h-10 w-10" />
                     </div>
-                    <span class="text-[10px] font-black uppercase tracking-[0.3em]">{{ $t('admin.no_donations') }}</span>
+                    <span class="text-[10px] font-semibold uppercase tracking-[0.3em]">{{ $t('admin.no_donations') }}</span>
                  </div>
               </div>
             </CardContent>
             <CardFooter class="p-6 pt-2">
-                <Button variant="ghost" class="w-full rounded-2xl border border-border/50 bg-card text-muted-foreground font-black text-[10px] uppercase tracking-widest h-14 hover:bg-muted hover:text-primary transition-all shadow-sm">
+                <Button variant="ghost" class="w-full rounded-2xl border border-border/50 bg-card text-muted-foreground font-semibold text-[10px] uppercase tracking-widest h-14 hover:bg-muted hover:text-primary transition-all shadow-sm">
                     {{ $t('admin.show_more') }}
                 </Button>
             </CardFooter>
@@ -187,7 +187,7 @@
           <!-- Expenses by Category (Pie Chart) -->
           <Card class="rounded-3xl border-none ring-1 ring-border bg-card shadow-sm overflow-hidden">
             <CardHeader class="border-b border-border bg-muted/30">
-              <CardTitle class="text-lg font-black text-foreground uppercase tracking-tight font-khmer">ចំណាយតាមប្រភេទ</CardTitle>
+              <CardTitle class="text-lg font-semibold text-foreground uppercase tracking-tight font-khmer">ចំណាយតាមប្រភេទ</CardTitle>
               <CardDescription class="font-medium text-muted-foreground">ការបែងចែកថវិកាចំណាយសរុប</CardDescription>
             </CardHeader>
             <CardContent class="h-[400px] pt-10">
@@ -201,7 +201,7 @@
                 />
                 <div v-else class="h-full flex flex-col items-center justify-center text-muted-foreground/20 gap-4">
                     <PieChartIcon class="size-16 opacity-10" />
-                    <span class="text-xs font-black uppercase tracking-widest">មិនមានទិន្នន័យចំណាយ</span>
+                    <span class="text-xs font-semibold uppercase tracking-widest">មិនមានទិន្នន័យចំណាយ</span>
                 </div>
               </div>
             </CardContent>
@@ -210,7 +210,7 @@
           <!-- Donation Methods (Doughnut Chart) -->
           <Card class="rounded-3xl border-none ring-1 ring-border bg-card shadow-sm overflow-hidden">
             <CardHeader class="border-b border-border bg-muted/30">
-              <CardTitle class="text-lg font-black text-foreground uppercase tracking-tight font-khmer">វិធីសាស្ត្រទទួលបច្ច័យ</CardTitle>
+              <CardTitle class="text-lg font-semibold text-foreground uppercase tracking-tight font-khmer">វិធីសាស្ត្រទទួលបច្ច័យ</CardTitle>
               <CardDescription class="font-medium text-muted-foreground">ការចូលរួមតាមរយៈមធ្យោបាយផ្សេងៗ</CardDescription>
             </CardHeader>
             <CardContent class="h-[400px] pt-10">
@@ -224,7 +224,7 @@
                 />
                 <div v-else class="h-full flex flex-col items-center justify-center text-muted-foreground/20 gap-4">
                     <ActivityIcon class="size-16 opacity-10" />
-                    <span class="text-xs font-black uppercase tracking-widest">មិនមានទិន្នន័យបច្ច័យ</span>
+                    <span class="text-xs font-semibold uppercase tracking-widest">មិនមានទិន្នន័យបច្ច័យ</span>
                 </div>
               </div>
             </CardContent>
@@ -234,7 +234,7 @@
         <!-- Monthly Trends -->
         <Card class="rounded-3xl border-none ring-1 ring-border bg-card shadow-sm overflow-hidden">
           <CardHeader class="border-b border-border bg-muted/30 pb-4">
-            <CardTitle class="text-lg font-black text-foreground uppercase tracking-tight font-khmer">និន្នាការប្រចាំខែ (USD)</CardTitle>
+            <CardTitle class="text-lg font-semibold text-foreground uppercase tracking-tight font-khmer">និន្នាការប្រចាំខែ (USD)</CardTitle>
             <CardDescription class="font-medium text-muted-foreground">ការប្រៀបធៀប ចំណូល និង ចំណាយ ប្រចាំខែ</CardDescription>
           </CardHeader>
           <CardContent class="h-[450px] pt-10 overflow-hidden">
@@ -248,7 +248,7 @@
               />
               <div v-else class="h-full flex flex-col items-center justify-center text-muted-foreground/20 gap-4">
                     <ActivityIcon class="size-16 opacity-10" />
-                    <span class="text-xs font-black uppercase tracking-widest">កំពុងទាញទិន្នន័យ...</span>
+                    <span class="text-xs font-semibold uppercase tracking-widest">កំពុងទាញទិន្នន័យ...</span>
               </div>
             </div>
           </CardContent>
@@ -263,11 +263,11 @@
               <div class="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 transition-transform group-hover:scale-110 group-hover:rotate-3 border border-primary/20">
                 <component :is="report.icon" class="h-8 w-8" />
               </div>
-              <CardTitle class="text-xl font-black text-foreground uppercase tracking-tight font-khmer">{{ report.title }}</CardTitle>
+              <CardTitle class="text-xl font-semibold text-foreground uppercase tracking-tight font-khmer">{{ report.title }}</CardTitle>
               <CardDescription class="text-sm font-medium text-muted-foreground mt-2 leading-relaxed">{{ report.description }}</CardDescription>
             </CardHeader>
             <CardFooter class="p-4 pt-0">
-              <Button variant="ghost" class="w-full h-14 rounded-2xl justify-between group px-6 bg-muted/30 font-black uppercase tracking-widest text-[10px] hover:bg-primary/10 hover:text-primary transition-all" @click="handleExport(report.id)">
+              <Button variant="ghost" class="w-full h-14 rounded-2xl justify-between group px-6 bg-muted/30 font-semibold uppercase tracking-widest text-[10px] hover:bg-primary/10 hover:text-primary transition-all" @click="handleExport(report.id)">
                 <span>Download CSV Report</span>
                 <DownloadIcon class="h-4 w-4 transition-transform group-hover:translate-y-1" />
               </Button>

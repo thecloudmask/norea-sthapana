@@ -6,12 +6,23 @@
 
     <article v-else-if="article" class="animate-in fade-in duration-700">
        <!-- Header Image -->
-       <div class="h-[350px] md:h-[500px] w-full relative overflow-hidden bg-slate-950">
+       <div class="h-[350px] md:h-[500px] w-full relative overflow-hidden bg-slate-950 cursor-pointer group" @click="openLightbox(article.imageUrl || 'https://images.unsplash.com/photo-1507692049790-de58293a469d?q=80&w=2070&auto=format&fit=crop')">
           <img :src="article.imageUrl || 'https://images.unsplash.com/photo-1507692049790-de58293a469d?q=80&w=2070&auto=format&fit=crop'" class="w-full h-full object-cover opacity-60 scale-105 transition-transform duration-1000" />
           <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+          <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div class="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30 text-white">
+                  <MaximizeIcon class="h-8 w-8" />
+              </div>
+          </div>
           <div class="absolute bottom-0 left-0 w-full p-6 md:p-12">
              <div class="container max-w-5xl mx-auto space-y-6 text-left">
-                <Badge class="bg-primary text-white border-none shadow-xl shadow-primary/20 px-4 py-1.5 uppercase tracking-widest text-[10px] font-black">{{ getCategoryLabel(article.category) }}</Badge>
+                <div class="flex flex-wrap items-center gap-3">
+                   <Badge class="bg-primary text-white border-none shadow-xl shadow-primary/20 px-4 py-1.5 uppercase tracking-widest text-[10px] font-black w-fit">{{ getCategoryLabel(article.category) }}</Badge>
+                   <div v-if="article.location" class="flex items-center gap-2 text-white/80 text-[10px] font-black uppercase tracking-[0.2em] bg-white/10 px-4 py-1.5 rounded-full border border-white/5 backdrop-blur-sm shadow-lg shadow-black/20">
+                      <MapPinIcon class="size-3 text-orange-400" />
+                      <span>{{ article.location }}</span>
+                   </div>
+                </div>
                 <h1 class="text-3xl md:text-6xl font-black text-white leading-tight drop-shadow-2xl font-khmer max-w-4xl">{{ article.title }}</h1>
                 <div class="flex items-center gap-6 mt-6 text-white/60 text-xs font-black uppercase tracking-widest">
                    <div class="flex items-center gap-2">
@@ -19,8 +30,8 @@
                       <span class="tabular-nums">{{ formatDate(article.createdAt) }}</span>
                    </div>
                    <div class="flex items-center gap-2">
-                      <UserIcon class="h-4 w-4 text-primary" />
-                      <span>{{ article.author || 'Admin' }}</span>
+                       <UserIcon class="h-4 w-4 text-primary" />
+                       <span>{{ article.author || 'Admin' }}</span>
                    </div>
                 </div>
              </div>
@@ -50,7 +61,7 @@
                              </h2>
                              <div class="w-24 h-1.5 bg-primary/80 mx-auto rounded-full shadow-[0_0_15px_rgba(234,88,12,0.5)]"></div>
                              <p class="text-white/90 text-xl md:text-2xl font-medium italic font-khmer opacity-90 leading-relaxed">
-                                 {{ article.content }}
+                                 {{ stripHtml(article.content) }}
                              </p>
                              <div class="pt-8">
                                 <p class="text-primary text-[10px] font-black uppercase tracking-[0.3em] opacity-60">
@@ -74,8 +85,7 @@
               </div>
 
               <!-- Normal Content Body -->
-              <div class="prose prose-lg dark:prose-invert max-w-none font-khmer leading-loose text-foreground/80 font-medium">
-                 <p class="whitespace-pre-wrap">{{ article.content }}</p>
+              <div class="prose prose-xl dark:prose-invert max-w-none font-khmer leading-loose text-foreground/90 font-medium rik-editor-content" v-html="article.content">
               </div>
 
               <!-- Share Section -->
@@ -95,7 +105,7 @@
                     </div>
                  </div>
                  
-                 <RouterLink to="/articles" class="text-primary hover:opacity-70 font-black uppercase tracking-widest text-[10px] flex items-center gap-3 bg-muted/50 px-6 py-3 rounded-2xl border border-border transition-all hover:gap-4">
+                 <RouterLink to="/articles" class="text-primary hover:opacity-70 font-bold uppercase tracking-widest text-[10px] flex items-center gap-3 bg-muted/50 px-6 py-3 rounded-2xl border border-border transition-all hover:gap-4">
                     <ArrowLeftIcon class="h-3 w-3" />
                     {{ $t('article.back_to_library') }}
                  </RouterLink>
@@ -104,11 +114,28 @@
        </div>
     </article>
   </div>
+
+  <!-- Lightbox -->
+  <Transition
+    enter-active-class="transition duration-300 ease-out"
+    enter-from-class="opacity-0 scale-95"
+    enter-to-class="opacity-100 scale-100"
+    leave-active-class="transition duration-200 ease-in"
+    leave-from-class="opacity-100 scale-100"
+    leave-to-class="opacity-0 scale-95"
+  >
+    <div v-if="showLightbox" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-12" @click="showLightbox = false">
+        <button class="absolute top-8 right-8 text-white/60 hover:text-white transition-colors bg-white/10 p-4 rounded-2xl border border-white/10">
+            <XIcon class="h-6 w-6" />
+        </button>
+        <img :src="lightboxImage" class="max-w-full max-h-full object-contain rounded-lg animate-in fade-in zoom-in duration-500 shadow-2xl" />
+    </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { CalendarIcon, UserIcon, QuoteIcon, DownloadIcon, FacebookIcon, TwitterIcon, LinkIcon, ArrowLeftIcon } from 'lucide-vue-next'
+import { CalendarIcon, UserIcon, QuoteIcon, DownloadIcon, FacebookIcon, TwitterIcon, LinkIcon, ArrowLeftIcon, MapPinIcon, MaximizeIcon, XIcon } from 'lucide-vue-next'
 import { formatKhmerDate } from '~/utils/date'
 import * as htmlToImage from 'html-to-image'
 import { doc, getDoc } from 'firebase/firestore'
@@ -142,6 +169,12 @@ const fetchArticleById = async (id: string) => {
 onMounted(() => {
     fetchArticleById(route.params.id as string)
 })
+
+const stripHtml = (html: string) => {
+    if (!html) return "";
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+}
 
 const getCategoryLabel = (cat: string) => {
     switch (cat) {
@@ -185,4 +218,28 @@ const copyLink = () => {
     navigator.clipboard.writeText(window.location.href)
     alert(t('article.link_copied'))
 }
+
+// Lightbox Logic
+const showLightbox = ref(false)
+const lightboxImage = ref('')
+const openLightbox = (url: string) => {
+    lightboxImage.value = url
+    showLightbox.value = true
+}
 </script>
+
+<style>
+.rik-editor-content p {
+    margin-bottom: 1.5rem;
+}
+.rik-editor-content ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.rik-editor-content ol {
+    list-style-type: decimal;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+</style>

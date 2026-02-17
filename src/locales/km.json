@@ -8,7 +8,8 @@
     "reports": "របាយការណ៍",
     "contact": "ទំនាក់ទំនង",
     "donate": "បូជាបច្ច័យ",
-    "donate_now": "បូជាបច្ច័យឥឡូវនេះ"
+    "donate_now": "បូជាបច្ច័យឥឡូវនេះ",
+    "more": "ផ្សេងៗ"
   },
   "hero": {
     "title_start": "រួមគ្នាកសាង ដើម្បី",
@@ -16,6 +17,34 @@
     "subtitle": "ចូលរួមសន្សំបុណ្យកុសល និងតាមដានគម្រោងអភិវឌ្ឍន៍",
     "cta_donate": "បរិច្ចាគឥឡូវនេះ",
     "cta_projects": "ពិនិត្យមើលគម្រោង"
+  },
+  "home": {
+    "dharma_title": "ធម៌អប់រំ និង មេរៀនជីវិត",
+    "dharma_subtitle": "ចំណេះដឹងពុទ្ធសាសនា សុភាសិត និងការអប់រំផ្លូវចិត្តសម្រាប់ជីវិតប្រចាំថ្ងៃ"
+  },
+  "donation": {
+    "title": "បូជាបច្ច័យកសាង",
+    "subtitle": "ចូលរួមសន្សំបុណ្យកុសល លើកស្ទួយព្រះពុទ្ធសាសនា",
+    "scan_qr": "ស្កេន KHQR ដើម្បីបូជាបច្ច័យ",
+    "bank_transfer": "គណនីធនាគារ",
+    "account_name": "ឈ្មោះគណនី",
+    "account_number": "លេខគណនី",
+    "copy": "ចម្លង",
+    "copied": "បានចម្លង!",
+    "close": "បិទ",
+    "thank_you": "សូមអនុមោទនាបុណ្យ",
+    "disclaimer": "រាល់បច្ច័យទាំងអស់នឹងត្រូវប្រើប្រាស់ក្នុងគម្រោងនេះដោយតម្លាភាព និងមានការកត់ត្រាច្បាស់លាស់។",
+    "no_qr": "មិនទាន់មាន QR",
+    "join_title": "ចូលរួមមហាកុសល",
+    "scan_subtitle": "ស្កែនដើម្បីចូលបច្ច័យតាមរយៈ KHQR",
+    "type_item": "សម្ភារៈ (Item)",
+    "type_cash": "សាច់ប្រាក់ (Cash)",
+    "type_transfer": "ផ្ទេរប្រាក់ (Transfer)",
+    "type_qr": "KHQR",
+    "type_aba": "ABA Bank",
+    "type_acleda": "ACLEDA Bank",
+    "type_wing": "Wing Bank",
+    "type_other_bank": "ធនាគារផ្សេងៗ (Other Bank)"
   },
   "abbot": {
     "title_small": "ព្រះចៅអធិការ",
@@ -108,24 +137,10 @@
     "section7_title": "៧. ទំនាក់ទំនង",
     "section7_content": "ប្រសិនបើអ្នកមានសំណួរអំពីលក្ខខណ្ឌប្រើប្រាស់ សូមទាក់ទងមកកាន់យើង៖"
   },
-  "donation": {
-    "type_item": "សម្ភារៈ (Item)",
-    "type_cash": "សាច់ប្រាក់ (Cash)",
-    "type_transfer": "ផ្ទេរប្រាក់ (Transfer)",
-    "type_qr": "KHQR",
-    "type_aba": "ABA Bank",
-    "type_acleda": "ACLEDA Bank",
-    "type_wing": "Wing Bank",
-    "type_other_bank": "ធនាគារផ្សេងៗ (Other Bank)",
-    "join_title": "ចូលរួមមហាកុសល",
-    "scan_subtitle": "ស្កែនដើម្បីចូលបច្ច័យតាមរយៈ KHQR",
-    "no_qr": "មិនទាន់មាន QR",
-    "thank_you": "សូមអរព្រះគុណ និងអរគុណ",
-    "disclaimer": "រាល់បច្ច័យទាំងអស់នឹងត្រូវប្រើប្រាស់ក្នុងគម្រោងនេះដោយតម្លាភាព និងមានការកត់ត្រាច្បាស់លាស់។"
-  },
   "events": {
     "title": "កម្មវិធីបុណ្យខាងមុខ",
     "subtitle": "Upcoming Buddhist Ceremonies",
+    "upcoming": "កម្មវិធីខាងមុខ",
     "see_all": "មើលកម្មវិធីទាំងអស់",
     "location_default": "សាលាឆាន់",
     "empty": "មិនមានកម្មវិធីបុណ្យខាងមុខទេ។"
@@ -140,6 +155,7 @@
     "title": "បណ្ណាល័យធម៌",
     "subtitle": "ប្រភពនៃចំណេះដឹង ពុទ្ធប្រវត្តិ សុភាសិត និងប្រវត្តិពិធីបុណ្យផ្សេងៗ",
     "search_placeholder": "ស្វែងរកអត្ថបទធម៌...",
+    "see_all": "មើលបណ្ណាល័យទាំងអស់",
     "empty": "មិនមានអត្ថបទដែលអ្នកកំពុងស្វែងរកទេ។"
   },
   "common": {
@@ -153,6 +169,8 @@
     "status_completed": "បញ្ចប់",
     "status_draft": "គ្រោងទុក",
     "status_past": "បានបញ្ចប់",
+    "status_planning": "កំពុងរៀបចំ",
+    "status_cancelled": "បោះបង់",
     "filter_all": "ទាំងអស់",
     "filter_upcoming": "ខាងមុខ",
     "filter_past": "បានបញ្ចប់",
@@ -309,10 +327,18 @@
       "edit_ceremony": "កែសម្រួលកម្មវិធីបុណ្យ",
       "ceremony_title": "ចំណងជើងកម្មវិធី",
       "event_date": "កាលបរិច្ឆេទបុណ្យ",
+      "start_date": "ថ្ងៃចាប់ផ្ដើម",
+      "end_date": "ថ្ងៃបញ្ចប់",
+      "multi_day_toggle": "បុណ្យពហុវារៈ",
       "is_featured": "កម្មវិធីសំខាន់ (Featured)",
       "featured_badge": "សំខាន់",
       "placeholder_title": "ឈ្មោះកម្មវិធីបុណ្យ...",
-      "placeholder_content": "ព័ត៌មានលម្អិតអំពីកម្មវិធីបុណ្យ..."
+      "placeholder_invitation": "សរសេរខ្លឹមសារលិខិតអញ្ជើញនៅទីនេះ...",
+      "placeholder_schedule": "បញ្ជាក់កម្មវិធីបុណ្យតាមថ្ងៃនីមួយៗ...",
+      "placeholder_committee": "បញ្ជីរាយនាមអ្នកផ្ដើមបុណ្យ...",
+      "invitation_tab": "លិខិតអញ្ជើញ",
+      "schedule_tab": "កម្មវិធីបុណ្យ",
+      "committee_tab": "អ្នកផ្ដើមបុណ្យ"
     },
     "news": {
       "title": "គ្រប់គ្រងដំណឹងថ្មីៗ",
@@ -367,7 +393,13 @@
         "theme_desc": "រៀបចំរូបរាងរបស់ផ្ទាំងគ្រប់គ្រងតាមចំណង់ចំណូលចិត្ត។",
         "dark_mode": "មុខងារងងឹត (Dark Mode)",
         "dark_mode_desc": "ប្តូររវាងពណ៌ភ្លឺ និងងងឹត។",
-        "saving": "កំពុងរក្សាទុក..."
+        "saving": "កំពុងរក្សាទុក...",
+        "donation_info": "ព័ត៌មានសម្រាប់ការបរិច្ចាគ",
+        "donation_info_desc": "កំណត់គណនីធនាគារ និង KHQR សម្រាប់ការបរិច្ចាគសាធារណៈ។",
+        "bank_name": "ឈ្មោះធនាគារ",
+        "bank_account": "លេខគណនី",
+        "account_name": "ឈ្មោះគណនី",
+        "qr_code_url": "តំណភ្ជាប់រូបភាព QR (URL)"
     },
     "expense_categories": {
       "material": "សម្ភារៈកសាង",

@@ -14,14 +14,14 @@
       </div>
       <div class="flex items-center gap-3">
         <Select v-model="statusFilter">
-          <SelectTrigger class="w-[150px] rounded-xl border-border h-11 bg-card shadow-sm font-bold">
+          <SelectTrigger class="w-[150px] rounded-xl border-border h-11 bg-card shadow-sm font-semibold">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg">
-            <SelectItem value="all" class="font-bold">ទាំងអស់ (All)</SelectItem>
-            <SelectItem value="published" class="font-bold text-emerald-600">Published</SelectItem>
-            <SelectItem value="draft" class="font-bold text-slate-500">Draft</SelectItem>
-            <SelectItem value="archived" class="font-bold text-orange-500">Archived</SelectItem>
+            <SelectItem value="all" class="font-semibold">ទាំងអស់ (All)</SelectItem>
+            <SelectItem value="published" class="font-semibold text-emerald-600">Published</SelectItem>
+            <SelectItem value="draft" class="font-semibold text-slate-500">Draft</SelectItem>
+            <SelectItem value="archived" class="font-semibold text-orange-500">Archived</SelectItem>
           </SelectContent>
         </Select>
         <Button @click="openCreateModal" class="rounded-xl shadow-lg shadow-primary/20 font-medium h-11 px-6">
@@ -68,7 +68,7 @@
                 <!-- Status & Category Badges -->
                 <div class="absolute top-4 left-4 flex flex-col gap-2 drop-shadow-lg">
                      <Badge 
-                        class="text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 shadow-sm border-none ring-1 ring-black/5"
+                        class="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-1 shadow-sm border-none ring-1 ring-black/5"
                         :class="{
                           'bg-emerald-500 text-white': item.status === 'published',
                           'bg-slate-500 text-white': item.status === 'draft', 
@@ -134,7 +134,7 @@
                           </SelectTrigger>
                           <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg">
                               <SelectItem value="draft" class="rounded-lg font-normal text-slate-600">Draft (ព្រាង)</SelectItem>
-                              <SelectItem value="published" class="rounded-lg font-bold text-emerald-600">Published (ផ្សាយ)</SelectItem>
+                              <SelectItem value="published" class="rounded-lg font-semibold text-emerald-600">Published (ផ្សាយ)</SelectItem>
                               <SelectItem value="archived" class="rounded-lg font-normal text-orange-600">Archived (រក្សាទុក)</SelectItem>
                           </SelectContent>
                       </Select>
@@ -158,7 +158,7 @@
 
                 <div class="grid gap-2">
                   <Label for="content" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">{{ $t('admin.library.article_content') }} *</Label>
-                  <Textarea id="content" v-model="formData.content" required :placeholder="$t('admin.library.placeholder_content')" rows="8" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all resize-none" />
+                  <RichEditor v-model="formData.content" :placeholder="$t('admin.library.placeholder_content')" />
                 </div>
                 
                 <div class="flex items-center space-x-3 py-2">
@@ -167,7 +167,7 @@
                 </div>
 
                 <div class="grid gap-2 pt-4 border-t border-border">
-                  <Label class="text-xs font-black uppercase tracking-widest text-muted-foreground/60">{{ $t('admin.forms.receipt') }}</Label>
+                  <Label class="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60">{{ $t('admin.forms.receipt') }}</Label>
                   <div class="flex flex-col gap-4">
                     <div class="flex items-center gap-3">
                        <Input type="file" accept="image/*" @change="handleImageUpload" :disabled="uploadingImage" class="rounded-xl border-border bg-muted/50 text-[10px]" />
@@ -225,13 +225,12 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { PlusIcon, PencilIcon, TrashIcon, ImageIcon, CalendarIcon, ArrowLeftIcon } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import RichEditor from '@/components/ui/RichEditor.vue'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Switch } from '@/components/ui/switch'
 import { format } from 'date-fns'
 import { useArticles, type Article, type ArticleCategory } from '~/composables/useArticles'
 import { useCloudinary } from '~/composables/useCloudinary'
@@ -271,18 +270,7 @@ const filteredArticles = computed(() => {
   return items
 })
 
-// Computed for date input (YYYY-MM-DD) - only useful for ceremony category
-const eventDateInput = computed({
-    get: () => {
-        if (!formData.value.eventDate) return ''
-        const d = new Date(formData.value.eventDate)
-        if (isNaN(d.getTime())) return '' // Invalid date
-        return d.toISOString().split('T')[0]
-    },
-    set: (val) => {
-        formData.value.eventDate = val ? new Date(val) : null
-    }
-})
+
 
 let unsubscribe: (() => void) | null = null
 

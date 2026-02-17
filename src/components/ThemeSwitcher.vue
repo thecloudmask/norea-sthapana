@@ -1,47 +1,56 @@
 <script setup lang="ts">
-import { watch } from "vue";
+import { computed } from "vue";
 import { useColorMode } from "@vueuse/core";
-import { MoonIcon, SunIcon, LaptopIcon } from "lucide-vue-next";
+import { MoonIcon, SunIcon } from "lucide-vue-next";
 
-const props = defineProps<{
+defineProps<{
   size?: "default" | "sm";
 }>();
 
-const colorMode = useColorMode();
+const mode = useColorMode();
+const isDark = computed(() => mode.value === 'dark');
 
-watch(colorMode, (val) => {
-  console.log("🌓 [ThemeSwitcher] Mode changed to:", val);
-});
-
-const modes = [
-  { value: "light", icon: SunIcon, label: "Light" },
-  { value: "dark", icon: MoonIcon, label: "Dark" },
-  { value: "auto", icon: LaptopIcon, label: "System" },
-] as const;
+const toggleTheme = () => {
+  mode.value = isDark.value ? 'light' : 'dark';
+};
 </script>
 
 <template>
-  <div
-    class="flex items-center gap-1 bg-muted/50 rounded-xl border border-border/50"
-    :class="size === 'sm' ? 'p-1' : 'p-1.5 rounded-2xl'"
+  <button
+    @click="toggleTheme"
+    class="relative flex-shrink-0 flex items-center justify-center rounded-full transition-all duration-300 hover:bg-muted text-foreground overflow-hidden"
+    :class="size === 'sm' ? 'w-9 h-9 min-w-[36px]' : 'w-10 h-10 min-w-[40px]'"
+    :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
   >
-    <button
-      v-for="mode in modes"
-      :key="mode.value"
-      @click="colorMode = mode.value"
-      class="transition-all duration-200 flex items-center justify-center"
-      :class="[
-        colorMode === mode.value
-          ? 'bg-background text-primary shadow-sm ring-1 ring-border/20'
-          : 'text-muted-foreground hover:text-foreground hover:bg-muted',
-        size === 'sm' ? 'p-1 rounded-full' : 'p-1 rounded-xl',
-      ]"
-      :title="mode.label"
-    >
-      <component
-        :is="mode.icon"
-        :class="size === 'sm' ? 'h-3.5 w-3.5' : 'h-5 w-5'"
+    <Transition name="theme-rotate" mode="out-in">
+      <SunIcon 
+        v-if="!isDark" 
+        class="absolute" 
+        :class="size === 'sm' ? 'h-4 w-4' : 'h-5 w-5'"
       />
-    </button>
-  </div>
+      <MoonIcon 
+        v-else 
+        class="absolute" 
+        :class="size === 'sm' ? 'h-4 w-4' : 'h-5 w-5'"
+      />
+    </Transition>
+    <span class="sr-only">Toggle theme</span>
+  </button>
 </template>
+
+<style scoped>
+.theme-rotate-enter-active,
+.theme-rotate-leave-active {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-rotate-enter-from {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+.theme-rotate-leave-to {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+</style>

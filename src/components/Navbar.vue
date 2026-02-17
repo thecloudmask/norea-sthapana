@@ -1,59 +1,78 @@
 <template>
-  <header class="sticky top-0 z-50 w-full border-b border-white/5 bg-background/80 backdrop-blur-2xl transition-all duration-300 supports-[backdrop-filter]:bg-background/60">
-    <div class="container mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
-      <!-- Logo Area -->
-      <RouterLink to="/" class="flex items-center gap-3 transition-transform hover:scale-[1.02]">
-        <div class="size-10 md:size-11 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-          <span class="text-white font-black text-xl">{{ $t('app.name_highlight')[0] }}</span>
-        </div>
-        <div class="flex flex-col">
-          <span class="text-lg md:text-xl font-bold text-foreground leading-none">
-            <span class="text-primary">{{ $t('app.name_highlight') }}</span>{{ $t('app.name_rest') }}
-          </span>
-          <span class="text-[9px] font-medium text-muted-foreground/60 mt-0.5">{{ $t('app.subtitle') }}</span>
-        </div>
-      </RouterLink>
+  <header 
+    class="sticky top-0 z-50 w-full border-b transition-all duration-300 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60"
+    :class="[
+      y > 20 ? 'bg-background/80 h-16 shadow-sm border-border/40' : 'bg-transparent border-transparent h-20 md:h-24'
+    ]"
+  >
+    <div class="w-full px-4 md:px-6 h-full flex items-center justify-between transition-all duration-300">
+      <!-- Logo Area (Fixed Width for Balance) -->
+      <div class="w-[200px] flex-shrink-0">
+        <RouterLink to="/" class="flex items-center gap-3 transition-transform hover:scale-[1.02] w-fit">
+          <div 
+            class="rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20 transition-all duration-300"
+            :class="y > 20 ? 'size-9 md:size-10' : 'size-11 md:size-12'"
+          >
+            <span class="text-white font-bold text-xl">{{ $t('app.name_highlight')[0] }}</span>
+          </div>
+          <div class="flex flex-col transition-all duration-300" :class="{ 'opacity-0 -translate-x-2 w-0 overflow-hidden': y > 20 && false }">
+            <!-- Keeping text visible but slightly smaller on scroll is usually better -->
+             <div class="flex flex-col transition-all duration-300" :class="y > 20 ? 'scale-90 origin-left' : 'scale-100 origin-left'">
+                <span class="text-lg md:text-xl font-bold text-foreground leading-none">
+                  <span class="text-primary">{{ $t('app.name_highlight') }}</span>{{ $t('app.name_rest') }}
+                </span>
+                <span class="text-[9px] font-medium text-muted-foreground/60 mt-0.5" :class="{ 'opacity-0 h-0': y > 20 }">{{ $t('app.subtitle') }}</span>
+             </div>
+          </div>
+        </RouterLink>
+      </div>
 
-      <!-- Desktop Navigation -->
-      <nav class="hidden md:flex items-center gap-10">
+      <!-- Desktop Navigation (Centered) -->
+      <nav class="hidden md:flex flex-1 items-center justify-center gap-8">
         <RouterLink 
           v-for="link in navLinks" 
           :key="link.href" 
           :to="getLinkPath(link.href)" 
-          class="text-sm font-medium font-khmer text-muted-foreground transition-colors relative py-2 px-1 hover:text-foreground"
-          :class="{ 'text-foreground font-semibold': isActive(link.href) }"
+          class="text-sm font-medium font-khmer text-muted-foreground transition-colors relative py-2 px-1 hover:text-primary"
+          :class="{ 'font-semibold text-primary': isActive(link.href) }"
         >
           {{ $t(link.titleKey) }}
           <span class="absolute -bottom-1 left-0 w-full h-0.5 bg-primary scale-x-0 transition-transform duration-300 ease-out origin-left" :class="{ 'scale-x-100': isActive(link.href) }"></span>
         </RouterLink>
       </nav>
 
-      <!-- Action Buttons -->
-      <div class="flex items-center gap-3 md:gap-5">
-        <!-- Theme Switcher (Desktop) -->
+      <!-- Action Buttons (Right Aligned) -->
+      <div class="flex items-center justify-end gap-3 md:gap-4 w-[200px] flex-shrink-0">
+        <!-- Theme Switcher -->
         <ThemeSwitcher class="hidden md:flex" size="sm" />
         
-        <!-- Language Switcher -->
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button variant="ghost" size="sm" class="hidden md:flex gap-2 px-3 rounded-full hover:bg-muted font-khmer transition-all h-9">
-              <GlobeIcon class="h-4 w-4 text-muted-foreground" />
-              <span class="text-sm font-medium text-foreground">{{ locale === 'km' ? 'ខ្មែរ' : 'EN' }}</span>
-              <ChevronDownIcon class="h-3 w-3 text-muted-foreground/60" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" class="rounded-xl p-1 border-border/50 bg-card/95 backdrop-blur-sm shadow-xl">
-            <DropdownMenuItem @click="setLocale('km')" class="font-khmer font-medium cursor-pointer rounded-lg h-9 px-3 focus:bg-primary/10 focus:text-primary transition-colors">
-              ខ្មែរ (Khmer)
-            </DropdownMenuItem>
-            <DropdownMenuItem @click="setLocale('en')" class="font-medium cursor-pointer rounded-lg h-9 px-3 focus:bg-primary/10 focus:text-primary transition-colors">
-              English
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <!-- Language Switcher (Flag Toggle) -->
+        <button 
+          @click="toggleLocale"
+          class="hidden md:flex items-center gap-2 pr-3 pl-2 py-1.5 rounded-sm border border-border/50 hover:bg-muted/50 transition-all bg-card/50 backdrop-blur-sm shadow-sm min-w-fit"
+        >
+          <img 
+            v-if="locale === 'km'" 
+            src="/images/khmer_flag.png" 
+            alt="Khmer" 
+            class="w-6 h-4 object-cover rounded-[2px] shadow-sm flex-shrink-0"
+          />
+          <img 
+            v-else 
+            src="/images/us_flag.webp" 
+            alt="English" 
+            class="w-6 h-4 object-cover rounded-[2px] shadow-sm flex-shrink-0"
+          />
+          <span class="text-sm font-medium font-khmer leading-none pt-0.5 whitespace-nowrap">
+            {{ locale === 'km' ? 'ខ្មែរ' : 'EN' }}
+          </span>
+        </button>
 
         <!-- Donate Button (Desktop) -->
-        <Button class="hidden md:flex bg-primary hover:bg-orange-600 text-white font-medium font-khmer h-10 px-6 rounded-full shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95 text-xs">
+        <Button 
+          class="hidden md:flex bg-primary hover:bg-orange-600 text-white font-medium font-khmer h-10 px-6 rounded-sm shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95 text-xs"
+          @click="showDonationModal = true"
+        >
           {{ $t('nav.donate') }}
         </Button>
 
@@ -66,94 +85,128 @@
                   <MenuIcon class="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" class="p-0 w-[300px] border-border bg-card">
-                <div class="flex flex-col h-full">
-                  <!-- Drawer Header -->
-                  <div class="p-6 border-b border-border">
-                    <div class="flex items-center gap-3">
-                      <div class="size-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-                        <span class="text-white font-black text-xl">{{ $t('app.name_highlight')[0] }}</span>
+                <SheetContent side="right" class="p-0 w-[320px] sm:w-[380px] border-l border-border/50 bg-background/95 backdrop-blur-3xl">
+                  <div class="flex flex-col h-full">
+                    <!-- Drawer Header -->
+                    <div class="relative p-6 pb-8 border-b border-border/50 bg-gradient-to-b from-primary/5 to-transparent">
+                      <div class="absolute top-0 right-0 p-4 opacity-50 mix-blend-overlay pointer-events-none">
+                         <!-- Decorative pattern if needed -->
                       </div>
-                      <div class="flex flex-col text-left">
-                        <span class="text-lg font-bold text-foreground leading-none">
-                          <span class="text-primary">{{ $t('app.name_highlight') }}</span>{{ $t('app.name_rest') }}
-                        </span>
-                        <span class="text-[9px] font-medium text-muted-foreground/60 mt-0.5">{{ $t('app.subtitle') }}</span>
+                      <div class="flex items-center gap-4">
+                        <div class="size-14 rounded-2xl bg-primary flex items-center justify-center shadow-xl shadow-primary/20 ring-4 ring-background">
+                          <span class="text-white font-bold text-2xl">{{ $t('app.name_highlight')[0] }}</span>
+                        </div>
+                        <div class="flex flex-col text-left">
+                          <span class="text-xl font-bold text-foreground leading-none tracking-tight">
+                            <span class="text-primary">{{ $t('app.name_highlight') }}</span>{{ $t('app.name_rest') }}
+                          </span>
+                          <span class="text-[10px] font-medium text-muted-foreground/80 mt-1 uppercase tracking-wider">{{ $t('app.subtitle') }}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <!-- Drawer Navigation -->
-                  <div class="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
-                    <RouterLink 
-                      v-for="link in navLinks" 
-                      :key="link.href" 
-                      :to="getLinkPath(link.href)" 
-                      @click="isOpen = false"
-                      class="flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-medium font-khmer text-muted-foreground hover:bg-muted hover:text-primary transition-all group"
-                      :class="{ 'bg-primary/5 text-primary ring-1 ring-primary/20 shadow-sm': isActive(link.href) }"
-                    >
-                      <component :is="link.icon" class="h-5 w-5 transition-transform group-hover:scale-110" />
-                      {{ $t(link.titleKey) }}
-                    </RouterLink>
-                  </div>
-
-                  <!-- Drawer Footer -->
-                  <div class="p-6 bg-muted/30 border-t border-border mt-auto">
-                    <div class="flex justify-center gap-3 mb-8">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        class="font-khmer h-11 px-6 rounded-xl transition-all border-border bg-background" 
-                        :class="{ 'border-primary bg-primary/10 text-primary shadow-lg shadow-primary/5': locale === 'km' }" 
-                        @click="setLocale('km')"
-                      >
-                        ខ្មែរ
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        class="h-11 px-6 rounded-xl transition-all border-border bg-background font-medium" 
-                        :class="{ 'border-primary bg-primary/10 text-primary shadow-lg shadow-primary/5': locale === 'en' }" 
-                        @click="setLocale('en')"
-                      >
-                        English
-                      </Button>
+                    <!-- Drawer Navigation -->
+                    <div class="flex-1 px-4 py-6 overflow-y-auto">
+                      <div class="space-y-2">
+                        <RouterLink 
+                          v-for="link in navLinks" 
+                          :key="link.href" 
+                          :to="getLinkPath(link.href)" 
+                          @click="isOpen = false"
+                          class="flex items-center gap-4 px-5 py-4 rounded-2xl text-base font-medium font-khmer text-muted-foreground transition-all group hover:bg-muted/60 active:scale-[0.98] active:bg-muted"
+                          :class="{ 'bg-primary/5 text-primary ring-1 ring-primary/20 shadow-sm font-semibold': isActive(link.href) }"
+                        >
+                          <div 
+                            class="size-10 rounded-xl flex items-center justify-center transition-colors"
+                            :class="isActive(link.href) ? 'bg-primary/10 text-primary' : 'bg-muted/50 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'"
+                          >
+                             <component :is="link.icon" class="h-5 w-5" />
+                          </div>
+                          {{ $t(link.titleKey) }}
+                        </RouterLink>
+                      </div>
                     </div>
 
-                    <Button class="w-full h-14 bg-primary hover:bg-orange-600 text-white font-medium font-khmer rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95">
-                      {{ $t('nav.donate_now') }}
-                    </Button>
-                    <p class="text-center text-[9px] text-muted-foreground font-black uppercase tracking-[0.3em] mt-8 opacity-40 italic">
-                      &copy; {{ new Date().getFullYear() }} {{ $t('app.name') }}
-                    </p>
+                    <!-- Drawer Footer -->
+                    <div class="p-6 bg-muted/20 border-t border-border/50 mt-auto backdrop-blur-sm">
+                      <div class="flex items-center justify-between mb-6">
+                         <span class="text-sm font-medium text-muted-foreground">App Settings</span>
+                         <div class="flex items-center gap-3">
+                           <!-- Language Toggle Mobile -->
+                            <button 
+                              @click="toggleLocale"
+                              class="flex items-center gap-2 pr-3 pl-2 py-1.5 rounded-xl border border-border/50 bg-background shadow-sm active:scale-95 transition-all"
+                            >
+                              <img 
+                                v-if="locale === 'km'" 
+                                src="/images/khmer_flag.png" 
+                                alt="Khmer" 
+                                class="w-6 h-4 object-cover rounded-[2px] shadow-sm flex-shrink-0"
+                              />
+                              <img 
+                                v-else 
+                                src="/images/us_flag.webp" 
+                                alt="English" 
+                                class="w-6 h-4 object-cover rounded-[2px] shadow-sm flex-shrink-0"
+                              />
+                              <span class="text-xs font-bold font-khmer leading-none pt-0.5">
+                                {{ locale === 'km' ? 'KH' : 'EN' }}
+                              </span>
+                            </button>
+                         </div>
+                      </div>
+
+                      <Button 
+                        class="w-full h-14 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold text-lg font-khmer rounded-2xl shadow-xl shadow-orange-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                        @click="handleMobileDonate"
+                      >
+                        <HeartIcon class="w-5 h-5 fill-current" />
+                        {{ $t('nav.donate_now') }}
+                      </Button>
+                      
+                      <p class="text-center text-[10px] text-muted-foreground font-semibold uppercase tracking-[0.2em] mt-6 opacity-30">
+                        {{ $t('app.name') }}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </SheetContent>
+                </SheetContent>
             </Sheet>
         </div>
       </div>
     </div>
+    <!-- Donation Modal -->
+    <DonationModal v-model:open="showDonationModal" />
   </header>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { MenuIcon, HomeIcon, FolderKanbanIcon, BookOpenIcon, PhoneIcon, CalendarIcon, GlobeIcon, ChevronDownIcon, NewspaperIcon, BarChart3Icon } from 'lucide-vue-next'
+import { MenuIcon, HomeIcon, FolderKanbanIcon, BookOpenIcon, CalendarIcon, NewspaperIcon, HeartIcon } from 'lucide-vue-next'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useWindowScroll } from '@vueuse/core'
+import DonationModal from '@/components/DonationModal.vue'
+import ThemeSwitcher from '@/components/ThemeSwitcher.vue'
 
 const route = useRoute()
-const { locale, t } = useI18n()
-const setLocale = (val: string) => {
-  locale.value = val
+const { locale } = useI18n()
+const { y } = useWindowScroll()
+
+const toggleLocale = () => {
+  locale.value = locale.value === 'km' ? 'en' : 'km'
 }
+
+const handleMobileDonate = () => {
+  isOpen.value = false
+  showDonationModal.value = true
+}
+
 // Mock usage for now, pending full i18n routing setup
 const localePath = (path: string) => path
 const isOpen = ref(false)
+const showDonationModal = ref(false)
 
 const navLinks = [
   { titleKey: 'nav.home', href: '/', icon: HomeIcon },
@@ -161,9 +214,8 @@ const navLinks = [
   { titleKey: 'nav.ceremonies', href: '/ceremonies', icon: CalendarIcon },
   { titleKey: 'nav.news', href: '/news', icon: NewspaperIcon },
   { titleKey: 'nav.library', href: '/articles', icon: BookOpenIcon },
-  { titleKey: 'nav.reports', href: '/reports', icon: BarChart3Icon },
-  { titleKey: 'nav.contact', href: '#contact-footer', icon: PhoneIcon },
 ]
+
 
 const getLinkPath = (href: string) => {
   if (href.startsWith('#')) return href

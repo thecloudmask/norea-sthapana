@@ -4,7 +4,7 @@
     <div class="bg-primary pt-24 pb-16 text-center text-white px-4 relative overflow-hidden">
         <div class="absolute inset-0 bg-black/10 pointer-events-none"></div>
         <div class="relative z-10 animate-in fade-in slide-in-from-top-4 duration-700">
-           <h1 class="text-3xl md:text-5xl font-black mb-4 font-khmer uppercase tracking-tight">{{ $t('reports_page.title') }}</h1>
+           <h1 class="text-3xl md:text-5xl font-semibold mb-4 font-khmer uppercase tracking-tight">{{ $t('reports_page.title') }}</h1>
            <p class="text-white/80 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
               {{ $t('reports_page.subtitle') }}
            </p>
@@ -23,7 +23,7 @@
            <Card class="bg-card border-none shadow-xl rounded-3xl overflow-hidden">
                 <CardHeader class="border-b border-border bg-muted/30 p-6">
                     <div class="flex items-center justify-between">
-                        <CardTitle class="text-xl font-bold flex items-center gap-2">
+                        <CardTitle class="text-xl font-semibold flex items-center gap-2">
                              <HeartHandshakeIcon class="h-5 w-5 text-primary" />
                              {{ $t('reports_page.donations') }}
                         </CardTitle>
@@ -33,16 +33,16 @@
                 <div class="divide-y divide-border">
                     <div v-for="item in donations" :key="item.id" class="p-6 flex items-center justify-between hover:bg-muted/30 transition-colors group">
                         <div class="flex items-center gap-4">
-                            <div class="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                            <div class="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
                                 {{ item.donorName.charAt(0).toUpperCase() }}
                             </div>
                             <div>
-                                <h3 class="font-bold text-foreground">{{ item.donorName }}</h3>
+                                <h3 class="font-semibold text-foreground">{{ item.donorName }}</h3>
                                 <p class="text-xs text-muted-foreground">{{ formatDate(item.createdAt) }}</p>
                             </div>
                         </div>
                         <div class="text-right">
-                             <p class="font-bold font-mono text-lg" :class="item.currency === 'USD' ? 'text-emerald-600' : 'text-blue-600'">
+                             <p class="font-semibold font-mono text-lg" :class="item.currency === 'USD' ? 'text-emerald-600' : 'text-blue-600'">
                                 {{ item.currency === 'USD' ? '$' : '៛' }}{{ item.amount.toLocaleString() }}
                              </p>
                              <Badge variant="secondary" class="text-[9px] uppercase tracking-wider">{{ item.paymentMethod }}</Badge>

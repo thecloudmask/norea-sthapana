@@ -2,25 +2,25 @@
   <div class="container py-10 space-y-10 transition-colors duration-300">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div>
-        <h1 class="text-4xl font-black tracking-tight text-foreground font-khmer uppercase">{{ $t('admin.projects_admin.title') }}</h1>
+        <h1 class="text-4xl font-semibold tracking-tight text-foreground font-khmer uppercase">{{ $t('admin.projects_admin.title') }}</h1>
         <p class="text-muted-foreground mt-1 font-medium">{{ $t('admin.projects_admin.subtitle') }}</p>
       </div>
       <div class="flex items-center gap-3">
         <Select v-model="statusFilter">
-          <SelectTrigger class="w-[180px] rounded-xl border-border shadow-sm font-bold h-11 bg-card">
+          <SelectTrigger class="w-[180px] rounded-xl border-border shadow-sm font-semibold h-11 bg-card">
             <SelectValue :placeholder="$t('admin.forms.status')" />
           </SelectTrigger>
           <SelectContent class="rounded-xl p-1 shadow-xl border-border">
-            <SelectItem value="all" class="rounded-lg font-bold">{{ $t('admin.projects_admin.filter_all') }}</SelectItem>
-            <SelectItem value="planning" class="rounded-lg font-bold">Planning</SelectItem>
-            <SelectItem value="draft" class="rounded-lg font-bold">{{ $t('admin.projects_admin.filter_draft') }}</SelectItem>
-            <SelectItem value="active" class="rounded-lg font-bold">{{ $t('admin.projects_admin.filter_active') }}</SelectItem>
-            <SelectItem value="paused" class="rounded-lg font-bold">{{ $t('admin.projects_admin.filter_paused') }}</SelectItem>
-            <SelectItem value="completed" class="rounded-lg font-bold">{{ $t('admin.projects_admin.filter_completed') }}</SelectItem>
-            <SelectItem value="cancelled" class="rounded-lg font-bold">Cancelled</SelectItem>
+            <SelectItem value="all" class="rounded-lg font-semibold">{{ $t('admin.projects_admin.filter_all') }}</SelectItem>
+            <SelectItem value="planning" class="rounded-lg font-semibold">Planning</SelectItem>
+            <SelectItem value="draft" class="rounded-lg font-semibold">{{ $t('admin.projects_admin.filter_draft') }}</SelectItem>
+            <SelectItem value="active" class="rounded-lg font-semibold">{{ $t('admin.projects_admin.filter_active') }}</SelectItem>
+            <SelectItem value="paused" class="rounded-lg font-semibold">{{ $t('admin.projects_admin.filter_paused') }}</SelectItem>
+            <SelectItem value="completed" class="rounded-lg font-semibold">{{ $t('admin.projects_admin.filter_completed') }}</SelectItem>
+            <SelectItem value="cancelled" class="rounded-lg font-semibold">Cancelled</SelectItem>
           </SelectContent>
         </Select>
-        <Button @click="openCreateModal" class="rounded-xl h-11 px-6 shadow-lg shadow-primary/20 hover:shadow-primary/30 font-bold transition-all">
+        <Button @click="openCreateModal" class="rounded-xl h-11 px-6 shadow-lg shadow-primary/20 hover:shadow-primary/30 font-semibold transition-all">
           <PlusIcon class="mr-2 h-4 w-4" />
           {{ $t('admin.forms.create_project') }}
         </Button>
@@ -61,7 +61,7 @@
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" class="rounded-xl shadow-2xl border-border p-2 min-w-[160px]">
-                  <DropdownMenuItem @click="openEditProject(project)" class="rounded-lg font-bold">{{ $t('admin.projects_admin.edit_project') }}</DropdownMenuItem>
+                  <DropdownMenuItem @click="openEditProject(project)" class="rounded-lg font-semibold">{{ $t('admin.projects_admin.edit_project') }}</DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem @click="confirmDeleteProject(project)" class="rounded-lg text-rose-600 font-extrabold focus:bg-rose-500/10 focus:text-rose-600">
                     <Trash2Icon class="mr-2 h-3.5 w-3.5" />
@@ -74,34 +74,34 @@
         
         <CardContent class="flex-1 p-6 space-y-6">
            <div>
-              <h3 class="text-xl font-bold font-khmer text-foreground line-clamp-1 group-hover:text-primary transition-colors">{{ project.title }}</h3>
+              <h3 class="text-xl font-semibold font-khmer text-foreground line-clamp-1 group-hover:text-primary transition-colors">{{ project.title }}</h3>
               <p class="text-sm font-medium text-muted-foreground line-clamp-2 mt-2 leading-relaxed font-khmer">{{ project.description }}</p>
            </div>
            
            <div class="space-y-4 bg-muted/30 p-4 rounded-2xl ring-1 ring-border">
               <div class="grid grid-cols-2 gap-4 border-b border-border pb-3">
                  <div class="flex flex-col">
-                    <span class="text-[10px] uppercase font-black tracking-widest text-muted-foreground flex items-center gap-1">
+                    <span class="text-[10px] uppercase font-semibold tracking-widest text-muted-foreground flex items-center gap-1">
                       <ArrowUpCircleIcon class="w-3 h-3 text-emerald-500" />
                       {{ $t('admin.projects_admin.raised') }}
                     </span>
-                    <span class="text-base font-black text-emerald-600 dark:text-emerald-400 tabular-nums tracking-tighter">${{ (project.currentAmount || 0).toLocaleString() }}</span>
+                    <span class="text-base font-semibold text-emerald-600 dark:text-emerald-400 tabular-nums tracking-tighter">${{ (project.currentAmount || 0).toLocaleString() }}</span>
                  </div>
                  <div class="flex flex-col text-right border-l border-border pl-4">
-                    <span class="text-[10px] uppercase font-black tracking-widest text-muted-foreground flex items-center justify-end gap-1">
+                    <span class="text-[10px] uppercase font-semibold tracking-widest text-muted-foreground flex items-center justify-end gap-1">
                       {{ $t('admin.expenses') }}
                       <ArrowDownCircleIcon class="w-3 h-3 text-rose-500" />
                     </span>
-                    <span class="text-base font-black text-rose-600 dark:text-rose-400 tabular-nums tracking-tighter">${{ (project.totalExpensesUsd || 0).toLocaleString() }}</span>
+                    <span class="text-base font-semibold text-rose-600 dark:text-rose-400 tabular-nums tracking-tighter">${{ (project.totalExpensesUsd || 0).toLocaleString() }}</span>
                  </div>
               </div>
 
-              <div class="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+              <div class="flex justify-between items-center text-[10px] font-semibold uppercase tracking-widest">
                  <div class="text-muted-foreground flex items-center gap-1">
                     <span class="text-muted-foreground/60">{{ $t('projects.goal') }}:</span>
                     <span class="text-foreground">${{ project.goalAmount.toLocaleString() }}</span>
                  </div>
-                 <div class="text-primary font-black">
+                 <div class="text-primary font-semibold">
                     {{ Math.round(((project.currentAmount || 0) / (project.goalAmount || 1)) * 100) }}% {{ $t('admin.projects_admin.complete') }}
                  </div>
               </div>
@@ -111,7 +111,7 @@
         </CardContent>
         <CardFooter class="px-6 pb-6 pt-0">
            <RouterLink :to="`/admin/projects/${project.id}`" class="w-full">
-              <Button variant="outline" class="w-full h-11 rounded-xl border-border text-muted-foreground font-bold hover:bg-primary hover:text-white hover:border-primary transition-colors shadow-sm bg-background/50">
+              <Button variant="outline" class="w-full h-11 rounded-xl border-border text-muted-foreground font-semibold hover:bg-primary hover:text-white hover:border-primary transition-colors shadow-sm bg-background/50">
                  <span class="mr-2 font-khmer">{{ $t('admin.projects_admin.view_details') }}</span>
                  <ArrowRightIcon class="h-4 w-4" />
               </Button>
@@ -128,7 +128,7 @@
             <p class="font-extrabold text-foreground text-lg">មិនទាន់មានគម្រោង</p>
             <p class="text-sm font-medium text-muted-foreground">សូមបង្កើតគម្រោងដំបូងបង្អស់របស់អ្នក ដើម្បីចាប់ផ្តើមទទួបនឹងគ្រប់គ្រងការបរិច្ចាគ।</p>
          </div>
-         <Button @click="openCreateModal" variant="outline" class="mt-4 rounded-xl border-border font-bold">{{ $t('admin.forms.create_project') }}</Button>
+         <Button @click="openCreateModal" variant="outline" class="mt-4 rounded-xl border-border font-semibold">{{ $t('admin.forms.create_project') }}</Button>
       </div>
     </div>
 
@@ -154,7 +154,7 @@
                     
                     <div class="grid gap-2">
                         <Label for="description" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">{{ $t('admin.forms.project_desc') }} *</Label>
-                        <Textarea id="description" v-model="formData.description" required placeholder="ពិពណ៌នាអំពីគម្រោង..." rows="4" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all resize-none" />
+                        <RichEditor v-model="formData.description" :placeholder="$t('admin.forms.project_desc')" />
                     </div>
 
                     <div class="grid grid-cols-2 gap-6">
@@ -207,7 +207,7 @@
                             <template v-else>
                                 <div v-if="uploadingBanner" class="flex flex-col items-center gap-2">
                                     <div class="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-                                    <span class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Uploading...</span>
+                                    <span class="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Uploading...</span>
                                 </div>
                                 <label v-else class="cursor-pointer flex flex-col items-center gap-2 p-4 text-center">
                                     <UploadIcon class="h-6 w-6 text-muted-foreground/30" />
@@ -219,7 +219,7 @@
                     </div>
 
                     <div class="space-y-4">
-                        <Label class="text-xs font-black uppercase tracking-widest text-muted-foreground/60">QR Code Image</Label>
+                        <Label class="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60">QR Code Image</Label>
                         <div class="relative group aspect-square max-w-[120px] mx-auto rounded-2xl bg-muted/30 border-2 border-dashed border-border overflow-hidden flex flex-col items-center justify-center gap-2 hover:border-primary/50 transition-all">
                             <template v-if="formData.qrCodeUrl">
                                 <img :src="formData.qrCodeUrl" class="absolute inset-0 w-full h-full object-cover" />
@@ -284,7 +284,7 @@ import { useProjects } from '~/composables/useProjects'
 import { useCloudinary } from '~/composables/useCloudinary'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+import RichEditor from '@/components/ui/RichEditor.vue'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'

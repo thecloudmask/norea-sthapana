@@ -4,7 +4,7 @@
     <div class="bg-primary pt-24 pb-16 text-center text-white px-4 relative overflow-hidden">
         <div class="absolute inset-0 bg-black/10 pointer-events-none"></div>
         <div class="relative z-10 animate-in fade-in slide-in-from-top-4 duration-700">
-           <h1 class="text-3xl md:text-5xl font-black mb-4 font-khmer uppercase tracking-tight">{{ $t('ceremonies.title') }}</h1>
+           <h1 class="text-3xl md:text-5xl font-bold mb-4 font-khmer uppercase tracking-tight">{{ $t('ceremonies.title') }}</h1>
            <p class="text-white/80 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
               {{ $t('ceremonies.subtitle') }}
            </p>
@@ -17,10 +17,10 @@
             <div class="flex flex-col md:flex-row gap-6 items-center">
                 <div class="relative flex-1 w-full group">
                     <SearchIcon class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 h-5 w-5 group-focus-within:text-primary transition-colors" />
-                    <Input 
+                    <input 
                        v-model="searchQuery" 
                        :placeholder="$t('ceremonies.search_placeholder')" 
-                       class="pl-12 h-14 text-lg rounded-xl border-border bg-muted/30 focus:bg-background transition-all font-medium"
+                       class="flex h-14 w-full rounded-xl border border-border bg-muted/30 px-12 py-2 text-lg ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all font-medium focus:bg-background"
                     />
                 </div>
                 <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
@@ -34,7 +34,7 @@
                             : 'bg-background hover:bg-muted border-border text-muted-foreground'
                        ]"
                        @click="filterStatus = status"
-                       class="rounded-xl px-6 h-12 font-black uppercase tracking-widest text-[10px] transition-all whitespace-nowrap"
+                       class="rounded-xl px-6 h-12 font-semibold uppercase tracking-widest text-[10px] transition-all whitespace-nowrap"
                     >
                        {{ status === 'all' ? $t('common.filter_all') : $t(`common.filter_${status}`) }}
                     </Button>
@@ -48,7 +48,7 @@
        </div>
 
        <div v-else-if="filteredCeremonies.length > 0" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-           <RouterLink v-for="item in filteredCeremonies" :key="item.id" :to="`/articles/${item.id}`" class="group h-full">
+           <RouterLink v-for="item in filteredCeremonies" :key="item.id" :to="`/ceremonies/${item.id}`" class="group h-full">
                <Card class="h-full overflow-hidden border-none shadow-sm ring-1 ring-border bg-card hover:shadow-2xl hover:ring-primary/20 transition-all duration-500 flex flex-col rounded-3xl">
                    <div class="aspect-video relative overflow-hidden bg-muted">
                        <img v-if="item.imageUrl" :src="item.imageUrl" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -58,30 +58,37 @@
                        
                        <!-- Date Badge -->
                        <div v-if="item.eventDate" class="absolute top-4 right-4 bg-background/95 backdrop-blur-md shadow-lg px-3 py-2 rounded-2xl flex flex-col items-center min-w-[65px] border border-border/50 ring-1 ring-white/10"
-                            :class="{ 'grayscale opacity-60 scale-95': isPast(item.eventDate) }">
-                           <span class="text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">{{ getMonth(item.eventDate) }}</span>
-                           <span class="text-2xl font-black text-foreground leading-none mt-1">{{ getDay(item.eventDate) }}</span>
+                            :class="{ 'grayscale opacity-60 scale-95': isPast(item.eventDate, item.endDate) }">
+                           <span class="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest">{{ getMonth(item.eventDate) }}</span>
+                           <span class="text-2xl font-semibold text-foreground leading-none mt-1">{{ getDay(item.eventDate) }}</span>
+                           <div v-if="item.endDate" class="mt-1 pt-1 border-t border-muted w-full text-center">
+                               <span class="text-[7px] font-black text-primary uppercase tracking-[0.2em] leading-none block">Multi-day</span>
+                           </div>
                        </div>
 
                        <!-- Past Badge Overlay -->
-                       <div v-if="isPast(item.eventDate)" class="absolute top-4 left-4 bg-muted/90 backdrop-blur-md text-muted-foreground px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border border-border flex items-center gap-1.5">
+                       <div v-if="isPast(item.eventDate, item.endDate)" class="absolute top-4 left-4 bg-muted/90 backdrop-blur-md text-muted-foreground px-3 py-1.5 rounded-xl text-[9px] font-semibold uppercase tracking-widest border border-border flex items-center gap-1.5">
                            <HistoryIcon class="size-3" />
                            {{ $t('common.status_past') }}
                        </div>
                    </div>
                    <CardContent class="flex-1 p-8 flex flex-col text-left space-y-4">
-                       <h3 class="text-xl md:text-2xl font-black font-khmer group-hover:text-primary transition-colors line-clamp-2 leading-snug text-foreground">
+                       <div class="flex items-center gap-2 text-[10px] font-semibold text-primary uppercase tracking-[0.2em]">
+                           <MapPinIcon class="size-3" />
+                           <span>{{ item.location || $t('events.location_default') }}</span>
+                       </div>
+                       <h3 class="text-xl md:text-2xl font-semibold font-khmer group-hover:text-primary transition-colors line-clamp-2 leading-snug text-foreground">
                            {{ item.title }}
                        </h3>
                        <p class="text-muted-foreground line-clamp-3 text-sm font-medium leading-relaxed flex-1">
-                           {{ item.content }}
+                           {{ stripHtml(item.content) }}
                        </p>
                        <div class="pt-6 border-t border-border flex items-center justify-between">
-                            <div class="flex items-center text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest tabular-nums italic">
+                            <div class="flex items-center text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest tabular-nums italic">
                                 <CalendarIcon class="h-3.5 w-3.5 mr-2 opacity-50" />
-                                <span>{{ formatDate(item.eventDate || item.createdAt) }}</span>
+                                <span>{{ formatDateRange(item.eventDate, item.endDate) }}</span>
                             </div>
-                            <span class="text-primary font-black uppercase tracking-widest text-[10px] flex items-center gap-2 group-hover:gap-3 transition-all">
+                            <span class="text-primary font-semibold uppercase tracking-widest text-[10px] flex items-center gap-2 group-hover:gap-3 transition-all">
                                 {{ $t('common.read_details') }}
                                 <ArrowRightIcon class="h-3 w-3" />
                             </span>
@@ -95,8 +102,8 @@
            <div class="size-20 rounded-full bg-muted flex items-center justify-center text-muted-foreground/20 mx-auto mb-6">
                 <SearchXIcon class="h-10 w-10" />
            </div>
-           <p class="text-muted-foreground font-bold text-lg mb-6">{{ $t('ceremonies.empty') }}</p>
-           <Button variant="outline" @click="searchQuery = ''" class="rounded-xl border-border px-8 font-black uppercase tracking-widest text-[10px] h-12 hover:bg-muted bg-background/50">
+           <p class="text-muted-foreground font-semibold text-lg mb-6">{{ $t('ceremonies.empty') }}</p>
+           <Button variant="outline" @click="searchQuery = ''" class="rounded-xl border-border px-8 font-semibold uppercase tracking-widest text-[10px] h-12 hover:bg-muted bg-background/50">
                 {{ $t('common.reset_filters') }}
            </Button>
        </div>
@@ -106,13 +113,11 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { SearchIcon, CalendarIcon, SearchXIcon, HistoryIcon, ArrowRightIcon } from 'lucide-vue-next'
+import { SearchIcon, CalendarIcon, SearchXIcon, HistoryIcon, ArrowRightIcon, MapPinIcon } from 'lucide-vue-next'
 import { formatKhmerDate, toKhmerNumerals } from '~/utils/date'
 import { useArticles } from '~/composables/useArticles'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 
 const { articles, loading, fetchArticles } = useArticles()
 const searchQuery = ref('')
@@ -129,7 +134,7 @@ const filteredCeremonies = computed(() => {
         
         // Filter by Status (Upcoming/Past)
         if (filterStatus.value !== 'all') {
-            const isItemPast = isPast(item.eventDate)
+            const isItemPast = isPast(item.eventDate, item.endDate)
             if (filterStatus.value === 'upcoming' && isItemPast) return false
             if (filterStatus.value === 'past' && !isItemPast) return false
         }
@@ -155,15 +160,34 @@ const getDateObj = (date: any): Date => {
     return new Date(date)
 }
 
-const isPast = (date: any) => {
-    if (!date) return false
-    const d = getDateObj(date)
+const isPast = (start: any, end: any) => {
+    if (!start) return false
+    const d = getDateObj(end || start)
     const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    today.setHours(23, 59, 59, 999) // End of today
     return d < today
 }
 
-const formatDate = (date: any) => formatKhmerDate(date)
+const stripHtml = (html: string) => {
+    if (!html) return "";
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+}
+
+const formatDateRange = (start: any, end: any) => {
+    if (!start) return ''
+    const startDate = getDateObj(start)
+    const formattedStart = formatKhmerDate(startDate, 'dd/MM/yyyy')
+    
+    if (!end) return formattedStart
+    
+    const endDate = getDateObj(end)
+    const formattedEnd = formatKhmerDate(endDate, 'dd/MM/yyyy')
+    
+    if (formattedStart === formattedEnd) return formattedStart
+    
+    return `${formatKhmerDate(startDate, 'dd')} - ${formattedEnd}`
+}
 
 const getMonth = (date: any) => {
     if (!date) return ''
