@@ -17,12 +17,7 @@
             background-size: 40px 40px;
           "
         ></div>
-        <!-- Simulating an image -->
-        <img
-          src="https://images.unsplash.com/photo-1620933934526-2c502fb3569c?q=80&w=2070&auto=format&fit=crop"
-          class="w-full h-full object-cover opacity-50"
-          alt="Temple Background"
-        />
+
       </div>
 
       <!-- Hero Content -->
