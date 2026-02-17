@@ -19,10 +19,10 @@
               
               <!-- Center Title -->
               <div class="flex-1 text-center px-4">
-                <h1 class="text-3xl font-black text-primary mb-2 font-khmer">របាយការណ៍បិទគម្រោង</h1>
+                <h1 class="text-3xl font-black text-primary mb-2 font-khmer">{{ $t('admin.project_report.title') }}</h1>
                 <h2 class="text-xl font-bold text-foreground/80 mb-1 uppercase tracking-tight">Project Closure Report</h2>
-                <h3 class="text-lg font-bold text-foreground/60 font-khmer">វត្តនរាធិបតី (Wat Narea Thipadee)</h3>
-                <p class="text-xs font-black text-muted-foreground mt-4 uppercase tracking-widest italic">កាលបរិច្ឆេទ: {{ formatDate(new Date()) }}</p>
+                <h3 class="text-lg font-bold text-foreground/60 font-khmer">{{ $t('admin.project_report.wat_name') }} (Wat Narea Thipadee)</h3>
+                <p class="text-xs font-black text-muted-foreground mt-4 uppercase tracking-widest italic">{{ $t('admin.project_report.date') }}: {{ formatDate(new Date()) }}</p>
               </div>
 
               <!-- Status Badge -->
@@ -43,18 +43,18 @@
 
           <!-- Project Info Section -->
           <div class="project-info bg-muted/40 p-8 rounded-2xl mb-10 border border-border print:bg-gray-50">
-            <h4 class="text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest mb-6 border-b border-border/50 pb-2">ព័ត៌មានគម្រោង (Project Information)</h4>
+            <h4 class="text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest mb-6 border-b border-border/50 pb-2">{{ $t('admin.project_report.project_info') }} (Project Information)</h4>
             <div class="grid grid-cols-2 gap-8">
               <div class="space-y-1">
-                <label class="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest block">ឈ្មោះគម្រោង (Project Title)</label>
+                <label class="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest block">{{ $t('admin.project_report.project_title') }} (Project Title)</label>
                 <p class="font-black text-xl text-foreground font-khmer leading-tight">{{ project.title }}</p>
               </div>
               <div class="space-y-1">
-                <label class="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest block">រយៈពេល (Duration)</label>
+                <label class="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest block">{{ $t('admin.project_report.duration') }} (Duration)</label>
                 <p class="font-bold text-foreground tabular-nums">{{ formatDate(project.startDate) }} - {{ formatDate(new Date()) }}</p>
               </div>
               <div class="col-span-2 space-y-1">
-                <label class="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest block">ការពិពណ៌នា (Description)</label>
+                <label class="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest block">{{ $t('admin.project_report.description') }} (Description)</label>
                 <p class="text-foreground/80 font-medium leading-relaxed font-khmer">{{ project.description }}</p>
               </div>
             </div>
@@ -66,11 +66,11 @@
             <div class="summary-box border-2 border-emerald-500/20 bg-emerald-500/5 p-6 rounded-2xl print:border-emerald-400 print:bg-emerald-50">
               <div class="flex items-center gap-2 mb-4">
                 <ArrowUpRight class="h-6 w-6 text-emerald-500" />
-                <h5 class="text-[10px] font-black text-emerald-600 uppercase tracking-widest font-khmer">ចំណូលសរុប</h5>
+                <h5 class="text-[10px] font-black text-emerald-600 uppercase tracking-widest font-khmer">{{ $t('admin.project_report.total_income') }}</h5>
               </div>
               <div class="space-y-1">
-                <p class="text-3xl font-black text-emerald-500 tabular-nums">${{ totalIncome.usd.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</p>
-                <p v-if="totalIncome.khr > 0" class="text-xl font-bold text-emerald-400 tabular-nums">៛{{ totalIncome.khr.toLocaleString() }}</p>
+                <p class="text-3xl font-black text-emerald-500 tabular-nums">{{ $t('common.currency_usd') }}{{ totalIncome.usd.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</p>
+                <p v-if="totalIncome.khr > 0" class="text-xl font-bold text-emerald-400 tabular-nums">{{ $t('common.currency_khr') }}{{ totalIncome.khr.toLocaleString() }}</p>
               </div>
               <p class="text-[9px] font-black text-emerald-600/40 mt-4 uppercase tracking-widest">Total Income</p>
             </div>
@@ -79,11 +79,11 @@
             <div class="summary-box border-2 border-rose-500/20 bg-rose-500/5 p-6 rounded-2xl print:border-rose-400 print:bg-rose-50">
               <div class="flex items-center gap-2 mb-4">
                 <ArrowDownLeft class="h-6 w-6 text-rose-500" />
-                <h5 class="text-[10px] font-black text-rose-600 uppercase tracking-widest font-khmer">ចំណាយសរុប</h5>
+                <h5 class="text-[10px] font-black text-rose-600 uppercase tracking-widest font-khmer">{{ $t('admin.project_report.total_expense') }}</h5>
               </div>
               <div class="space-y-1">
-                <p class="text-3xl font-black text-rose-500 tabular-nums">${{ totalExpense.usd.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</p>
-                <p v-if="totalExpense.khr > 0" class="text-xl font-bold text-rose-400 tabular-nums">៛{{ totalExpense.khr.toLocaleString() }}</p>
+                <p class="text-3xl font-black text-rose-500 tabular-nums">{{ $t('common.currency_usd') }}{{ totalExpense.usd.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</p>
+                <p v-if="totalExpense.khr > 0" class="text-xl font-bold text-rose-400 tabular-nums">{{ $t('common.currency_khr') }}{{ totalExpense.khr.toLocaleString() }}</p>
               </div>
               <p class="text-[9px] font-black text-rose-600/40 mt-4 uppercase tracking-widest">Total Expense</p>
             </div>
@@ -92,14 +92,14 @@
             <div class="summary-box border-2 p-6 rounded-2xl" :class="netBalance.usd >= 0 ? 'border-primary/20 bg-primary/5 print:border-primary/40 print:bg-primary/5' : 'border-orange-500/20 bg-orange-500/5 print:border-orange-400 print:bg-orange-50'">
               <div class="flex items-center gap-2 mb-4">
                 <Wallet class="h-6 w-6" :class="netBalance.usd >= 0 ? 'text-primary' : 'text-orange-500'" />
-                <h5 class="text-[10px] font-black uppercase tracking-widest font-khmer" :class="netBalance.usd >= 0 ? 'text-primary' : 'text-orange-600'">សាច់ប្រាក់នៅសល់</h5>
+                <h5 class="text-[10px] font-black uppercase tracking-widest font-khmer" :class="netBalance.usd >= 0 ? 'text-primary' : 'text-orange-600'">{{ $t('admin.project_report.net_balance') }}</h5>
               </div>
               <div class="space-y-1">
-                <p class="text-3xl font-black tabular-nums" :class="netBalance.usd >= 0 ? 'text-primary' : 'text-orange-500'">${{ Math.abs(netBalance.usd).toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</p>
-                <p v-if="netBalance.khr !== 0" class="text-xl font-bold tabular-nums" :class="netBalance.usd >= 0 ? 'text-primary/70' : 'text-orange-400'">៛{{ Math.abs(netBalance.khr).toLocaleString() }}</p>
+                <p class="text-3xl font-black tabular-nums" :class="netBalance.usd >= 0 ? 'text-primary' : 'text-orange-500'">{{ $t('common.currency_usd') }}{{ Math.abs(netBalance.usd).toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</p>
+                <p v-if="netBalance.khr !== 0" class="text-xl font-bold tabular-nums" :class="netBalance.usd >= 0 ? 'text-primary/70' : 'text-orange-400'">{{ $t('common.currency_khr') }}{{ Math.abs(netBalance.khr).toLocaleString() }}</p>
               </div>
               <p class="text-[9px] font-black mt-4 uppercase tracking-widest" :class="netBalance.usd >= 0 ? 'text-primary/40' : 'text-orange-600/40'">
-                {{ netBalance.usd >= 0 ? 'Net Surplus' : 'Net Deficit' }}
+                {{ netBalance.usd >= 0 ? $t('admin.project_report.net_surplus') : $t('admin.project_report.net_deficit') }}
               </p>
             </div>
           </div>
@@ -110,25 +110,27 @@
               <div class="size-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
                   <ReceiptIcon class="h-4 w-4" />
               </div>
-              ការចំណាយតាមប្រភេទ (Expense Breakdown)
+              {{ $t('admin.project_report.expense_breakdown') }} (Expense Breakdown)
             </h4>
             <div class="overflow-hidden rounded-2xl border border-border">
               <table class="w-full">
                 <thead class="bg-muted text-foreground/70 print:bg-gray-800 print:text-white">
                   <tr>
-                    <th class="px-8 py-4 text-left text-[10px] font-black uppercase tracking-widest">ប្រភេទ (Category)</th>
-                    <th class="px-8 py-4 text-right text-[10px] font-black uppercase tracking-widest">ចំនួនទឹកប្រាក់ USD</th>
-                    <th class="px-8 py-4 text-right text-[10px] font-black uppercase tracking-widest">ចំនួនទឹកប្រាក់ KHR</th>
+                    <th class="px-8 py-4 text-left text-[10px] font-black uppercase tracking-widest">{{ $t('admin.table.category') }} (Category)</th>
+                    <th class="px-8 py-4 text-right text-[10px] font-black uppercase tracking-widest">{{ $t('admin.table.amount') }} USD</th>
+                    <th class="px-8 py-4 text-right text-[10px] font-black uppercase tracking-widest">{{ $t('admin.table.amount') }} KHR</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-border">
                   <tr v-for="(amounts, category) in expensesByCategory" :key="category" class="hover:bg-muted/30 transition-colors">
-                    <td class="px-8 py-5 font-black text-foreground/80 uppercase tracking-wide text-xs">{{ getCategoryLabel(category) }}</td>
-                    <td class="px-8 py-5 text-right font-black text-foreground tabular-nums">${{ amounts.usd.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</td>
-                    <td class="px-8 py-5 text-right font-black text-foreground tabular-nums">៛{{ amounts.khr.toLocaleString() }}</td>
+                    <td class="px-8 py-5 font-black text-foreground/80 uppercase tracking-wide text-xs">
+                      {{ $t('admin.expense_categories.' + category) }}
+                    </td>
+                    <td class="px-8 py-5 text-right font-black text-foreground tabular-nums">{{ $t('common.currency_usd') }}{{ amounts.usd.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</td>
+                    <td class="px-8 py-5 text-right font-black text-foreground tabular-nums">{{ $t('common.currency_khr') }}{{ amounts.khr.toLocaleString() }}</td>
                   </tr>
                   <tr v-if="Object.keys(expensesByCategory).length === 0">
-                    <td colspan="3" class="px-8 py-12 text-center text-muted-foreground/30 italic font-bold">មិនមានទិន្នន័យចំណាយ</td>
+                    <td colspan="3" class="px-8 py-12 text-center text-muted-foreground/30 italic font-bold">{{ $t('admin.project_report.no_expense_data') }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -141,7 +143,7 @@
               <div class="size-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-500 border border-orange-500/20">
                   <Trophy class="h-4 w-4" />
               </div>
-              សប្បុរសជនកំពូល (Top Donors - Honor List)
+              {{ $t('admin.project_report.top_donors') }} (Top Donors - Honor List)
             </h4>
             <div class="grid grid-cols-1 gap-4">
               <div v-for="(donor, index) in topDonors" :key="index" class="flex items-center gap-6 p-6 bg-muted/30 rounded-2xl border border-border group hover:bg-muted transition-colors print:bg-yellow-50">
@@ -156,7 +158,7 @@
                 </div>
               </div>
               <div v-if="topDonors.length === 0" class="text-center py-12 text-muted-foreground/30 font-bold italic">
-                មិនមានទិន្នន័យបច្ច័យ
+                {{ $t('admin.project_report.no_donation_data') }}
               </div>
             </div>
           </div>
@@ -165,19 +167,19 @@
           <div class="signature-section mt-16 pt-12 border-t-2 border-border page-break-before">
             <div class="grid grid-cols-3 gap-12 text-center">
               <div>
-                <p class="font-black text-foreground mb-24 font-khmer">ហេរញ្ញិក</p>
+                <p class="font-black text-foreground mb-24 font-khmer">{{ $t('admin.project_report.treasurer') }}</p>
                 <div class="border-t-2 border-border/50 pt-4">
                   <p class="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Treasurer</p>
                 </div>
               </div>
               <div>
-                <p class="font-black text-foreground mb-24 font-khmer">ប្រធានគណៈកម្មការ</p>
+                <p class="font-black text-foreground mb-24 font-khmer">{{ $t('admin.project_report.committee_head') }}</p>
                 <div class="border-t-2 border-border/50 pt-4">
                   <p class="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Committee Head</p>
                 </div>
               </div>
               <div>
-                <p class="font-black text-foreground mb-24 font-khmer">ព្រះចៅអធិការ</p>
+                <p class="font-black text-foreground mb-24 font-khmer">{{ $t('admin.project_report.abbot') }}</p>
                 <div class="border-t-2 border-border/50 pt-4">
                   <p class="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Abbot</p>
                 </div>
@@ -296,16 +298,6 @@ const expensesByCategory = computed(() => {
   return grouped
 })
 
-// Group expenses by category
-const getCategoryLabel = (category: string) => {
-  const labels: Record<string, string> = {
-    material: 'សម្ភារៈ (Materials)',
-    labor: 'ថ្លៃឈ្នួល (Labor)',
-    utility: 'ទឹកភ្លើង/ផ្សេងៗ (Utility)',
-    other: 'ផ្សេងៗ (Other)'
-  }
-  return labels[category] || category
-}
 
 // Get top 5 donors
 const topDonors = computed(() => {

@@ -119,7 +119,7 @@
             <form @submit.prevent="handleSave" class="space-y-6">
               <div class="grid gap-6">
                 <div class="grid gap-2">
-                  <Label for="title" class="text-xs font-medium text-foreground/70">{{ $t('admin.library.article_title') }} *</Label>
+                  <Label for="title" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80 font-khmer">{{ $t('admin.library.article_title') }} *</Label>
                   <Input id="title" v-model="formData.title" required :placeholder="$t('admin.library.placeholder_title')" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11" />
                 </div>
                 
@@ -127,7 +127,7 @@
 
                 <div class="grid grid-cols-2 gap-6">
                   <div class="grid gap-2">
-                      <Label for="status" class="text-xs font-medium text-foreground/70">{{ $t('admin.forms.status') }} *</Label>
+                      <Label for="status" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80 font-khmer">{{ $t('admin.forms.status') }} *</Label>
                       <Select v-model="formData.status" required>
                           <SelectTrigger class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11 text-left">
                               <SelectValue placeholder="Select Status" />
@@ -141,7 +141,7 @@
                   </div>
                   
                   <div class="grid gap-2">
-                    <Label for="category" class="text-xs font-medium text-foreground/70">{{ $t('admin.forms.type') }} *</Label>
+                    <Label for="category" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80 font-khmer">{{ $t('admin.forms.type') }} *</Label>
                     <Select v-model="formData.category">
                         <SelectTrigger class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11 text-left">
                             <SelectValue :placeholder="$t('admin.forms.select')" />
@@ -167,7 +167,7 @@
                 </div>
 
                 <div class="grid gap-2 pt-4 border-t border-border">
-                  <Label class="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60">{{ $t('admin.forms.receipt') }}</Label>
+                  <Label class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80 font-khmer">{{ $t('admin.forms.receipt') }}</Label>
                   <div class="flex flex-col gap-4">
                     <div class="flex items-center gap-3">
                        <Input type="file" accept="image/*" @change="handleImageUpload" :disabled="uploadingImage" class="rounded-xl border-border bg-muted/50 text-[10px]" />

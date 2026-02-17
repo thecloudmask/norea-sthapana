@@ -12,7 +12,7 @@
         <Button variant="outline" @click="recalculateAll" :disabled="recalculatingAll" class="rounded-xl border-border bg-card shadow-sm hover:bg-muted font-medium px-6 h-10">
           <RefreshCwIcon class="mr-2 h-4 w-4" :class="{ 'animate-spin': recalculatingAll }" />
           <span class="hidden sm:inline">{{ $t('admin.recalculate') }}</span>
-          <span class="sm:hidden">Reset</span>
+          <span class="sm:hidden">{{ $t('admin.recalculate') }}</span>
         </Button>
         <Button size="icon" variant="default" class="rounded-xl bg-primary hover:bg-orange-600 shadow-lg shadow-primary/20">
           <DownloadIcon class="h-4 w-4" />
@@ -22,10 +22,10 @@
     
     <Tabs default-value="overview" class="space-y-10">
       <TabsList class="bg-muted p-1 rounded-2xl inline-flex h-12 border border-border">
-        <TabsTrigger value="overview" class="rounded-xl px-8 py-2 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm font-medium transition-all">Overview</TabsTrigger>
-        <TabsTrigger value="analytics" class="rounded-xl px-8 py-2 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm font-medium transition-all">Analytics</TabsTrigger>
-        <TabsTrigger value="reports" class="rounded-xl px-8 py-2 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm font-medium transition-all">Reports</TabsTrigger>
-        <TabsTrigger value="notifications" class="rounded-xl px-8 py-2 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm font-medium transition-all">Updates</TabsTrigger>
+        <TabsTrigger value="overview" class="rounded-xl px-8 py-2 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm font-medium transition-all font-khmer">{{ $t('admin.tabs.overview') }}</TabsTrigger>
+        <TabsTrigger value="analytics" class="rounded-xl px-8 py-2 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm font-medium transition-all font-khmer">{{ $t('admin.tabs.analytics') }}</TabsTrigger>
+        <TabsTrigger value="reports" class="rounded-xl px-8 py-2 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm font-medium transition-all font-khmer">{{ $t('admin.tabs.reports') }}</TabsTrigger>
+        <TabsTrigger value="notifications" class="rounded-xl px-8 py-2 data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-sm font-medium transition-all font-khmer">{{ $t('admin.tabs.notifications') }}</TabsTrigger>
       </TabsList>
       
       <!-- Overview Tab -->
@@ -187,8 +187,8 @@
           <!-- Expenses by Category (Pie Chart) -->
           <Card class="rounded-3xl border-none ring-1 ring-border bg-card shadow-sm overflow-hidden">
             <CardHeader class="border-b border-border bg-muted/30">
-              <CardTitle class="text-lg font-semibold text-foreground uppercase tracking-tight font-khmer">ចំណាយតាមប្រភេទ</CardTitle>
-              <CardDescription class="font-medium text-muted-foreground">ការបែងចែកថវិកាចំណាយសរុប</CardDescription>
+              <CardTitle class="text-lg font-semibold text-foreground uppercase tracking-tight font-khmer">{{ $t('admin.analytics_labels.expenses_by_category') }}</CardTitle>
+              <CardDescription class="font-medium text-muted-foreground">{{ $t('admin.analytics_labels.expenses_by_category_subtitle') }}</CardDescription>
             </CardHeader>
             <CardContent class="h-[400px] pt-10">
               <div>
@@ -210,8 +210,8 @@
           <!-- Donation Methods (Doughnut Chart) -->
           <Card class="rounded-3xl border-none ring-1 ring-border bg-card shadow-sm overflow-hidden">
             <CardHeader class="border-b border-border bg-muted/30">
-              <CardTitle class="text-lg font-semibold text-foreground uppercase tracking-tight font-khmer">វិធីសាស្ត្រទទួលបច្ច័យ</CardTitle>
-              <CardDescription class="font-medium text-muted-foreground">ការចូលរួមតាមរយៈមធ្យោបាយផ្សេងៗ</CardDescription>
+              <CardTitle class="text-lg font-semibold text-foreground uppercase tracking-tight font-khmer">{{ $t('admin.analytics_labels.donation_methods') }}</CardTitle>
+              <CardDescription class="font-medium text-muted-foreground">{{ $t('admin.analytics_labels.donation_methods_subtitle') }}</CardDescription>
             </CardHeader>
             <CardContent class="h-[400px] pt-10">
               <div>
@@ -410,7 +410,8 @@ const revenueTrendOptions = computed(() => ({
   chart: {
     toolbar: { show: false },
     zoom: { enabled: false },
-    fontFamily: 'Inter, sans-serif'
+    fontFamily: 'Inter, sans-serif',
+    background: 'transparent'
   },
   theme: { mode: isDark.value ? 'dark' : 'light' },
   colors: ['#ea580c'],
@@ -476,6 +477,7 @@ const expensePieOptions = computed(() => {
   return {
     labels: Object.keys(categories),
     theme: { mode: isDark.value ? 'dark' : 'light' },
+    chart: { background: 'transparent' },
     colors: ['#f97316', '#fb923c', '#fdba74', '#fed7aa', '#ffedd5'],
     legend: { position: 'bottom', labels: { colors: isDark.value ? '#94a3b8' : '#64748b' } },
     dataLabels: { enabled: true, dropShadow: { enabled: false } },
@@ -502,6 +504,7 @@ const methodDonutOptions = computed(() => {
   return {
     labels: Object.keys(methods),
     theme: { mode: isDark.value ? 'dark' : 'light' },
+    chart: { background: 'transparent' },
     colors: ['#0f172a', '#334155', '#64748b', '#94a3b8', '#cbd5e1'],
     plotOptions: {
       pie: {
@@ -550,7 +553,8 @@ const trendSeries = computed(() => {
 const trendOptions = computed(() => ({
   chart: {
     toolbar: { show: false },
-    fontFamily: 'Inter, sans-serif'
+    fontFamily: 'Inter, sans-serif',
+    background: 'transparent'
   },
   theme: { mode: isDark.value ? 'dark' : 'light' },
   colors: ['#10b981', '#ef4444'],

@@ -96,13 +96,13 @@
             <form @submit.prevent="handleSave" class="space-y-6">
               <div class="grid gap-6">
                 <div class="grid gap-2">
-                  <Label for="title" class="text-xs font-medium text-foreground/70">{{ $t('admin.news.news_title') }} *</Label>
+                  <Label for="title" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80 font-khmer">{{ $t('admin.news.news_title') }} *</Label>
                   <Input id="title" v-model="formData.title" required :placeholder="$t('admin.news.placeholder_title')" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11" />
                 </div>
                 
                 <div class="grid grid-cols-2 gap-6">
                   <div class="grid gap-2">
-                    <Label for="type" class="text-xs font-medium text-foreground/70">{{ $t('admin.forms.type') }} *</Label>
+                    <Label for="type" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80 font-khmer">{{ $t('admin.forms.type') }} *</Label>
                     <Select v-model="formData.type">
                         <SelectTrigger class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11 text-left">
                             <SelectValue :placeholder="$t('admin.forms.select')" />
@@ -115,7 +115,7 @@
                   </div>
                   
                   <div v-if="formData.type === 'event'" class="grid gap-2 animate-in fade-in zoom-in duration-300">
-                      <Label for="eventDate" class="text-xs font-medium text-foreground/70">{{ $t('admin.ceremonies.event_date') }}</Label>
+                      <Label for="eventDate" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80 font-khmer">{{ $t('admin.ceremonies.event_date') }}</Label>
                       <Input id="eventDate" type="date" v-model="eventDateInput" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11" />
                   </div>
                 </div>
@@ -126,7 +126,7 @@
                 </div>
                 
                 <div class="grid gap-2 pt-4 border-t border-border">
-                  <Label class="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60">{{ $t('admin.forms.receipt') }}</Label>
+                  <Label class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80 font-khmer">{{ $t('admin.forms.receipt') }}</Label>
                   <div class="flex flex-col gap-4">
                     <div class="flex items-center gap-3">
                        <Input type="file" accept="image/*" @change="handleImageUpload" :disabled="uploadingImage" class="rounded-xl border-border bg-muted/50 text-[10px]" />

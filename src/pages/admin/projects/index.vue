@@ -12,12 +12,12 @@
           </SelectTrigger>
           <SelectContent class="rounded-xl p-1 shadow-xl border-border">
             <SelectItem value="all" class="rounded-lg font-semibold">{{ $t('admin.projects_admin.filter_all') }}</SelectItem>
-            <SelectItem value="planning" class="rounded-lg font-semibold">Planning</SelectItem>
+            <SelectItem value="planning" class="rounded-lg font-semibold">{{ $t('common.status_planning') }}</SelectItem>
             <SelectItem value="draft" class="rounded-lg font-semibold">{{ $t('admin.projects_admin.filter_draft') }}</SelectItem>
             <SelectItem value="active" class="rounded-lg font-semibold">{{ $t('admin.projects_admin.filter_active') }}</SelectItem>
             <SelectItem value="paused" class="rounded-lg font-semibold">{{ $t('admin.projects_admin.filter_paused') }}</SelectItem>
             <SelectItem value="completed" class="rounded-lg font-semibold">{{ $t('admin.projects_admin.filter_completed') }}</SelectItem>
-            <SelectItem value="cancelled" class="rounded-lg font-semibold">Cancelled</SelectItem>
+            <SelectItem value="cancelled" class="rounded-lg font-semibold">{{ $t('common.status_cancelled') }}</SelectItem>
           </SelectContent>
         </Select>
         <Button @click="openCreateModal" class="rounded-xl h-11 px-6 shadow-lg shadow-primary/20 hover:shadow-primary/30 font-semibold transition-all">
@@ -125,8 +125,8 @@
             <FolderOpenIcon class="w-10 h-10" />
          </div>
          <div class="max-w-[300px] space-y-1">
-            <p class="font-extrabold text-foreground text-lg">មិនទាន់មានគម្រោង</p>
-            <p class="text-sm font-medium text-muted-foreground">សូមបង្កើតគម្រោងដំបូងបង្អស់របស់អ្នក ដើម្បីចាប់ផ្តើមទទួបនឹងគ្រប់គ្រងការបរិច្ចាគ।</p>
+            <p class="font-extrabold text-foreground text-lg">{{ $t('admin.projects_admin.empty_title') }}</p>
+            <p class="text-sm font-medium text-muted-foreground">{{ $t('admin.projects_admin.empty_desc') }}</p>
          </div>
          <Button @click="openCreateModal" variant="outline" class="mt-4 rounded-xl border-border font-semibold">{{ $t('admin.forms.create_project') }}</Button>
       </div>
@@ -170,12 +170,12 @@
                                     <SelectValue :placeholder="$t('admin.forms.status')" />
                                 </SelectTrigger>
                                 <SelectContent class="rounded-xl p-1 shadow-lg border-border bg-card">
-                                    <SelectItem value="planning" class="rounded-lg font-normal">Planning</SelectItem>
+                                    <SelectItem value="planning" class="rounded-lg font-normal">{{ $t('common.status_planning') }}</SelectItem>
                                     <SelectItem value="draft" class="rounded-lg font-normal">{{ $t('admin.projects_admin.filter_draft') }}</SelectItem>
                                     <SelectItem value="active" class="rounded-lg font-normal">{{ $t('admin.projects_admin.filter_active') }}</SelectItem>
                                     <SelectItem value="paused" class="rounded-lg font-normal">{{ $t('admin.projects_admin.filter_paused') }}</SelectItem>
                                     <SelectItem value="completed" class="rounded-lg font-normal">{{ $t('admin.projects_admin.filter_completed') }}</SelectItem>
-                                    <SelectItem value="cancelled" class="rounded-lg font-normal">Cancelled</SelectItem>
+                                    <SelectItem value="cancelled" class="rounded-lg font-normal">{{ $t('common.status_cancelled') }}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -184,11 +184,11 @@
                     
                     <div class="grid grid-cols-2 gap-6">
                         <div class="grid gap-2">
-                            <Label for="location" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">Location</Label>
-                            <Input id="location" v-model="formData.location" placeholder="Ex: Prey Veng" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11" />
+                            <Label for="location" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">{{ $t('admin.forms.location') }}</Label>
+                            <Input id="location" v-model="formData.location" :placeholder="$t('admin.forms.placeholder_location')" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11" />
                         </div>
                         <div class="grid gap-2">
-                             <Label for="deadline" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">Deadline</Label>
+                             <Label for="deadline" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">{{ $t('admin.forms.deadline') }}</Label>
                              <Input id="deadline" type="date" v-model="deadlineInput" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11" />
                         </div>
                     </div>
@@ -196,7 +196,7 @@
 
                 <div class="grid grid-cols-2 gap-6 pt-4 border-t border-border">
                     <div class="space-y-4">
-                        <Label class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">Banner Image</Label>
+                        <Label class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80">{{ $t('admin.forms.banner_image') }}</Label>
                         <div class="relative group aspect-video rounded-2xl bg-muted/30 border-2 border-dashed border-border overflow-hidden flex flex-col items-center justify-center gap-2 hover:border-primary/50 transition-all">
                             <template v-if="formData.bannerUrl">
                                 <img :src="formData.bannerUrl" class="absolute inset-0 w-full h-full object-cover" />

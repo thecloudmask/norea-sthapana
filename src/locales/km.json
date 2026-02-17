@@ -23,6 +23,8 @@
     "dharma_subtitle": "ចំណេះដឹងពុទ្ធសាសនា សុភាសិត និងការអប់រំផ្លូវចិត្តសម្រាប់ជីវិតប្រចាំថ្ងៃ"
   },
   "donation": {
+    "processing": "កំពុងដំណើរការ...",
+    "error": "មានបញ្ហាបច្ចេកទេស",
     "title": "បូជាបច្ច័យកសាង",
     "subtitle": "ចូលរួមសន្សំបុណ្យកុសល លើកស្ទួយព្រះពុទ្ធសាសនា",
     "scan_qr": "ស្កេន KHQR ដើម្បីបូជាបច្ច័យ",
@@ -149,7 +151,13 @@
     "title": "កម្មវិធីបុណ្យ",
     "subtitle": "ព្រឹត្តិការណ៍ និងពិធីបុណ្យផ្សេងៗក្នុងវត្តនរាធិបតី",
     "search_placeholder": "ស្វែងរកកម្មវិធីបុណ្យ...",
-    "empty": "មិនមានកម្មវិធីបុណ្យដែលអ្នកកំពុងស្វែងរកទេ។"
+    "empty": "មិនមានកម្មវិធីបុណ្យដែលអ្នកកំពុងស្វែងរកទេ។",
+    "not_found": "រកមិនឃើញកម្មវិធីបុណ្យទេ",
+    "not_found_desc": "កម្មវិធីបុណ្យដែលអ្នកកំពុងស្វែងរកមិនមាន ឬត្រូវបានលុបចោល។",
+    "manage_details": "គ្រប់គ្រងកម្មវិធី",
+    "no_location": "មិនមានទីតាំង",
+    "status_filter": "ស្ថានភាព",
+    "placeholder_location": "ឧ. សាលាឆាន់, ចេតិយ..."
   },
   "library": {
     "title": "បណ្ណាល័យធម៌",
@@ -159,6 +167,8 @@
     "empty": "មិនមានអត្ថបទដែលអ្នកកំពុងស្វែងរកទេ។"
   },
   "common": {
+    "processing": "កំពុងដំណើរការ...",
+    "locale_key": "km",
     "temple_name": "វត្តនរាធិបតី",
     "read_more": "អានបន្ថែម",
     "read_details": "អានលម្អិត",
@@ -176,7 +186,10 @@
     "filter_past": "បានបញ្ចប់",
     "reset_filters": "បង្ហាញទាំងអស់វិញ",
     "currency_usd": "$",
-    "currency_khr": "៛"
+    "currency_khr": "៛",
+    "finance_workspace": "ផ្ទាំងហិរញ្ញវត្ថុ",
+    "exit_workspace": "ចាកចេញពីផ្ទាំងកិច្ចការ",
+    "close": "បិទ"
   },
   "footer": {
     "privacy_policy": "គោលការណ៍​ភាព​ឯកជន",
@@ -193,6 +206,7 @@
     "reviews": "({n} វាយតម្លៃ)"
   },
   "admin": {
+    "back_to_ceremonies": "ត្រឡប់ទៅបញ្ជីកម្មវិធីបុណ្យ",
     "dashboard": "ផ្ទាំងគ្រប់គ្រង",
     "dashboard_subtitle": "ទិដ្ឋភាពទូទៅនៃហិរញ្ញវត្ថុ និងសកម្មភាពវត្តនរាធិបតី",
     "recalculate": "បញ្ជាក់ទិន្នន័យឡើងវិញ",
@@ -222,15 +236,54 @@
     "project_updates": "បច្ចុប្បន្នភាពគម្រោង (Timeline)",
     "create_update": "បង្កើតការផុសថ្មី",
     "tabs": {
-      "overview": "Overview",
-      "donations": "Donations",
-      "expenses": "Expenses",
-      "updates": "Updates",
-      "analytics": "Analytics"
+      "overview": "ទិដ្ឋភាពទូទៅ",
+      "donations": "បច្ច័យចូល",
+      "expenses": "ការចំណាយ",
+      "updates": "ដំណឹងថ្មីៗ",
+      "analytics": "ការវិភាគ",
+      "reports": "របាយការណ៍",
+      "notifications": "ការជូនដំណឹង"
     },
     "no_image": "មិនទាន់មានរូបភាព",
+    "view_public_page": "មើលទំព័រអ្នកប្រើប្រាស់",
+    "project_settings": "ការកំណត់គម្រោង",
+    "scan_to_donate": "ស្កេនដើម្បីចូលរួមម្ចាស់បច្ច័យក្នុងគម្រោងនេះ",
+    "dashboard_overview": "ទិដ្ឋភាពទូទៅ",
+    "dashboard_overview_desc": "ប្រើប្រាស់ Tab ខាងលើដើម្បីគ្រប់គ្រងសប្បុរសជន តាមដានការចំណាយ និងផ្សព្វផ្សាយដំណឹងថ្មីៗ។",
+    "uploading": "កំពុងបញ្ចូល...",
     "edit": "កែសម្រួល",
     "delete": "លុប",
+    "reports": {
+      "financial_summary": "សង្ខេបហិរញ្ញវត្ថុ",
+      "financial_summary_desc": "របាយការណ៍បូកសរុបចំណូលចំណាយប្រចាំខែ",
+      "donation_list": "បញ្ជីសប្បុរសជន",
+      "donation_list_desc": "បញ្ជីរាយនាមសប្បុរសជនទាំងអស់ក្នុងគម្រោង",
+      "expense_audit": "សមតុល្យចំណាយ",
+      "expense_audit_desc": "របាយការណ៍ចំណាយលម្អិតសម្រាប់ការចុះសវនកម្ម",
+      "download_csv": "ទាញយក CSV"
+    },
+    "project_report": {
+      "title": "របាយការណ៍បិទគម្រោង",
+      "wat_name": "វត្តនរាធិបតី",
+      "date": "កាលបរិច្ឆេទ",
+      "project_info": "ព័ត៌មានគម្រោង",
+      "project_title": "ឈ្មោះគម្រោង",
+      "duration": "រយៈពេល",
+      "description": "ការពិពណ៌នា",
+      "financial_summary": "សេចក្តីសង្ខេបហិរញ្ញវត្ថុ",
+      "total_income": "ចំណូលសរុប",
+      "total_expense": "ចំណាយសរុប",
+      "net_balance": "សាច់ប្រាក់នៅសល់",
+      "net_surplus": "ចំណូលលើសចំណាយ",
+      "net_deficit": "ចំណាយលើសចំណូល",
+      "expense_breakdown": "ការចំណាយតាមប្រភេទ",
+      "top_donors": "សប្បុរសជនកំពូល",
+      "no_expense_data": "មិនមានទិន្នន័យចំណាយ",
+      "no_donation_data": "មិនមានទិន្នន័យបច្ច័យ",
+      "treasurer": "ហេរញ្ញិក",
+      "committee_head": "ប្រធានគណៈកម្មការ",
+      "abbot": "ព្រះចៅអធិការ"
+    },
     "table": {
       "donor_name": "ឈ្មោះសប្បុរសជន",
       "amount": "ចំនួនទឹកប្រាក់",
@@ -251,6 +304,10 @@
       "transactions": "ចំនួនប្រតិបត្តិការ",
       "expenses_by_category": "ចំណាយតាមប្រភេទ",
       "donation_methods": "វិធីសាស្ត្រទទួលបច្ច័យ",
+      "expenses_by_category_subtitle": "ការបែងចែកថវិកាចំណាយសរុប",
+      "donation_methods_subtitle": "ការចូលរួមតាមរយៈមធ្យោបាយផ្សេងៗ",
+      "no_donation_data": "មិនមានទិន្នន័យបច្ច័យ",
+      "loading_data": "កំពុងទាញទិន្នន័យ...",
       "times": "ដង"
     },
     "forms": {
@@ -287,7 +344,17 @@
       "status": "ស្ថានភាព",
       "back_to_dashboard": "ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង",
       "save_changes": "រក្សាទុកការកែប្រែ",
-      "create_project": "បង្កើតគម្រោងថ្មី"
+      "create_project": "បង្កើតគម្រោងថ្មី",
+      "status_published": "ផ្សព្វផ្សាយ (Published)",
+      "status_draft": "ព្រាង (Draft)",
+      "status_archived": "កត់ក្នុងបញ្ជី (Archived)",
+      "select_status": "ជ្រើសរើសស្ថានភាព",
+      "location": "ទីតាំង",
+      "deadline": "ថ្ងៃបញ្ចប់",
+      "banner_image": "រូបភាពតំណាង",
+      "placeholder_location": "ឧ. ភូមិ២, ស្រុកសង្កែ...",
+      "upload_success": "បានបញ្ជូនរូបភាពដោយជោគជ័យ",
+      "upload_error": "មានបញ្ហាក្នុងការបញ្ជូនរូបភាព"
     },
     "projects_admin": {
       "title": "គម្រោងសាងសង់",
@@ -303,6 +370,8 @@
       "filter_active": "ដំណើរការ (Active)",
       "filter_paused": "ផ្អាក (Paused)",
       "filter_completed": "បញ្ចប់ (Completed)",
+      "empty_title": "មិនទាន់មានគម្រោង",
+      "empty_desc": "សូមបង្កើតគម្រោងដំបូងបង្អស់របស់អ្នក ដើម្បីចាប់ផ្តើមទទួបនឹងគ្រប់គ្រងការបរិច្ចាគ។",
       "confirm_delete_title": "លុបគម្រោងចោល?",
       "confirm_delete_desc": "តើអ្នកប្រាកដថាចង់លុបគម្រោងនេះមែនទេ? រាល់ទិន្នន័យបច្ច័យ និងចំណាយនឹងត្រូវបាត់បង់។"
     },
@@ -338,7 +407,12 @@
       "placeholder_committee": "បញ្ជីរាយនាមអ្នកផ្ដើមបុណ្យ...",
       "invitation_tab": "លិខិតអញ្ជើញ",
       "schedule_tab": "កម្មវិធីបុណ្យ",
-      "committee_tab": "អ្នកផ្ដើមបុណ្យ"
+      "committee_tab": "អ្នកផ្ដើមបុណ្យ",
+      "empty": "មិនមានកម្មវិធីបុណ្យតាមលក្ខខណ្ឌដែលអ្នកស្វែងរកឡើយ។",
+      "status_filter": "ស្ថានភាព (Filter)",
+      "manage_details": "គ្រប់គ្រងព័ត៌មានលម្អិត",
+      "multi_day": "ពហុវារៈ",
+      "single_day": "តែមួយថ្ងៃ"
     },
     "news": {
       "title": "គ្រប់គ្រងដំណឹងថ្មីៗ",
@@ -417,9 +491,99 @@
         "update": "ការផុស"
       }
     },
+    "ceremony_finance": {
+      "title": "ហិរញ្ញវត្ថុ",
+      "income": "ចំណូល",
+      "expense": "ចំណាយ",
+      "balance": "សមតុល្យ",
+      "summary": "សេចក្តីសង្ខេប",
+      "total_income": "ចំណូលសរុប",
+      "total_expense": "ចំណាយសរុប",
+      "total_balance": "សមតុល្យ",
+      "income_count": "ឯកសារចំណូល",
+      "expense_count": "ឯកសារចំណាយ",
+      "add_income": "កត់ត្រាចំណូល",
+      "add_expense": "កត់ត្រាចំណាយ",
+      "edit_income": "កែប្រែកំណត់ត្រាចំណូល",
+      "edit_expense": "កែប្រែកំណត់ត្រាចំណាយ",
+      "income_list": "បញ្ជីចំណូល",
+      "income_list_desc": "មើល និងគ្រប់គ្រងកំណត់ត្រាចំណូលទាំងអស់សម្រាប់កម្មវិធីបុណ្យនេះ។",
+      "view_details": "មើលព័ត៌មានលម្អិត",
+      "view_income": "ព័ត៌មានលម្អិតចំណូល",
+      "view_expense": "ព័ត៌មានលម្អិតចំណាយ",
+      "expense_list": "បញ្ជីចំណាយ",
+      "expense_list_desc": "មើល និងគ្រប់គ្រងកំណត់ត្រាចំណាយទាំងអស់សម្រាប់កម្មវិធីបុណ្យនេះ។",
+      "no_income": "មិនមានទិន្នន័យចំណូលទេ",
+      "no_expense": "មិនមានទិន្នន័យចំណាយទេ",
+      "search_placeholder": "ស្វែងរកឈ្មោះ, លេខទូរស័ព្ទ, មុខចំណាយ...",
+      "receipt_number": "លេខវិក្កយបត្រ",
+      "expense_number": "លេខសំគាល់ចំណាយ",
+      "receipt": "វិក្កយបត្រ / រូបភាព",
+      "donor_name": "ឈ្មោះសប្បុរសជន",
+      "donor_phone": "លេខទូរស័ព្ទ",
+      "amount": "ចំនួនទឹកប្រាក់",
+      "currency": "រូបិយប័ណ្ណ",
+      "payment_method": "វិធីបង់ប្រាក់",
+      "description": "បរិយាយ / ផ្សេងៗ",
+      "donor_info": "បញ្ចូលព័ត៌មានអ្នកបរិច្ចាគខាងក្រោម",
+      "item_name": "ឈ្មោះមុខចំណាយ",
+      "category": "ប្រភេទចំណាយ",
+      "vendor": "អ្នកទទួលប្រាក់ / ហាង",
+      "paid_by": "បង់ដោយ / អ្នកទទួល",
+      "paid_date": "កាលបរិច្ឆេទបង់",
+      "quantity": "បរិមាណ",
+      "unit_price": "តម្លៃរាយ",
+      "expense_form_desc": "បញ្ចូលព័ត៌មានចំណាយខាងក្រោម",
+      "form": {
+        "save": "រក្សាទុក",
+        "cancel": "បោះបង់",
+        "optional": "មិនចាំបាច់",
+        "select_currency": "ជ្រើសរើសរូបិយប័ណ្ណ",
+        "select_payment": "ជ្រើសរើសវិធីសាស្ត្រ",
+        "select_category": "ជ្រើសរើសប្រភេទ",
+        "enter_amount": "0.00",
+        "enter_description": "រៀបរាប់បន្ថែម..."
+      },
+      "payment_methods": {
+        "cash": "សាច់ប្រាក់",
+        "aba": "ABA",
+        "acleda": "អេស៊ីលីដា",
+        "wing": "វីង",
+        "truemoney": "ទ្រូម៉ាន់នី",
+        "qr": "KHQR",
+        "other": "ផ្សេងៗ"
+      },
+      "expense_categories": {
+        "food": "ចង្ហាន់ និង ភេសជ្ជៈ",
+        "transport": "សោហ៊ុយធ្វើដំណើរ",
+        "venue": "រោង និង តុបតែង",
+        "materials": "សម្ភារៈប្រើប្រាស់",
+        "service": "ថ្លៃសេវាកម្ម",
+        "monks": "បច្ច័យប្រគេនព្រះសង្ឃ",
+        "music": "ភ្លេង និង ការសម្តែង",
+        "other": "ផ្សេងៗ"
+      },
+      "messages": {
+        "add_success": "បានកត់ត្រាដោយជោគជ័យ",
+        "add_error": "មានបញ្ហាក្នុងការកត់ត្រា",
+        "update_success": "បានកែប្រែដោយជោគជ័យ",
+        "update_error": "មានបញ្ហាក្នុងការកែប្រែ",
+        "delete_success": "បានលុបដោយជោគជ័យ",
+        "delete_error": "មានបញ្ហាក្នុងការលុប"
+      },
+      "duplicate_warning": {
+        "title": "ប្រុងប្រយ័ត្ន៖ ទិន្នន័យជាន់គ្នា",
+        "message": "បានរកឃើញទិន្នន័យស្រដៀងគ្នាក្នុងរយៈពេល ២៤ ម៉ោងចុងក្រោយ៖",
+        "question": "តើអ្នកប្រាកដថាចង់កត់ត្រាទិន្នន័យនេះទៀតទេ?",
+        "ago": "មុន"
+      }
+    },
     "sidebar": {
       "overview": "ទិដ្ឋភាពទូទៅ",
-      "management": "ការគ្រប់គ្រង",
+      "operations": "ប្រតិបត្តិការ",
+      "content": "ខ្លឹមសារ",
+      "analytics": "ការវិភាគ",
+      "system": "ប្រព័ន្ធ",
       "dashboard": "ផ្ទាំងគ្រប់គ្រង",
       "projects": "គម្រោងកសាង",
       "ceremonies": "កម្មវិធីបុណ្យ",

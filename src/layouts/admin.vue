@@ -1,5 +1,5 @@
 <template>
-  <SidebarProvider>
+  <SidebarProvider v-if="!uiStore.isFinanceWorkspace">
     <Sidebar collapsible="icon" variant="inset">
       <!-- Sidebar Header / Logo -->
       <SidebarHeader>
@@ -22,29 +22,12 @@
 
       <!-- Sidebar Content -->
       <SidebarContent>
-        <!-- Group: Overview -->
-        <SidebarGroup>
-          <SidebarGroupLabel>{{ $t('admin.sidebar.overview') }}</SidebarGroupLabel>
+        <!-- Dynamic Navigation Groups -->
+        <SidebarGroup v-for="group in navigation" :key="group.title">
+          <SidebarGroupLabel>{{ $t(group.title) }}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem v-for="item in menuOverview" :key="item.url">
-                <SidebarMenuButton as-child :isActive="isActive(item.url)">
-                  <RouterLink :to="item.url">
-                    <component :is="item.icon" />
-                    <span>{{ $t(item.titleKey) }}</span>
-                  </RouterLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <!-- Group: Library & Settings -->
-        <SidebarGroup>
-          <SidebarGroupLabel>{{ $t('admin.sidebar.management') }}</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem v-for="item in menuManagement" :key="item.url">
+              <SidebarMenuItem v-for="item in group.items" :key="item.url">
                 <SidebarMenuButton as-child :isActive="isActive(item.url)">
                   <RouterLink :to="item.url">
                     <component :is="item.icon" />
@@ -150,11 +133,19 @@
               </div>
         </div>
       </header>
-      <div class="flex flex-1 flex-col gap-6 p-4 md:p-6 lg:p-8 overflow-y-auto">
+      <div class="flex flex-1 flex-col gap-6 p-2 md:p-2 lg:p-2 overflow-y-auto">
         <RouterView />
       </div>
     </SidebarInset>
   </SidebarProvider>
+
+  <!-- Finance Workspace Layout (Truly Full Screen) -->
+  <div v-else class="fixed inset-0 w-full h-full bg-background flex flex-col z-[100] overflow-hidden">
+     <div class="flex-1 overflow-y-auto">
+        <RouterView />
+     </div>
+  </div>
+
 </template>
 
 <script setup lang="ts">
@@ -166,6 +157,7 @@ import {
     ChevronsUpDownIcon, SparklesIcon, BadgeCheckIcon, CreditCardIcon, BellIcon, ClockIcon, Users as UsersIcon, CalendarIcon, FileBarChartIcon, NewspaperIcon
 } from 'lucide-vue-next'
 import { useAuthStore } from '~/stores/auth'
+import { useUIStore } from '~/stores/ui'
 import { 
     Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, 
     SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, 
@@ -179,6 +171,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const uiStore = useUIStore()
 const { profile, user, userRole } = storeToRefs(authStore)
 
 const initials = computed(() => {
@@ -186,25 +179,47 @@ const initials = computed(() => {
   return name.substring(0, 2).toUpperCase()
 })
 
-const menuOverview = computed(() => [
-  { titleKey: "admin.sidebar.dashboard", url: "/admin", icon: LayoutDashboardIcon },
-  { titleKey: "admin.sidebar.projects", url: "/admin/projects", icon: FolderKanbanIcon },
-])
-
-const menuManagement = computed(() => {
-  const items = [
-    { titleKey: "admin.sidebar.ceremonies", url: "/admin/ceremonies", icon: CalendarIcon },
-    { titleKey: "admin.sidebar.reports", url: "/admin/reports", icon: FileBarChartIcon },
-    { titleKey: "admin.sidebar.articles", url: "/admin/articles", icon: FileTextIcon },
-    { titleKey: "admin.sidebar.news", url: "/admin/news", icon: NewspaperIcon },
+const navigation = computed(() => {
+  const groups = [
+    {
+      title: "admin.sidebar.overview",
+      items: [
+        { titleKey: "admin.sidebar.dashboard", url: "/admin", icon: LayoutDashboardIcon },
+      ]
+    },
+    {
+      title: "admin.sidebar.operations",
+      items: [
+        { titleKey: "admin.sidebar.ceremonies", url: "/admin/ceremonies", icon: CalendarIcon },
+        { titleKey: "admin.sidebar.projects", url: "/admin/projects", icon: FolderKanbanIcon },
+      ]
+    },
+    {
+      title: "admin.sidebar.content",
+      items: [
+        { titleKey: "admin.sidebar.articles", url: "/admin/articles", icon: FileTextIcon },
+        { titleKey: "admin.sidebar.news", url: "/admin/news", icon: NewspaperIcon },
+      ]
+    },
+    {
+      title: "admin.sidebar.analytics",
+      items: [
+        { titleKey: "admin.sidebar.reports", url: "/admin/reports", icon: FileBarChartIcon },
+      ]
+    }
   ]
   
   if (authStore.isAdmin) {
-    items.push({ titleKey: "admin.sidebar.users", url: "/admin/users", icon: UsersIcon })
-    items.push({ titleKey: "admin.sidebar.settings", url: "/admin/settings", icon: SettingsIcon })
+    groups.push({
+      title: "admin.sidebar.system",
+      items: [
+        { titleKey: "admin.sidebar.users", url: "/admin/users", icon: UsersIcon },
+        { titleKey: "admin.sidebar.settings", url: "/admin/settings", icon: SettingsIcon },
+      ]
+    })
   }
 
-  return items
+  return groups
 })
 
 const isActive = (url: string) => {

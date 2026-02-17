@@ -61,8 +61,8 @@
             <div class="flex items-center gap-2">
               <RouterLink :to="`/project/${project.id}`" target="_blank">
                 <Button variant="ghost" size="sm" class="rounded-lg text-muted-foreground hover:text-primary transition-all font-medium text-xs">
-                  <ExternalLinkIcon class="mr-2 h-4 w-4" />
-                  View Public Page
+                   <ExternalLinkIcon class="mr-2 h-4 w-4" />
+                   {{ $t('admin.view_public_page') }}
                 </Button>
               </RouterLink>
               <Button variant="ghost" size="sm" class="rounded-lg text-muted-foreground hover:text-primary transition-all font-medium text-xs" @click="handleExportReport">
@@ -73,7 +73,7 @@
             
             <Button variant="ghost" size="sm" class="rounded-lg text-muted-foreground hover:text-primary transition-all font-medium text-xs" @click="openEditProjectSettings">
               <SettingsIcon class="mr-2 h-4 w-4" />
-              Project Settings
+              {{ $t('admin.project_settings') }}
             </Button>
           </div>
         </div>
@@ -192,7 +192,7 @@
                        </Button>
                     </div>
                   </div>
-                  <p class="mt-4 text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest italic">Scan to donate to this project</p>
+                  <p class="mt-4 text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest italic">{{ $t('admin.scan_to_donate') }}</p>
                   <input type="file" id="qr-upload" class="hidden" accept="image/*" @change="handleUpdateQR" />
                 </CardContent>
               </Card>
@@ -203,8 +203,8 @@
                     <LayoutDashboardIcon class="size-8" />
                   </div>
                   <div class="space-y-1">
-                    <h3 class="text-sm font-semibold text-foreground/40 uppercase tracking-[0.2em]">Dashboard Overview</h3>
-                    <p class="text-[11px] text-muted-foreground/60 max-w-xs font-medium">Use the tabs above to manage donations, track expenses, and post updates for your project supporters.</p>
+                    <h3 class="text-sm font-semibold text-foreground/40 uppercase tracking-[0.2em]">{{ $t('admin.dashboard_overview') }}</h3>
+                    <p class="text-[11px] text-muted-foreground/60 max-w-xs font-medium">{{ $t('admin.dashboard_overview_desc') }}</p>
                   </div>
                 </div>
               </Card>
@@ -326,7 +326,7 @@
                     <TableCell class="text-center py-5">
                       <div class="flex justify-center">
                         <Badge variant="outline" class="bg-muted text-foreground border-border uppercase text-[11px] font-bold px-4 py-1.5 rounded-xl group-hover:bg-card transition-colors">
-                          {{ expense.category }}
+                          {{ $t('admin.expense_categories.' + (expense.category || 'other')) }}
                         </Badge>
                       </div>
                     </TableCell>
@@ -630,7 +630,7 @@
               <Input type="file" accept="image/*" @change="handleReceiptUpload" class="flex-1" />
               <Button type="button" variant="outline" size="sm" :disabled="uploadingReceipt" v-if="uploadingReceipt">
                 <span class="mr-2 h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
-                Uploading...
+                {{ $t('admin.uploading') }}
               </Button>
             </div>
             <div v-if="newExpense.receiptUrl" class="text-xs text-emerald-600 flex items-center gap-1.5">
@@ -701,7 +701,7 @@
               <Input type="file" id="update-image-upload" class="flex-1" accept="image/*" @change="handleUpdateImageUpload" />
               <Button type="button" variant="outline" size="sm" :disabled="uploadingUpdateImage" v-if="uploadingUpdateImage">
                 <span class="mr-2 h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
-                Uploading...
+                {{ $t('admin.uploading') }}
               </Button>
             </div>
             <img v-if="newUpdate.imageUrl" :src="newUpdate.imageUrl" class="mt-2 w-full h-48 object-cover rounded-lg border" />

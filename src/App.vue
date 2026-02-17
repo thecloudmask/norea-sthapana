@@ -1,10 +1,12 @@
 <template>
   <div class="min-h-screen bg-background text-foreground transition-colors duration-500">
     <RouterView />
+    <Toaster />
   </div>
 </template>
 
 <script setup lang="ts">
+import { Toaster } from '@/components/ui/toast'
 // Main layout file
 </script>
 
