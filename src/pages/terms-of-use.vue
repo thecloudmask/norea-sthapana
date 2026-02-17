@@ -56,6 +56,9 @@
 </template>
 
 <script setup lang="ts">
+import { useHead } from '@unhead/vue';
+import { useI18n } from 'vue-i18n';
+
 const { locale, t } = useI18n()
 
 useHead({

@@ -203,7 +203,7 @@ const menuManagement = computed(() => {
     items.push({ titleKey: "admin.sidebar.users", url: "/admin/users", icon: UsersIcon })
     items.push({ titleKey: "admin.sidebar.settings", url: "/admin/settings", icon: SettingsIcon })
   }
-  
+
   return items
 })
 
@@ -216,6 +216,7 @@ const isActive = (url: string) => {
 const currentPage = computed(() => {
     return route.name?.toString().replace('admin-', '').replace('index', 'Dashboard').toUpperCase() || 'Dashboard'
 })
+
 
 const handleLogout = async () => {
   await authStore.logout()
