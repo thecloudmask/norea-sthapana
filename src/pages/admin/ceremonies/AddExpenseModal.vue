@@ -50,7 +50,7 @@
               <SelectTrigger class="rounded-xl border-border bg-muted/30 h-11 font-normal font-khmer focus:bg-background transition-all">
                 <SelectValue :placeholder="$t('admin.ceremony_finance.form.select_category')" />
               </SelectTrigger>
-              <SelectContent class="bg-card border-border rounded-xl font-khmer font-normal">
+              <SelectContent class="bg-card border-border rounded-xl font-khmer font-normal z-[100]">
                 <SelectItem value="food" class="font-normal">{{ $t('admin.ceremony_finance.expense_categories.food') }}</SelectItem>
                 <SelectItem value="transport" class="font-normal">{{ $t('admin.ceremony_finance.expense_categories.transport') }}</SelectItem>
                 <SelectItem value="venue" class="font-normal">{{ $t('admin.ceremony_finance.expense_categories.venue') }}</SelectItem>
@@ -123,7 +123,7 @@
                 <SelectTrigger class="rounded-xl border-border bg-muted/30 h-11 font-bold text-center focus:bg-background transition-all">
                   <SelectValue :placeholder="$t('admin.ceremony_finance.form.select_currency')" />
                 </SelectTrigger>
-                <SelectContent class="bg-card border-border rounded-xl">
+                <SelectContent class="bg-card border-border rounded-xl z-[100]">
                   <SelectItem value="USD" class="font-normal">{{ $t('common.currency_usd') }}</SelectItem>
                   <SelectItem value="KHR" class="font-normal">{{ $t('common.currency_khr') }}</SelectItem>
                 </SelectContent>

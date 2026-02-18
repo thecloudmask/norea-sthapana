@@ -114,7 +114,7 @@
                 <SelectTrigger class="rounded-xl border-border bg-muted/20 h-12 font-bold">
                   <SelectValue :placeholder="$t('admin.ceremony_finance.form.select_currency')" />
                 </SelectTrigger>
-                <SelectContent class="bg-card border-border rounded-xl">
+                <SelectContent class="bg-card border-border rounded-xl z-[100]">
                   <SelectItem value="USD" class="font-normal">{{ $t('common.currency_usd') }}</SelectItem>
                   <SelectItem value="KHR" class="font-normal">{{ $t('common.currency_khr') }}</SelectItem>
                 </SelectContent>
@@ -132,7 +132,7 @@
               <SelectTrigger class="rounded-xl border-border bg-muted/20 h-12 font-medium">
                 <SelectValue :placeholder="$t('admin.ceremony_finance.form.select_payment')" />
               </SelectTrigger>
-              <SelectContent class="bg-card border-border rounded-xl shadow-xl">
+              <SelectContent class="bg-card border-border rounded-xl shadow-xl z-[100]">
                 <SelectItem value="cash" class="font-medium font-khmer">{{ $t('admin.ceremony_finance.payment_methods.cash') }}</SelectItem>
                 <SelectItem value="aba" class="font-medium font-khmer">{{ $t('admin.ceremony_finance.payment_methods.aba') }}</SelectItem>
                 <SelectItem value="acleda" class="font-medium font-khmer">{{ $t('admin.ceremony_finance.payment_methods.acleda') }}</SelectItem>

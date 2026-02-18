@@ -16,7 +16,10 @@ export default defineConfig({
   plugins: [
     Vue(),
     Pages({
-      dirs: 'src/pages',
+      dirs: [
+        { dir: 'src/pages/public', baseRoute: '' },
+        { dir: 'src/pages/admin', baseRoute: 'admin' }
+      ],
       exclude: ['**/components/*.vue']
     }),
     Layouts({

@@ -105,12 +105,10 @@
                 </div>
             </CardContent>
             <div class="px-6 pb-6 pt-0 flex gap-2">
-               <RouterLink :to="`/admin/ceremonies/${item.id}`" class="flex-1">
-                  <Button variant="outline" class="w-full h-11 rounded-xl border-border text-muted-foreground font-medium hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all shadow-sm bg-background/50 active:scale-[0.98]">
-                     <span class="mr-2 font-khmer">{{ $t('admin.ceremonies.manage_details') }}</span>
-                     <ArrowRightIcon class="h-4 w-4" />
-                  </Button>
-               </RouterLink>
+               <Button @click="openDetail(item.id || '')" variant="outline" class="w-full h-11 rounded-xl border-border text-muted-foreground font-medium hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all shadow-sm bg-background/50 active:scale-[0.98]">
+                  <span class="mr-2 font-khmer">{{ $t('admin.ceremonies.manage_details') }}</span>
+                  <ArrowRightIcon class="h-4 w-4" />
+               </Button>
             </div>
         </Card>
 
@@ -276,6 +274,97 @@
 
 
   </div>
+    <!-- Full Screen Detail Overlay -->
+    <Teleport to="body">
+      <div v-if="showDetailOverlay && selectedCeremonyId" class="fixed inset-0 z-[45] bg-background animate-in fade-in slide-in-from-bottom-4 duration-300 overflow-y-auto w-full h-full pointer-events-auto">
+         <div class="w-full min-h-screen bg-background p-4 md:p-12 space-y-4">
+            <div v-if="detailLoading" class="flex flex-col items-center justify-center py-20 gap-4">
+              <div class="h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-primary"></div>
+              <p class="text-sm font-bold text-muted-foreground uppercase tracking-widest">{{ $t('common.processing') }}...</p>
+            </div>
+
+            <template v-else-if="detailCeremony">
+              <!-- Standard Detail Header -->
+              <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 animate-in fade-in duration-700">
+                <div class="space-y-4">
+                  <button @click="closeDetail" class="text-[11px] font-bold uppercase tracking-widest text-primary flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    <ArrowLeftIcon class="h-3.5 w-3.5" /> 
+                    {{ $t('admin.ceremonies.title') }}
+                  </button>
+                  
+                  <div>
+                    <h1 class="text-4xl font-bold text-foreground font-khmer tracking-tight">
+                      {{ detailCeremony.title }}
+                    </h1>
+                    <div class="flex items-center gap-3 mt-1">
+                       <Badge variant="outline" class="rounded-lg bg-primary/5 text-primary border-primary/10">
+                          {{ detailDisplayDate(detailCeremony.eventDate) }}
+                       </Badge>
+                       <span v-if="detailCeremony.location" class="text-sm text-muted-foreground flex items-center gap-1.5 font-medium">
+                          <MapPinIcon class="size-3.5" />
+                          {{ detailCeremony.location }}
+                       </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-end gap-3 pb-1">
+                   <Button variant="outline" class="h-10 rounded-xl border-border bg-card hover:bg-muted font-medium shadow-sm transition-all" @click="showFinanceSummary = !showFinanceSummary">
+                      <LayoutDashboardIcon class="mr-2 h-4 w-4" />
+                      {{ showFinanceSummary ? 'Hide Cards' : 'Show Cards' }}
+                   </Button>
+                </div>
+              </div>
+
+              <!-- Detail View Table -->
+              <div class="mt-4">
+                 <CeremonyFinanceTab 
+                    :ceremonyId="selectedCeremonyId" 
+                    :showSummaryCards="showFinanceSummary"
+                    @add-income="detailHandleAddIncome"
+                    @add-expense="detailHandleAddExpense"
+                    @edit-income="detailHandleEditIncome"
+                    @edit-expense="detailHandleEditExpense"
+                 />
+              </div>
+            </template>
+
+            <div v-else class="py-24 text-center">
+              <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+                <FileXIcon class="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 class="text-lg font-medium text-foreground">{{ $t('admin.ceremonies.not_found') }}</h3>
+              <p class="text-muted-foreground mt-1">{{ $t('admin.ceremonies.not_found_desc') }}</p>
+              <Button variant="outline" class="mt-4" @click="closeDetail">
+                {{ $t('admin.back_to_ceremonies') }}
+              </Button>
+            </div>
+
+            <!-- Inner Modals -->
+            <Teleport to="body">
+                <AddIncomeModal 
+                  v-if="detailShowAddIncomeModal"
+                  :open="detailShowAddIncomeModal"
+                  @update:open="(val: any) => !val && detailHandleCloseIncome()"
+                  :ceremony-id="detailCeremony?.id || ''"
+                  :user-id="user?.uid || ''"
+                  :initial-data="detailEditingIncome"
+                  @success="() => {}"
+                />
+
+                <AddExpenseModal 
+                  v-if="detailShowAddExpenseModal"
+                  :open="detailShowAddExpenseModal"
+                  @update:open="(val: any) => !val && detailHandleCloseExpense()"
+                  :ceremony-id="detailCeremony?.id || ''"
+                  :user-id="user?.uid || ''"
+                  :initial-data="detailEditingExpense"
+                  @success="() => {}"
+                />
+            </Teleport>
+         </div>
+      </div>
+    </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -291,7 +380,8 @@ import {
   ArrowLeftIcon, 
   MapPinIcon, 
   ArrowRightIcon,
-  SearchIcon
+  SearchIcon,
+  LayoutDashboardIcon
 } from 'lucide-vue-next'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -304,6 +394,16 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useArticles } from '~/composables/useArticles'
 import { useCloudinary } from '~/composables/useCloudinary'
 import { formatKhmerDate } from '~/utils/date'
+import CeremonyFinanceTab from './CeremonyFinanceTab.vue'
+import AddIncomeModal from './AddIncomeModal.vue'
+import AddExpenseModal from './AddExpenseModal.vue'
+import { useCeremonyFinance } from '~/composables/useCeremonyFinance'
+import { useAuthStore } from '@/stores/auth'
+import { useUIStore } from '@/stores/ui'
+import { FileXIcon, MinusIcon } from 'lucide-vue-next'
+import { storeToRefs } from 'pinia'
+import { type Article } from '~/composables/useArticles'
+import type { CeremonyIncome, CeremonyExpense } from '~/types/ceremonyFinance'
 
 
 const { articles, loading, fetchArticles, addArticle, updateArticle, deleteArticle } = useArticles()
@@ -321,6 +421,10 @@ const isEditing = ref(false)
 const editingId = ref<string | null>(null)
 const itemToDelete = ref<any>(null)
 const activeTab = ref('invitation')
+
+const selectedCeremonyId = ref<string | null>(null)
+const showDetailOverlay = ref(false)
+const showFinanceSummary = ref(true)
 
 const formData = ref({
   title: '',
@@ -360,14 +464,20 @@ const filteredCeremonies = computed(() => {
   return items
 })
 
-onMounted(() => {
-  fetchArticles()
+onMounted(async () => {
+  await fetchArticles()
   if (route.query.status) statusFilter.value = route.query.status as string
+  if (route.query.ceremonyId) {
+    // If ID is valid string
+    const id = route.query.ceremonyId as string
+    if (id) openDetail(id)
+  }
 })
 
 watch(statusFilter, (val) => {
-  const query: Record<string, string> = {}
+  const query = { ...route.query }
   if (val && val !== 'all') query.status = val
+  else delete query.status
   router.replace({ query })
 })
 
@@ -512,6 +622,106 @@ const stripHtml = (html: string) => {
     if (!html) return "";
     const doc = new DOMParser().parseFromString(html, 'text/html');
     return doc.body.textContent || "";
+}
+
+const openDetail = async (id: string) => {
+  selectedCeremonyId.value = id
+  showDetailOverlay.value = true
+  document.body.style.overflow = 'hidden'
+  router.push({ query: { ...route.query, ceremonyId: id } })
+  await loadDetailData(id)
+}
+
+const closeDetail = () => {
+  showDetailOverlay.value = false
+  selectedCeremonyId.value = null
+  document.body.style.overflow = ''
+  uiStore.setFinanceWorkspace(false)
+  
+  const query = { ...route.query }
+  delete query.ceremonyId
+  router.replace({ query })
+}
+
+// Detail Logic
+const { getArticle } = useArticles()
+const { fetchIncomes } = useCeremonyFinance()
+const authStore = useAuthStore()
+const uiStore = useUIStore()
+const { user } = storeToRefs(authStore)
+
+const detailCeremony = ref<Article | null>(null)
+const detailLoading = ref(true)
+const detailShowAddIncomeModal = ref(false)
+const detailShowAddExpenseModal = ref(false)
+const detailEditingIncome = ref<CeremonyIncome | null>(null)
+const detailEditingExpense = ref<CeremonyExpense | null>(null)
+
+const detailDisplayDate = (date: any) => {
+  if (!date) return ''
+  const d = date?.toDate ? date.toDate() : new Date(date)
+  return formatKhmerDate(d)
+}
+
+const toDate = (t: any) => t?.toDate ? t.toDate() : new Date(t || Date.now())
+
+const detailHandleAddIncome = () => {
+  detailEditingIncome.value = null
+  detailShowAddIncomeModal.value = true
+}
+
+const detailHandleAddExpense = () => {
+  detailEditingExpense.value = null
+  detailShowAddExpenseModal.value = true
+}
+
+const detailHandleEditIncome = (income: CeremonyIncome) => {
+  detailEditingIncome.value = {
+     ...income,
+     createdAt: toDate(income.createdAt),
+     updatedAt: income.updatedAt ? toDate(income.updatedAt) : undefined
+  }
+  detailShowAddIncomeModal.value = true
+}
+
+const detailHandleEditExpense = (expense: CeremonyExpense) => {
+  detailEditingExpense.value = {
+      ...expense,
+      createdAt: toDate(expense.createdAt),
+      updatedAt: expense.updatedAt ? toDate(expense.updatedAt) : undefined,
+      paidDate: expense.paidDate ? toDate(expense.paidDate) : undefined
+  }
+  detailShowAddExpenseModal.value = true
+}
+
+const detailHandleCloseIncome = () => {
+  detailShowAddIncomeModal.value = false
+  detailEditingIncome.value = null
+}
+
+const detailHandleCloseExpense = () => {
+  detailShowAddExpenseModal.value = false
+  detailEditingExpense.value = null
+}
+
+const loadDetailData = async (id: string) => {
+  if (id) {
+    detailLoading.value = true
+    // Reset state
+    detailCeremony.value = null
+    fetchIncomes(id)
+    
+    try {
+      const data = await getArticle(id)
+      if (data) {
+        detailCeremony.value = data
+      }
+    } catch (error) {
+      console.error('Failed to fetch ceremony:', error)
+    } finally {
+      detailLoading.value = false
+    }
+  }
 }
 </script>
 

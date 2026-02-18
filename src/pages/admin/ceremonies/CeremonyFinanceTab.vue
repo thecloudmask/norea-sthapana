@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-8">
     <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div v-if="showSummaryCards" class="grid grid-cols-1 md:grid-cols-3 gap-6">
       
       <!-- Total Income -->
       <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all hover:shadow-md">
@@ -132,7 +132,7 @@
              </Button>
         </div>
 
-        <div class="rounded-3xl border-none ring-1 ring-border bg-card shadow-sm overflow-hidden">
+        <div class="rounded-3xl border-none ring-1 ring-border bg-card shadow-sm overflow-hidden overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow class="bg-muted/30 hover:bg-muted/30 border-b border-border">
@@ -477,9 +477,12 @@ import { useCeremonyFinance } from '~/composables/useCeremonyFinance'
 import { formatKhmerDate } from '~/utils/date'
 import type { CeremonyIncome, CeremonyExpense } from '~/types/ceremonyFinance'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   ceremonyId: string
-}>()
+  showSummaryCards?: boolean
+}>(), {
+  showSummaryCards: true
+})
 
 const { t } = useI18n()
 const emit = defineEmits(['add-income', 'add-expense', 'edit-income', 'edit-expense'])

@@ -66,7 +66,7 @@
           class="relative aspect-[3/4] md:aspect-square rounded-2xl overflow-hidden shadow-xl ring-1 ring-border"
         >
           <img
-            src="../assets/images/monk.png"
+            src="../../assets/images/monk.png"
             alt="Abbot"
             class="w-full h-full object-cover"
           />
