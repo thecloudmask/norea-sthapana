@@ -2,10 +2,14 @@
   <div class="container py-10 space-y-10 transition-colors duration-300">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div>
-        <h1 class="text-4xl font-semibold tracking-tight text-foreground font-khmer uppercase">{{ $t('admin.projects_admin.title') }}</h1>
-        <p class="text-muted-foreground mt-1 font-medium">{{ $t('admin.projects_admin.subtitle') }}</p>
+        <h1 class="text-3xl md:text-4xl font-semibold tracking-tight text-foreground font-khmer uppercase">{{ $t('admin.projects_admin.title') }}</h1>
+        <p class="text-muted-foreground mt-1 font-normal">{{ $t('admin.projects_admin.subtitle') }}</p>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-wrap">
+        <div class="relative">
+          <SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
+          <Input v-model="searchQuery" :placeholder="$t('common.search_placeholder')" class="pl-9 h-11 w-[220px] rounded-xl border-border bg-card font-medium" />
+        </div>
         <Select v-model="statusFilter">
           <SelectTrigger class="w-[180px] rounded-xl border-border shadow-sm font-semibold h-11 bg-card">
             <SelectValue :placeholder="$t('admin.forms.status')" />
@@ -20,7 +24,7 @@
             <SelectItem value="cancelled" class="rounded-lg font-semibold">{{ $t('common.status_cancelled') }}</SelectItem>
           </SelectContent>
         </Select>
-        <Button @click="openCreateModal" class="rounded-xl h-11 px-6 shadow-lg shadow-primary/20 hover:shadow-primary/30 font-semibold transition-all">
+        <Button @click="openCreateModal" class="rounded-xl h-11 px-6 shadow-sm bg-primary hover:bg-primary/90 text-white font-medium active:scale-[0.98] transition-all">
           <PlusIcon class="mr-2 h-4 w-4" />
           {{ $t('admin.forms.create_project') }}
         </Button>
@@ -278,8 +282,9 @@
 
 <script setup lang="ts">
 console.log('🏁 [Admin Projects] Script setup starting...')
-import { ref, computed, onMounted } from 'vue'
-import { PlusIcon, FolderIcon, MoreVerticalIcon, PencilIcon, Trash2Icon, ArrowRightIcon, FolderOpenIcon, UploadIcon, QrCodeIcon, TrashIcon, ArrowUpCircleIcon, ArrowDownCircleIcon } from 'lucide-vue-next'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { PlusIcon, FolderIcon, MoreVerticalIcon, PencilIcon, Trash2Icon, ArrowRightIcon, FolderOpenIcon, UploadIcon, QrCodeIcon, TrashIcon, ArrowUpCircleIcon, ArrowDownCircleIcon, SearchIcon } from 'lucide-vue-next'
 import { useProjects } from '~/composables/useProjects'
 import { useCloudinary } from '~/composables/useCloudinary'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -297,6 +302,9 @@ import StatusBadge from '~/components/StatusBadge.vue'
 const { projects, loading, fetchProjects, createProject, updateProject, deleteProject } = useProjects()
 const { uploadImage } = useCloudinary()
 
+const route = useRoute()
+const router = useRouter()
+
 const showModal = ref(false)
 const showDeleteConfirm = ref(false)
 const isEditing = ref(false)
@@ -307,6 +315,7 @@ const deleting = ref(false)
 const uploadingBanner = ref(false)
 const uploadingQR = ref(false)
 const statusFilter = ref('all')
+const searchQuery = ref('')
 
 const formData = ref({
    title: '',
@@ -332,12 +341,26 @@ const deadlineInput = computed({
 })
 
 const filteredProjects = computed(() => {
-  if (statusFilter.value === 'all') return projects.value
-  return projects.value.filter(p => p.status === statusFilter.value)
+  let list = projects.value
+  if (statusFilter.value !== 'all') list = list.filter(p => p.status === statusFilter.value)
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    list = list.filter(p => p.title?.toLowerCase().includes(q) || stripHtml(p.description || '').toLowerCase().includes(q))
+  }
+  return list
 })
 
 onMounted(() => {
    fetchProjects()
+   if (route.query.status) statusFilter.value = route.query.status as string
+   if (route.query.q) searchQuery.value = route.query.q as string
+})
+
+watch([statusFilter, searchQuery], () => {
+  const query: Record<string, string> = {}
+  if (statusFilter.value && statusFilter.value !== 'all') query.status = statusFilter.value
+  if (searchQuery.value) query.q = searchQuery.value
+  router.replace({ query })
 })
 
 const openCreateModal = () => {

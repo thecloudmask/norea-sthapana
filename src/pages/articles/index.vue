@@ -95,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { SearchIcon, BookOpenIcon, CalendarIcon, SearchXIcon, ArrowRightIcon } from 'lucide-vue-next'
 import { formatKhmerDate } from '~/utils/date'
@@ -118,10 +118,20 @@ onMounted(() => {
     if (route.query.category) {
         selectedCategory.value = route.query.category as string
     }
+    if (route.query.q) {
+        searchQuery.value = route.query.q as string
+    }
     // Redirect if category is ceremony
     if (selectedCategory.value === 'ceremony') {
         router.push('/ceremonies')
     }
+})
+
+watch([searchQuery, selectedCategory], () => {
+    const query: Record<string, string> = {}
+    if (searchQuery.value) query.q = searchQuery.value
+    if (selectedCategory.value && selectedCategory.value !== 'all') query.category = selectedCategory.value
+    router.replace({ query })
 })
 
 const filteredArticles = computed(() => {

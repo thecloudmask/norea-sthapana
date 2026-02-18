@@ -11,6 +11,18 @@
     "donate_now": "Donate Now",
     "more": "More"
   },
+  "expense_categories": {
+    "material": "Material",
+    "labor": "Labor Cost",
+    "food": "Food",
+    "utility": "Other"
+  },
+  "categories": {
+    "proverb": "Proverb",
+    "history": "History",
+    "buddhist_history": "Buddhist History",
+    "general": "General"
+  },
   "hero": {
     "title_start": "Join to build for",
     "title_highlight": "Buddhism",
@@ -194,7 +206,8 @@
     "reset_filters": "View All",
     "currency_usd": "$",
     "currency_khr": "៛",
-    "close": "Close"
+    "close": "Close",
+    "search_placeholder": "Search..."
   },
   "footer": {
     "privacy_policy": "Privacy Policy",
@@ -265,7 +278,8 @@
       "donation_list_desc": "Complete list of all project donors",
       "expense_audit": "Expense Balance",
       "expense_audit_desc": "Detailed expense report for auditing",
-      "download_csv": "Download CSV"
+      "download_csv": "Download CSV",
+      "export_csv": "Download CSV"
     },
     "project_report": {
       "title": "Project Closure Report",
@@ -392,7 +406,8 @@
       "buddhist_history": "Buddhist History",
       "general": "General",
       "placeholder_title": "Article title...",
-      "placeholder_content": "Article content..."
+      "placeholder_content": "Article content...",
+      "no_articles": "No articles yet"
     },
       "ceremonies": {
         "title": "Ceremony Management",
@@ -429,7 +444,8 @@
       "type_news": "News",
       "type_event": "Event",
       "placeholder_title": "News title...",
-      "placeholder_content": "News content..."
+      "placeholder_content": "News content...",
+      "no_news": "No news yet"
     },
     "users": {
         "title": "User Management",
@@ -454,7 +470,8 @@
         "admin": "Admin",
         "super_admin": "Super Admin",
         "active": "Active",
-        "disabled": "Disabled"
+        "disabled": "Disabled",
+        "no_users": "No users found"
     },
     "settings": {
         "title": "System Settings",
@@ -568,7 +585,10 @@
         "add_error": "Failed to add",
         "update_error": "Failed to update",
         "delete_error": "Failed to delete",
-        "confirm_delete": "Are you sure you want to delete this record?"
+        "confirm_delete": "Are you sure you want to delete this record?",
+        "upload_success": "Image uploaded successfully",
+        "upload_success_desc": "Recipient image has been saved.",
+        "upload_error": "Failed to upload image"
       },
       "duplicate_warning": {
         "title": "Duplicate Warning",

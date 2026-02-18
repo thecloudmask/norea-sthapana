@@ -1,30 +1,35 @@
 <template>
   <div class="container py-10 space-y-10 transition-colors duration-300">
     <!-- Header Section -->
+    <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="space-y-4">
-        <RouterLink to="/admin" class="text-[11px] font-medium text-primary flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <RouterLink to="/admin" class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 hover:text-primary transition-colors">
           <ArrowLeftIcon class="h-3.5 w-3.5" /> 
           {{ $t('admin.forms.back_to_dashboard') }}
         </RouterLink>
         <div>
-          <h1 class="text-3xl font-medium text-foreground font-khmer">{{ $t('admin.library.title') }}</h1>
-          <p class="text-muted-foreground mt-1 font-medium">{{ $t('admin.library.subtitle') }}</p>
+          <h1 class="text-3xl md:text-4xl font-medium text-foreground font-khmer uppercase tracking-tight">{{ $t('admin.library.title') }}</h1>
+          <p class="text-muted-foreground mt-1 font-normal">{{ $t('admin.library.subtitle') }}</p>
         </div>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-wrap">
+        <div class="relative">
+          <SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
+          <Input v-model="searchQuery" :placeholder="$t('common.search_placeholder')" class="pl-9 h-11 w-[220px] rounded-xl border-border bg-card font-medium focus:ring-1 focus:ring-primary shadow-sm" />
+        </div>
         <Select v-model="statusFilter">
-          <SelectTrigger class="w-[150px] rounded-xl border-border h-11 bg-card shadow-sm font-semibold">
+          <SelectTrigger class="w-[150px] rounded-xl border-border h-11 bg-card shadow-sm font-medium">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg">
-            <SelectItem value="all" class="font-semibold">ទាំងអស់ (All)</SelectItem>
-            <SelectItem value="published" class="font-semibold text-emerald-600">Published</SelectItem>
-            <SelectItem value="draft" class="font-semibold text-slate-500">Draft</SelectItem>
-            <SelectItem value="archived" class="font-semibold text-orange-500">Archived</SelectItem>
+            <SelectItem value="all" class="font-medium rounded-lg">{{ $t('admin.projects_admin.filter_all') }}</SelectItem>
+            <SelectItem value="published" class="font-medium rounded-lg text-emerald-600">{{ $t('admin.forms.status_published') }}</SelectItem>
+            <SelectItem value="draft" class="font-medium rounded-lg text-slate-500">{{ $t('admin.forms.status_draft') }}</SelectItem>
+            <SelectItem value="archived" class="font-medium rounded-lg text-orange-500">{{ $t('admin.forms.status_archived') }}</SelectItem>
           </SelectContent>
         </Select>
-        <Button @click="openCreateModal" class="rounded-xl shadow-lg shadow-primary/20 font-medium h-11 px-6">
+        <Button @click="openCreateModal" class="rounded-xl shadow-sm bg-primary hover:bg-primary/90 text-white font-medium h-11 px-6 active:scale-[0.98] transition-all">
           <PlusIcon class="mr-2 h-4 w-4" />
           {{ $t('admin.library.add_new') }}
         </Button>
@@ -94,9 +99,9 @@
         <!-- Empty State -->
         <div v-if="articles.length === 0" class="col-span-full py-32 text-center rounded-3xl bg-muted/30 border-2 border-dashed border-border flex flex-col items-center justify-center gap-4">
            <div class="size-20 rounded-full bg-card shadow-sm flex items-center justify-center text-muted-foreground/30 ring-1 ring-border">
-              <ImageIcon class="w-10 h-10" />
+              <SearchIcon class="w-10 h-10" />
            </div>
-           <p class="font-medium text-foreground text-lg">មិនទាន់មានអត្ថបទ</p>
+           <p class="font-medium text-foreground text-lg">{{ $t('admin.library.no_articles') }}</p>
            <Button @click="openCreateModal" variant="outline" class="mt-4 rounded-xl border-border bg-background/50 font-medium">
               {{ $t('admin.library.add_new') }}
            </Button>
@@ -113,14 +118,15 @@
               </DialogTitle>
               <DialogDescription class="font-normal text-muted-foreground">
                 {{ isEditing ? $t('admin.library.edit_article') : $t('admin.library.add_new') }}
+                {{ isEditing ? $t('admin.library.edit_article_description') : $t('admin.library.add_new_description') }}
               </DialogDescription>
             </DialogHeader>
 
             <form @submit.prevent="handleSave" class="space-y-6">
               <div class="grid gap-6">
                 <div class="grid gap-2">
-                  <Label for="title" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80 font-khmer">{{ $t('admin.library.article_title') }} *</Label>
-                  <Input id="title" v-model="formData.title" required :placeholder="$t('admin.library.placeholder_title')" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11" />
+                  <Label for="title" class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80 font-khmer">{{ $t('admin.news.news_title') }} *</Label>
+                  <Input id="title" v-model="formData.title" required :placeholder="$t('admin.library.placeholder_title')" class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11 focus:ring-1 focus:ring-primary" />
                 </div>
                 
 
@@ -223,7 +229,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { PlusIcon, PencilIcon, TrashIcon, ImageIcon, CalendarIcon, ArrowLeftIcon } from 'lucide-vue-next'
+import { PlusIcon, PencilIcon, TrashIcon, ImageIcon, CalendarIcon, ArrowLeftIcon, SearchIcon } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -234,7 +240,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { format } from 'date-fns'
 import { useArticles, type Article, type ArticleCategory } from '~/composables/useArticles'
 import { useCloudinary } from '~/composables/useCloudinary'
-import { Timestamp } from 'firebase/firestore'
 
 
 const { articles, loading, fetchArticles, addArticle, updateArticle, deleteArticle } = useArticles()
@@ -261,11 +266,16 @@ const formData = ref({
 })
 
 const statusFilter = ref('all')
+const searchQuery = ref('')
 
 const filteredArticles = computed(() => {
   let items = articles.value.filter(a => a.category !== 'ceremony') // Exclude ceremonies from this view as they have their own page
   if (statusFilter.value !== 'all') {
     items = items.filter(i => (i.status || 'draft') === statusFilter.value)
+  }
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    items = items.filter(i => i.title.toLowerCase().includes(q) || (i.content && i.content.toLowerCase().includes(q)))
   }
   return items
 })
@@ -344,7 +354,7 @@ const handleSave = async () => {
         const data = {
             ...formData.value,
             // Ensure eventDate is saved only if ceremony
-            eventDate: formData.value.category === 'ceremony' && formData.value.eventDate ? Timestamp.fromDate(new Date(formData.value.eventDate)) : null
+            eventDate: formData.value.category === 'ceremony' && formData.value.eventDate ? new Date(formData.value.eventDate) : null
         }
 
         if (isEditing.value && editingId.value) {

@@ -182,6 +182,36 @@
               class="rounded-xl border-border bg-muted/30 min-h-[100px] resize-none font-khmer py-3 px-4 focus:bg-background transition-all font-normal"
             />
           </div>
+
+          <!-- Receipt Image Upload -->
+          <div class="space-y-4 pt-4 border-t border-border/50">
+            <Label class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80 font-khmer">{{ $t('admin.ceremony_finance.receipt') }} ({{ $t('admin.ceremony_finance.form.optional') }})</Label>
+            
+            <div class="flex flex-col gap-4">
+              <div class="flex items-center gap-3">
+                 <div class="relative flex-1">
+                    <Input 
+                      type="file" 
+                      accept="image/*" 
+                      @change="handleImageUpload" 
+                      :disabled="uploadingImage" 
+                      class="rounded-xl border-border bg-muted/30 text-[10px] h-10 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer" 
+                    />
+                 </div>
+                 <div v-if="uploadingImage" class="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent flex-shrink-0"></div>
+              </div>
+              
+              <div v-if="formData.receiptUrl" class="relative group aspect-video w-full max-w-[300px] rounded-2xl overflow-hidden border border-border bg-muted shadow-inner self-center">
+                  <img :src="formData.receiptUrl" class="w-full h-full object-contain" />
+                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <Button type="button" variant="destructive" size="sm" class="rounded-xl h-8" @click="formData.receiptUrl = ''">
+                        <TrashIcon class="size-3.5 mr-1" />
+                        Remove
+                      </Button>
+                  </div>
+              </div>
+            </div>
+          </div>
         </form>
       </div>
 
@@ -216,7 +246,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch, computed, nextTick } from 'vue'
-import { SaveIcon, CheckCircle2Icon } from 'lucide-vue-next'
+import { SaveIcon, CheckCircle2Icon, TrashIcon } from 'lucide-vue-next'
 import { 
   Sheet, 
   SheetContent, 
@@ -230,6 +260,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useCeremonyFinance } from '~/composables/useCeremonyFinance'
+import { useCloudinary } from '~/composables/useCloudinary'
 import type { ExpenseFormData, CeremonyExpense } from '~/types/ceremonyFinance'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { useI18n } from 'vue-i18n'
@@ -246,9 +277,11 @@ const emit = defineEmits(['update:open', 'success'])
 const { t } = useI18n()
 const { toast } = useToast()
 const { addExpense, updateExpense } = useCeremonyFinance()
+const { uploadImage } = useCloudinary()
 
 const itemInput = ref<any>(null)
 const loading = ref(false)
+const uploadingImage = ref(false)
 const paidDateInput = ref('')
 
 const isEditing = computed(() => !!props.initialData)
@@ -263,7 +296,8 @@ const formData = reactive<ExpenseFormData>({
   vendor: '',
   description: '',
   paidBy: '',
-  paidDate: undefined
+  paidDate: undefined,
+  receiptUrl: ''
 })
 
 const closeModal = () => {
@@ -279,6 +313,7 @@ const resetForm = () => {
   formData.description = ''
   formData.paidBy = ''
   formData.paidDate = undefined
+  formData.receiptUrl = ''
   paidDateInput.value = ''
   
   // Sticky: category, currency
@@ -306,6 +341,7 @@ watch(() => props.initialData, (val) => {
     formData.vendor = val.vendor || ''
     formData.description = val.description || ''
     formData.paidBy = val.paidBy || ''
+    formData.receiptUrl = val.receiptUrl || ''
     
     // Handle date
     if (val.paidDate) {
@@ -334,6 +370,29 @@ watch(() => props.open, (val) => {
 const calculateTotal = () => {
   if (formData.quantity && formData.unitPrice) {
     formData.amount = formData.quantity * formData.unitPrice
+  }
+}
+
+const handleImageUpload = async (event: any) => {
+  const file = event.target.files?.[0]
+  if (!file) return
+
+  uploadingImage.value = true
+  try {
+    const url = await uploadImage(file)
+    formData.receiptUrl = url
+    toast({
+      title: t('admin.ceremony_finance.messages.upload_success'),
+      description: t('admin.ceremony_finance.messages.upload_success_desc'),
+    })
+  } catch (err: any) {
+    toast({
+      title: t('admin.ceremony_finance.messages.upload_error'),
+      description: err.message,
+      variant: 'destructive',
+    })
+  } finally {
+    uploadingImage.value = false
   }
 }
 

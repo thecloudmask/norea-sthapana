@@ -26,7 +26,7 @@
 
     <div v-else class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <RouterLink v-for="item in filteredNews" :key="item.id" :to="`/news/${item.id}`" class="group h-full">
-            <Card class="flex flex-col h-full overflow-hidden border-none shadow-md transition-all hover:shadow-xl hover:-translate-y-1 bg-card">
+            <Card class="flex flex-col h-full overflow-hidden border-none shadow-sm transition-all hover:shadow-lg bg-card rounded-3xl ring-1 ring-border">
                 <div class="aspect-video w-full bg-muted relative overflow-hidden">
                     <img v-if="item.imageUrl" :src="item.imageUrl" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div v-else class="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
@@ -70,7 +70,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { CalendarIcon, ImageIcon } from 'lucide-vue-next'
 import { formatKhmerDate } from '~/utils/date'
 import { useNews } from '~/composables/useNews'
@@ -78,11 +79,20 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
+const route = useRoute()
+const router = useRouter()
 const { newsList, loading, fetchNews } = useNews()
 const filterType = ref('all')
 
 onMounted(() => {
     fetchNews()
+    if (route.query.type) filterType.value = route.query.type as string
+})
+
+watch(filterType, (val) => {
+    const query: Record<string, string> = {}
+    if (val && val !== 'all') query.type = val
+    router.replace({ query })
 })
 
 const filteredNews = computed(() => {

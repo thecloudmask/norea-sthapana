@@ -154,6 +154,73 @@
                     </Button>
                 </CardFooter>
             </Card>
+
+            <!-- KHR Exchange Rate Card -->
+            <Card class="bg-card border-none shadow-sm ring-1 ring-border rounded-2xl overflow-hidden">
+                <CardHeader class="border-b border-border bg-muted/30 pb-6 pt-6 px-8">
+                    <div class="flex items-center gap-3">
+                        <div class="size-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                            <TrendingUpIcon class="size-5 text-amber-600 dark:text-amber-400" />
+                        </div>
+                        <div>
+                            <CardTitle class="text-xl font-medium text-foreground font-khmer tracking-tight">អត្រាប្តូរប្រាក់ KHR/USD</CardTitle>
+                            <CardDescription class="text-foreground/70 font-medium mt-1 font-khmer text-sm">
+                                កំណត់ចំនួន រៀល (KHR) ស្មើ 1 ដុល្លារ (USD) — ប្រើសម្រាប់គណនាហិរញ្ញវត្ថុទាំងអស់
+                            </CardDescription>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent class="p-8 space-y-6">
+                    <!-- Current Rate Display -->
+                    <div class="flex items-center justify-between p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20">
+                        <div class="space-y-1">
+                            <p class="text-xs font-semibold uppercase tracking-widest text-amber-600/70 dark:text-amber-400/70">អត្រាបច្ចុប្បន្ន</p>
+                            <p class="text-3xl font-black text-amber-600 dark:text-amber-400 font-mono tracking-tight">
+                                ៛ {{ rateForm.toLocaleString() }}
+                                <span class="text-base font-normal text-amber-600/60">/ $1</span>
+                            </p>
+                        </div>
+                        <div class="text-right space-y-1">
+                            <p class="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60">ឧទាហរណ៍</p>
+                            <p class="text-sm font-medium text-foreground/70">
+                                $100 = ៛ {{ (100 * rateForm).toLocaleString() }}
+                            </p>
+                            <p class="text-sm font-medium text-foreground/70">
+                                ៛ 10,000 = ${{ (10000 / rateForm).toFixed(2) }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Rate Input -->
+                    <div class="grid gap-4">
+                        <Label for="khrRate" class="text-sm font-medium text-foreground/70 ml-1 font-khmer">
+                            ចំនួន រៀល ក្នុង 1 ដុល្លារ
+                        </Label>
+                        <div class="flex items-center gap-3">
+                            <div class="relative flex-1">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold text-lg">៛</span>
+                                <Input
+                                    id="khrRate"
+                                    v-model.number="rateForm"
+                                    type="number"
+                                    min="1000"
+                                    max="10000"
+                                    step="100"
+                                    class="rounded-xl border-border bg-muted/30 font-mono font-bold focus:bg-background transition-all h-12 pl-10 pr-5 text-lg"
+                                />
+                            </div>
+                            <span class="text-muted-foreground font-medium text-sm whitespace-nowrap">រៀល / 1 USD</span>
+                        </div>
+                        <p class="text-xs text-muted-foreground/60 ml-1">អត្រាស្ដង់ដារ: ៛4,100 / $1 — ផ្លាស់ប្ដូរតាមអត្រាប្ដូរប្រាក់ជាក់ស្ដែង</p>
+                    </div>
+                </CardContent>
+                <CardFooter class="p-8 pt-4 flex justify-end bg-muted/10 border-t border-border/50">
+                    <Button :disabled="savingRate" @click="handleSaveRate" class="rounded-xl h-11 px-8 font-medium bg-amber-500 text-white hover:bg-amber-600 transition-all active:scale-95 shadow-sm">
+                        <span v-if="savingRate" class="mr-3 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                        {{ savingRate ? 'កំពុងរក្សាទុក...' : 'រក្សាទុកអត្រា' }}
+                    </Button>
+                </CardFooter>
+            </Card>
         </TabsContent>
 
         <TabsContent value="appearance" class="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 focus-visible:outline-none">
@@ -207,21 +274,25 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { SunIcon, MoonIcon, MonitorIcon, QrCodeIcon, UploadCloudIcon, TrashIcon, CheckCircleIcon } from 'lucide-vue-next'
+import { SunIcon, MoonIcon, MonitorIcon, QrCodeIcon, UploadCloudIcon, TrashIcon, CheckCircleIcon, TrendingUpIcon } from 'lucide-vue-next'
 import { useSettings } from '~/composables/useSettings'
 import { useCloudinary } from '~/composables/useCloudinary'
 import { useI18n } from 'vue-i18n'
 import { useColorMode } from '@vueuse/core'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { useKhrRate } from '~/composables/useKhrRate'
 
 const { t } = useI18n()
 const { settings, fetchSettings, saveSettings, loading } = useSettings()
 const { uploadImage } = useCloudinary()
 const { toast } = useToast()
 const colorMode = useColorMode()
+const { khrRate, saveKhrRate } = useKhrRate()
 
 const uploadingImage = ref(false)
+const savingRate = ref(false)
 const qrInput = ref<HTMLInputElement | null>(null)
+const rateForm = ref<number>(khrRate.value)
 
 const form = ref({
     templeName: '',
@@ -246,6 +317,9 @@ onMounted(async () => {
             bankAccountNumber: settings.value.bankAccountNumber || '',
             bankAccountName: settings.value.bankAccountName || '',
             qrCodeUrl: settings.value.qrCodeUrl || ''
+        }
+        if ((settings.value as any).khrRate) {
+            rateForm.value = (settings.value as any).khrRate
         }
     }
 })
@@ -304,6 +378,28 @@ const handleSave = async () => {
             variant: "destructive",
             duration: 3000
         })
+    }
+}
+
+const handleSaveRate = async () => {
+    if (!rateForm.value || rateForm.value < 100) return
+    savingRate.value = true
+    try {
+        await saveKhrRate(rateForm.value)
+        toast({
+            title: "ជោគជ័យ",
+            description: `អត្រាប្ដូរប្រាក់ត្រូវបានកំណត់ ៛${rateForm.value.toLocaleString()} / $1`,
+            duration: 3000
+        })
+    } catch (e: any) {
+        toast({
+            title: "បរាជ័យ",
+            description: "មិនអាចរក្សាទុកអត្រាប្ដូរប្រាក់បានទេ",
+            variant: "destructive",
+            duration: 3000
+        })
+    } finally {
+        savingRate.value = false
     }
 }</script>
 

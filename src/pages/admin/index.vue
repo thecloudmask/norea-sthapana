@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="space-y-10 p-2 md:p-4 transition-colors duration-300">
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-2 animate-in fade-in slide-in-from-top-4 duration-700">
       <div class="space-y-1">
@@ -30,11 +30,15 @@
       
       <!-- Overview Tab -->
       <TabsContent value="overview" class="space-y-10 focus-visible:outline-none animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <!-- Metrics Cards -->
+        <!-- Metrics Cards Row 1: Projects -->
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <!-- Project Revenue -->
           <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all">
             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3 bg-muted/30">
-              <CardTitle class="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{{ $t('admin.revenue') }}</CardTitle>
+              <div>
+                <p class="text-[9px] font-semibold text-primary/60 uppercase tracking-widest mb-0.5">{{ $t('admin.sidebar.projects') }}</p>
+                <CardTitle class="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{{ $t('admin.revenue') }}</CardTitle>
+              </div>
               <div class="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20">
                 <DollarSignIcon class="h-5 w-5" />
               </div>
@@ -42,15 +46,19 @@
             <CardContent class="pt-6">
               <div v-if="loading" class="h-16 w-full bg-muted animate-pulse rounded-2xl"></div>
               <div v-else class="space-y-1">
-                  <div class="text-3xl font-medium text-foreground tabular-nums tracking-tight">{{ $t('common.currency_usd') }} {{ totalRevenue.usd.toLocaleString(undefined, {minimumFractionDigits: 2}) }}</div>
-                  <div class="text-[11px] font-medium text-muted-foreground/40 uppercase tracking-tighter">{{ $t('common.currency_khr') }} {{ totalRevenue.khr.toLocaleString() }}</div>
+                <div class="text-3xl font-medium text-foreground tabular-nums tracking-tight">{{ $t('common.currency_usd') }} {{ projectRevenue.usd.toLocaleString(undefined, {minimumFractionDigits: 2}) }}</div>
+                <div class="text-[11px] font-medium text-muted-foreground/40 uppercase tracking-tighter">{{ $t('common.currency_khr') }} {{ projectRevenue.khr.toLocaleString() }}</div>
               </div>
             </CardContent>
           </Card>
 
+          <!-- Project Expenses -->
           <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all">
             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3 bg-muted/30">
-              <CardTitle class="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{{ $t('admin.expenses') }}</CardTitle>
+              <div>
+                <p class="text-[9px] font-semibold text-primary/60 uppercase tracking-widest mb-0.5">{{ $t('admin.sidebar.projects') }}</p>
+                <CardTitle class="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{{ $t('admin.expenses') }}</CardTitle>
+              </div>
               <div class="h-10 w-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20">
                 <CreditCardIcon class="h-5 w-5" />
               </div>
@@ -58,15 +66,19 @@
             <CardContent class="pt-6">
               <div v-if="loading" class="h-16 w-full bg-muted animate-pulse rounded-2xl"></div>
               <div v-else class="space-y-1">
-                  <div class="text-3xl font-medium text-foreground tabular-nums tracking-tight text-rose-500">{{ $t('common.currency_usd') }} {{ totalExpenses.usd.toLocaleString(undefined, {minimumFractionDigits: 2}) }}</div>
-                  <div class="text-[11px] font-medium text-muted-foreground/40 uppercase tracking-tighter">{{ $t('common.currency_khr') }} {{ totalExpenses.khr.toLocaleString() }}</div>
+                <div class="text-3xl font-medium text-rose-500 tabular-nums tracking-tight">{{ $t('common.currency_usd') }} {{ projectExpenses.usd.toLocaleString(undefined, {minimumFractionDigits: 2}) }}</div>
+                <div class="text-[11px] font-medium text-muted-foreground/40 uppercase tracking-tighter">{{ $t('common.currency_khr') }} {{ projectExpenses.khr.toLocaleString() }}</div>
               </div>
             </CardContent>
           </Card>
 
+          <!-- Project Balance -->
           <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all">
             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3 bg-muted/30">
-              <CardTitle class="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{{ $t('admin.balance') }}</CardTitle>
+              <div>
+                <p class="text-[9px] font-semibold text-primary/60 uppercase tracking-widest mb-0.5">{{ $t('admin.sidebar.projects') }}</p>
+                <CardTitle class="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{{ $t('admin.balance') }}</CardTitle>
+              </div>
               <div class="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20">
                 <ActivityIcon class="h-5 w-5" />
               </div>
@@ -74,12 +86,13 @@
             <CardContent class="pt-6">
               <div v-if="loading" class="h-16 w-full bg-muted animate-pulse rounded-2xl"></div>
               <div v-else class="space-y-1">
-                  <div class="text-3xl font-medium tabular-nums tracking-tight font-sans text-primary">{{ $t('common.currency_usd') }} {{ netBalance.usd.toLocaleString(undefined, {minimumFractionDigits: 2}) }}</div>
-                  <div class="text-[11px] font-medium text-muted-foreground/40 uppercase tracking-tighter">{{ $t('common.currency_khr') }} {{ netBalance.khr.toLocaleString() }}</div>
+                <div class="text-3xl font-medium tabular-nums tracking-tight" :class="projectBalance.usd >= 0 ? 'text-primary' : 'text-rose-500'">{{ $t('common.currency_usd') }} {{ projectBalance.usd.toLocaleString(undefined, {minimumFractionDigits: 2}) }}</div>
+                <div class="text-[11px] font-medium text-muted-foreground/40 uppercase tracking-tighter">{{ $t('common.currency_khr') }} {{ projectBalance.khr.toLocaleString() }}</div>
               </div>
             </CardContent>
           </Card>
 
+          <!-- Activity -->
           <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all">
             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3 bg-muted/30">
               <CardTitle class="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{{ $t('admin.activity') }}</CardTitle>
@@ -90,14 +103,94 @@
             <CardContent class="pt-6">
               <div v-if="loading" class="h-16 w-full bg-muted animate-pulse rounded-2xl"></div>
               <div v-else class="flex flex-col gap-2">
-                  <div class="flex items-baseline gap-2">
-                    <span class="text-3xl font-medium text-foreground">{{ activeProjects }}</span>
-                    <span class="text-[9px] font-medium text-muted-foreground/40 uppercase tracking-wider">{{ $t('admin.active_projects') }}</span>
-                  </div>
-                  <div class="text-[10px] font-semibold text-primary flex items-center gap-2 uppercase tracking-wider bg-primary/5 px-2 py-1 rounded-lg w-fit">
-                    <span class="size-1.5 rounded-full bg-primary animate-pulse"></span>
-                    {{ totalUsers }} {{ $t('admin.total_users') }}
-                  </div>
+                <div class="flex items-baseline gap-2">
+                  <span class="text-3xl font-medium text-foreground">{{ activeProjects }}</span>
+                  <span class="text-[9px] font-medium text-muted-foreground/40 uppercase tracking-wider">{{ $t('admin.active_projects') }}</span>
+                </div>
+                <div class="text-[10px] font-semibold text-primary flex items-center gap-2 uppercase tracking-wider bg-primary/5 px-2 py-1 rounded-lg w-fit">
+                  <span class="size-1.5 rounded-full bg-primary animate-pulse"></span>
+                  {{ totalUsers }} {{ $t('admin.total_users') }}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <!-- Metrics Cards Row 2: Ceremonies -->
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <!-- Ceremony Revenue -->
+          <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all">
+            <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3 bg-muted/30">
+              <div>
+                <p class="text-[9px] font-semibold text-violet-500/70 uppercase tracking-widest mb-0.5">{{ $t('admin.sidebar.ceremonies') }}</p>
+                <CardTitle class="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{{ $t('admin.revenue') }}</CardTitle>
+              </div>
+              <div class="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 border border-emerald-500/20">
+                <DollarSignIcon class="h-5 w-5" />
+              </div>
+            </CardHeader>
+            <CardContent class="pt-6">
+              <div v-if="loading" class="h-16 w-full bg-muted animate-pulse rounded-2xl"></div>
+              <div v-else class="space-y-1">
+                <div class="text-3xl font-medium text-foreground tabular-nums tracking-tight">{{ $t('common.currency_usd') }} {{ ceremonyRevenue.usd.toLocaleString(undefined, {minimumFractionDigits: 2}) }}</div>
+                <div class="text-[11px] font-medium text-muted-foreground/40 uppercase tracking-tighter">{{ $t('common.currency_khr') }} {{ ceremonyRevenue.khr.toLocaleString() }}</div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <!-- Ceremony Expenses -->
+          <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all">
+            <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3 bg-muted/30">
+              <div>
+                <p class="text-[9px] font-semibold text-violet-500/70 uppercase tracking-widest mb-0.5">{{ $t('admin.sidebar.ceremonies') }}</p>
+                <CardTitle class="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{{ $t('admin.expenses') }}</CardTitle>
+              </div>
+              <div class="h-10 w-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20">
+                <CreditCardIcon class="h-5 w-5" />
+              </div>
+            </CardHeader>
+            <CardContent class="pt-6">
+              <div v-if="loading" class="h-16 w-full bg-muted animate-pulse rounded-2xl"></div>
+              <div v-else class="space-y-1">
+                <div class="text-3xl font-medium text-rose-500 tabular-nums tracking-tight">{{ $t('common.currency_usd') }} {{ ceremonyExpensesTotal.usd.toLocaleString(undefined, {minimumFractionDigits: 2}) }}</div>
+                <div class="text-[11px] font-medium text-muted-foreground/40 uppercase tracking-tighter">{{ $t('common.currency_khr') }} {{ ceremonyExpensesTotal.khr.toLocaleString() }}</div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <!-- Ceremony Balance -->
+          <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all">
+            <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3 bg-muted/30">
+              <div>
+                <p class="text-[9px] font-semibold text-violet-500/70 uppercase tracking-widest mb-0.5">{{ $t('admin.sidebar.ceremonies') }}</p>
+                <CardTitle class="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{{ $t('admin.balance') }}</CardTitle>
+              </div>
+              <div class="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20">
+                <ActivityIcon class="h-5 w-5" />
+              </div>
+            </CardHeader>
+            <CardContent class="pt-6">
+              <div v-if="loading" class="h-16 w-full bg-muted animate-pulse rounded-2xl"></div>
+              <div v-else class="space-y-1">
+                <div class="text-3xl font-medium tabular-nums tracking-tight" :class="ceremonyBalance.usd >= 0 ? 'text-primary' : 'text-rose-500'">{{ $t('common.currency_usd') }} {{ ceremonyBalance.usd.toLocaleString(undefined, {minimumFractionDigits: 2}) }}</div>
+                <div class="text-[11px] font-medium text-muted-foreground/40 uppercase tracking-tighter">{{ $t('common.currency_khr') }} {{ ceremonyBalance.khr.toLocaleString() }}</div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <!-- Combined Net Balance -->
+          <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all">
+            <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3 bg-muted/30">
+              <CardTitle class="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{{ $t('admin.balance') }}</CardTitle>
+              <div class="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20">
+                <ActivityIcon class="h-5 w-5" />
+              </div>
+            </CardHeader>
+            <CardContent class="pt-6">
+              <div v-if="loading" class="h-16 w-full bg-muted animate-pulse rounded-2xl"></div>
+              <div v-else class="space-y-1">
+                <div class="text-3xl font-medium tabular-nums tracking-tight font-sans text-primary">{{ $t('common.currency_usd') }} {{ netBalance.usd.toLocaleString(undefined, {minimumFractionDigits: 2}) }}</div>
+                <div class="text-[11px] font-medium text-muted-foreground/40 uppercase tracking-tighter">{{ $t('common.currency_khr') }} {{ netBalance.khr.toLocaleString() }}</div>
               </div>
             </CardContent>
           </Card>
@@ -122,7 +215,7 @@
                    />
                    <div v-else class="h-full flex flex-col items-center justify-center text-muted-foreground/30 gap-4">
                         <RefreshCwIcon class="size-10 animate-spin opacity-20" />
-                        <span class="text-xs font-semibold uppercase tracking-widest">កំពុងទាញទិន្នន័យ...</span>
+                        <span class="text-xs font-semibold uppercase tracking-widest">áž€áŸ†áž–áž»áž„áž‘áž¶áž‰áž‘áž·áž“áŸ’áž“áž“áŸáž™...</span>
                    </div>
                  </div>
                </div>
@@ -157,7 +250,7 @@
                     </div>
                     <div class="text-right">
                        <div class="text-lg font-semibold tabular-nums tracking-tighter" :class="Number(d.amount) > 0 ? 'text-emerald-500' : 'text-rose-500'">
-                          <span class="text-[10px] font-semibold mr-1 opacity-60">{{ d.currency === 'KHR' ? '៛' : '$' }}</span>{{ Number(d.amount).toLocaleString() }}
+                          <span class="text-[10px] font-semibold mr-1 opacity-60">{{ d.currency === 'KHR' ? 'áŸ›' : '$' }}</span>{{ Number(d.amount).toLocaleString() }}
                        </div>
                        <div class="text-[9px] text-muted-foreground/30 font-semibold tabular-nums uppercase tracking-widest italic">{{ formatDateShort(d.createdAt) }}</div>
                     </div>
@@ -201,7 +294,7 @@
                 />
                 <div v-else class="h-full flex flex-col items-center justify-center text-muted-foreground/20 gap-4">
                     <PieChartIcon class="size-16 opacity-10" />
-                    <span class="text-xs font-semibold uppercase tracking-widest">មិនមានទិន្នន័យចំណាយ</span>
+                    <span class="text-xs font-semibold uppercase tracking-widest">áž˜áž·áž“áž˜áž¶áž“áž‘áž·áž“áŸ’áž“áž“áŸáž™áž…áŸ†ážŽáž¶áž™</span>
                 </div>
               </div>
             </CardContent>
@@ -224,7 +317,7 @@
                 />
                 <div v-else class="h-full flex flex-col items-center justify-center text-muted-foreground/20 gap-4">
                     <ActivityIcon class="size-16 opacity-10" />
-                    <span class="text-xs font-semibold uppercase tracking-widest">មិនមានទិន្នន័យបច្ច័យ</span>
+                    <span class="text-xs font-semibold uppercase tracking-widest">áž˜áž·áž“áž˜áž¶áž“áž‘áž·áž“áŸ’áž“áž“áŸáž™áž”áž…áŸ’áž…áŸáž™</span>
                 </div>
               </div>
             </CardContent>
@@ -234,8 +327,8 @@
         <!-- Monthly Trends -->
         <Card class="rounded-3xl border-none ring-1 ring-border bg-card shadow-sm overflow-hidden">
           <CardHeader class="border-b border-border bg-muted/30 pb-4">
-            <CardTitle class="text-lg font-semibold text-foreground uppercase tracking-tight font-khmer">និន្នាការប្រចាំខែ (USD)</CardTitle>
-            <CardDescription class="font-medium text-muted-foreground">ការប្រៀបធៀប ចំណូល និង ចំណាយ ប្រចាំខែ</CardDescription>
+            <CardTitle class="text-lg font-semibold text-foreground uppercase tracking-tight font-khmer">áž“áž·áž“áŸ’áž“áž¶áž€áž¶ážšáž”áŸ’ážšáž…áž¶áŸ†ážáŸ‚ (USD)</CardTitle>
+            <CardDescription class="font-medium text-muted-foreground">áž€áž¶ážšáž”áŸ’ážšáŸ€áž”áž’áŸ€áž” áž…áŸ†ážŽáž¼áž› áž“áž·áž„ áž…áŸ†ážŽáž¶áž™ áž”áŸ’ážšáž…áž¶áŸ†ážáŸ‚</CardDescription>
           </CardHeader>
           <CardContent class="h-[450px] pt-10 overflow-hidden">
             <div>
@@ -248,7 +341,7 @@
               />
               <div v-else class="h-full flex flex-col items-center justify-center text-muted-foreground/20 gap-4">
                     <ActivityIcon class="size-16 opacity-10" />
-                    <span class="text-xs font-semibold uppercase tracking-widest">កំពុងទាញទិន្នន័យ...</span>
+                    <span class="text-xs font-semibold uppercase tracking-widest">áž€áŸ†áž–áž»áž„áž‘áž¶áž‰áž‘áž·áž“áŸ’áž“áž“áŸáž™...</span>
               </div>
             </div>
           </CardContent>
@@ -296,7 +389,8 @@ import {
   ClipboardListIcon,
   RefreshCwIcon,
   UsersIcon,
-  FolderOpenIcon
+  FolderOpenIcon,
+  SparklesIcon
 } from 'lucide-vue-next'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
@@ -305,13 +399,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useDonations } from '~/composables/useDonations'
 import { useExpenses } from '~/composables/useExpenses'
 import { useProjects } from '~/composables/useProjects'
-import { collection, getDocs as getFirestoreDocs } from 'firebase/firestore'
-import { initFirebase } from '~/utils/firebase'
+import { useCeremonyFinance } from '~/composables/useCeremonyFinance'
+import { useUsers } from '~/composables/useUsers'
+import { useKhrRate } from '~/composables/useKhrRate'
 
-const { db } = initFirebase()
+const { khrRate } = useKhrRate()
+const { fetchTotalUsersCount } = useUsers()
 const { donations, fetchAllDonations, loading: loadingDonations } = useDonations()
 const { expenses, fetchAllExpenses, loading: loadingExpenses } = useExpenses()
 const { projects, fetchProjects, loading: loadingProjects, recalculateProjectProgress } = useProjects()
+const {
+  incomes: ceremonyIncomes,
+  expenses: ceremonyExpenses,
+  fetchAllIncomes: fetchAllCeremonyIncomes,
+  fetchAllExpenses: fetchAllCeremonyExpenses,
+  loading: loadingCeremonyFinance
+} = useCeremonyFinance()
 
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
@@ -321,8 +424,8 @@ const loadingUsers = ref(false)
 const fetchTotalUsers = async () => {
     loadingUsers.value = true
     try {
-        const snap = await getFirestoreDocs(collection(db, 'users'))
-        totalUsers.value = snap.size
+        const count = await fetchTotalUsersCount()
+        totalUsers.value = count
     } catch (e) {
         console.error(e)
     } finally {
@@ -330,7 +433,7 @@ const fetchTotalUsers = async () => {
     }
 }
 
-const loading = computed(() => loadingDonations.value || loadingExpenses.value || loadingProjects.value)
+const loading = computed(() => loadingDonations.value || loadingExpenses.value || loadingProjects.value || loadingCeremonyFinance.value)
 
 const recalculatingAll = ref(false)
 const recalculateAll = async () => {
@@ -346,25 +449,51 @@ const recalculateAll = async () => {
     }
 }
 
-// Metrics Separated by Currency
-const totalRevenue = computed(() => {
-    const usd = donations.value.filter(d => d.currency !== 'KHR').reduce((sum, d) => sum + (Number(d.amount) || 0), 0)
-    const khr = donations.value.filter(d => d.currency === 'KHR').reduce((sum, d) => sum + (Number(d.amount) || 0), 0)
-    return { usd, khr }
-})
+// --- Project-only metrics ---
+const projectRevenue = computed(() => ({
+    usd: donations.value.filter(d => d.currency !== 'KHR').reduce((sum, d) => sum + (Number(d.amount) || 0), 0),
+    khr: donations.value.filter(d => d.currency === 'KHR').reduce((sum, d) => sum + (Number(d.amount) || 0), 0)
+}))
 
-const totalExpenses = computed(() => {
-    const usd = expenses.value.filter(e => (e as any).currency !== 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0)
-    const khr = expenses.value.filter(e => (e as any).currency === 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0)
-    return { usd, khr }
-})
+const projectExpenses = computed(() => ({
+    usd: expenses.value.filter(e => (e as any).currency !== 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0),
+    khr: expenses.value.filter(e => (e as any).currency === 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0)
+}))
 
-const netBalance = computed(() => {
-    return {
-        usd: totalRevenue.value.usd - totalExpenses.value.usd,
-        khr: totalRevenue.value.khr - totalExpenses.value.khr
-    }
-})
+const projectBalance = computed(() => ({
+    usd: projectRevenue.value.usd - projectExpenses.value.usd,
+    khr: projectRevenue.value.khr - projectExpenses.value.khr
+}))
+
+// --- Ceremony-only metrics ---
+const ceremonyRevenue = computed(() => ({
+    usd: ceremonyIncomes.value.filter(i => i.currency !== 'KHR').reduce((sum, i) => sum + (Number(i.amount) || 0), 0),
+    khr: ceremonyIncomes.value.filter(i => i.currency === 'KHR').reduce((sum, i) => sum + (Number(i.amount) || 0), 0)
+}))
+
+const ceremonyExpensesTotal = computed(() => ({
+    usd: ceremonyExpenses.value.filter(e => e.currency !== 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0),
+    khr: ceremonyExpenses.value.filter(e => e.currency === 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0)
+}))
+
+const ceremonyBalance = computed(() => ({
+    usd: ceremonyRevenue.value.usd - ceremonyExpensesTotal.value.usd,
+    khr: ceremonyRevenue.value.khr - ceremonyExpensesTotal.value.khr
+}))
+
+// Keep combined for charts
+const totalRevenue = computed(() => ({
+    usd: projectRevenue.value.usd + ceremonyRevenue.value.usd,
+    khr: projectRevenue.value.khr + ceremonyRevenue.value.khr
+}))
+const totalExpenses = computed(() => ({
+    usd: projectExpenses.value.usd + ceremonyExpensesTotal.value.usd,
+    khr: projectExpenses.value.khr + ceremonyExpensesTotal.value.khr
+}))
+const netBalance = computed(() => ({
+    usd: totalRevenue.value.usd - totalExpenses.value.usd,
+    khr: totalRevenue.value.khr - totalExpenses.value.khr
+}))
 
 const activeProjects = computed(() => {
     return projects.value.filter(p => p.status === 'active').length
@@ -394,14 +523,20 @@ const formatDateShort = (date: any) => {
 
 const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-// 1. Revenue Trend (Area Chart)
+// 1. Revenue Trend (Area Chart) â€” projects + ceremonies combined
 const revenueTrendSeries = computed(() => {
   const data = new Array(12).fill(0)
   donations.value.forEach(d => {
     const date = d.createdAt?.toDate ? d.createdAt.toDate() : new Date(d.createdAt || Date.now())
     const month = date.getMonth()
     const amount = Number(d.amount) || 0
-    data[month] += d.currency === 'KHR' ? amount / 4100 : amount
+    data[month] += d.currency === 'KHR' ? amount / khrRate.value : amount
+  })
+  ceremonyIncomes.value.forEach(i => {
+    const date = (i.createdAt as any)?.toDate ? (i.createdAt as any).toDate() : new Date((i.createdAt as any) || Date.now())
+    const month = date.getMonth()
+    const amount = Number(i.amount) || 0
+    data[month] += i.currency === 'KHR' ? amount / khrRate.value : amount
   })
   return [{ name: 'Revenue', data }]
 })
@@ -462,7 +597,7 @@ const expenseSeries = computed(() => {
   expenses.value.forEach(e => {
     const cat = e.category || 'Other'
     const amount = Number(e.amount) || 0
-    const val = (e as any).currency === 'KHR' ? amount / 4100 : amount
+    const val = (e as any).currency === 'KHR' ? amount / khrRate.value : amount
     categories[cat] = (categories[cat] || 0) + val
   })
   return Object.values(categories)
@@ -529,19 +664,27 @@ const methodDonutOptions = computed(() => {
   }
 })
 
-// 4. Trend Line Chart
+// 4. Trend Line Chart â€” projects + ceremonies combined
 const trendSeries = computed(() => {
   const incomeData = new Array(12).fill(0)
   const expenseData = new Array(12).fill(0)
 
   donations.value.forEach(d => {
     const month = (d.createdAt?.toDate ? d.createdAt.toDate() : new Date(d.createdAt || Date.now())).getMonth()
-    incomeData[month] += d.currency === 'KHR' ? Number(d.amount) / 4100 : Number(d.amount)
+    incomeData[month] += d.currency === 'KHR' ? Number(d.amount) / khrRate.value : Number(d.amount)
+  })
+  ceremonyIncomes.value.forEach(i => {
+    const month = ((i.createdAt as any)?.toDate ? (i.createdAt as any).toDate() : new Date((i.createdAt as any) || Date.now())).getMonth()
+    incomeData[month] += i.currency === 'KHR' ? Number(i.amount) / khrRate.value : Number(i.amount)
   })
 
   expenses.value.forEach(e => {
     const month = (e.createdAt?.toDate ? e.createdAt.toDate() : new Date(e.createdAt || Date.now())).getMonth()
-    expenseData[month] += (e as any).currency === 'KHR' ? Number(e.amount) / 4100 : Number(e.amount)
+    expenseData[month] += (e as any).currency === 'KHR' ? Number(e.amount) / khrRate.value : Number(e.amount)
+  })
+  ceremonyExpenses.value.forEach(e => {
+    const month = ((e.createdAt as any)?.toDate ? (e.createdAt as any).toDate() : new Date((e.createdAt as any) || Date.now())).getMonth()
+    expenseData[month] += e.currency === 'KHR' ? Number(e.amount) / khrRate.value : Number(e.amount)
   })
 
   return [
@@ -590,9 +733,9 @@ const trendOptions = computed(() => ({
 
 // Reports Configuration
 const reportTypes = [
-  { id: 'financial_summary', title: 'សង្ខេបហិរញ្ញវត្ថុ', description: 'របាយការណ៍បូកសរុបចំណូលចំណាយប្រចាំខែ', icon: FileBarChartIcon },
-  { id: 'donation_list', title: 'បញ្ជីសប្បុរសជន', description: 'បញ្ជីរាយនាមសប្បុរសជនទាំងអស់', icon: ClipboardListIcon },
-  { id: 'expense_audit', title: 'សមតុល្យចំណាយ', description: 'របាយការណ៍ចំណាយលម្អិតសម្រាប់ការចុះសវនកម្ម', icon: PieChartIcon },
+  { id: 'financial_summary', title: 'ážŸáž„áŸ’ážáŸáž”áž áž·ážšáž‰áŸ’áž‰ážœážáŸ’ážáž»', description: 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž”áž¼áž€ážŸážšáž»áž”áž…áŸ†ážŽáž¼áž›áž…áŸ†ážŽáž¶áž™áž”áŸ’ážšáž…áž¶áŸ†ážáŸ‚', icon: FileBarChartIcon },
+  { id: 'donation_list', title: 'áž”áž‰áŸ’áž‡áž¸ážŸáž”áŸ’áž”áž»ážšážŸáž‡áž“', description: 'áž”áž‰áŸ’áž‡áž¸ážšáž¶áž™áž“áž¶áž˜ážŸáž”áŸ’áž”áž»ážšážŸáž‡áž“áž‘áž¶áŸ†áž„áž¢ážŸáŸ‹', icon: ClipboardListIcon },
+  { id: 'expense_audit', title: 'ážŸáž˜ážáž»áž›áŸ’áž™áž…áŸ†ážŽáž¶áž™', description: 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž…áŸ†ážŽáž¶áž™áž›áž˜áŸ’áž¢áž·ážážŸáž˜áŸ’ážšáž¶áž”áŸ‹áž€áž¶ážšáž…áž»áŸ‡ážŸážœáž“áž€áž˜áŸ’áž˜', icon: PieChartIcon },
 ]
 
 const handleExport = (id: string) => {
@@ -662,6 +805,8 @@ onMounted(() => {
     fetchAllExpenses()
     fetchProjects()
     fetchTotalUsers()
+    fetchAllCeremonyIncomes()
+    fetchAllCeremonyExpenses()
 })
 </script>
 

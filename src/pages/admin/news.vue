@@ -1,19 +1,24 @@
 <template>
   <div class="container py-10 space-y-10 transition-colors duration-300">
     <!-- Header Section -->
+    <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="space-y-4">
-        <RouterLink to="/admin" class="text-[11px] font-medium text-primary flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <RouterLink to="/admin" class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 hover:text-primary transition-colors">
           <ArrowLeftIcon class="h-3.5 w-3.5" /> 
           {{ $t('admin.forms.back_to_dashboard') }}
         </RouterLink>
         <div>
-          <h1 class="text-3xl font-medium text-foreground font-khmer">{{ $t('admin.news.title') }}</h1>
-          <p class="text-muted-foreground mt-1 font-medium">{{ $t('admin.news.subtitle') }}</p>
+          <h1 class="text-3xl md:text-4xl font-medium text-foreground font-khmer uppercase tracking-tight">{{ $t('admin.news.title') }}</h1>
+          <p class="text-muted-foreground mt-1 font-normal">{{ $t('admin.news.subtitle') }}</p>
         </div>
       </div>
-      <div class="flex items-center gap-3">
-        <Button @click="openCreateModal" class="rounded-xl shadow-lg shadow-primary/20 font-medium h-11 px-6">
+      <div class="flex items-center gap-3 flex-wrap">
+        <div class="relative">
+          <SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
+          <Input v-model="searchQuery" :placeholder="$t('common.search_placeholder')" class="pl-9 h-11 w-[220px] rounded-xl border-border bg-card font-medium focus:ring-1 focus:ring-primary shadow-sm" />
+        </div>
+        <Button @click="openCreateModal" class="rounded-xl shadow-sm bg-primary hover:bg-primary/90 text-white font-medium h-11 px-6 active:scale-[0.98] transition-all">
           <PlusIcon class="mr-2 h-4 w-4" />
           {{ $t('admin.news.add_new') }}
         </Button>
@@ -27,7 +32,7 @@
 
     <!-- News Grid -->
     <div v-else class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        <Card v-for="item in newsList" :key="item.id" class="group flex flex-col overflow-hidden border-none shadow-sm ring-1 ring-border rounded-3xl transition-all hover:shadow-xl bg-card">
+        <Card v-for="item in filteredNews" :key="item.id" class="group flex flex-col overflow-hidden border-none shadow-sm ring-1 ring-border rounded-3xl transition-all hover:shadow-xl bg-card">
             <div class="aspect-video w-full bg-muted relative overflow-hidden">
                 <img v-if="item.imageUrl" :src="item.imageUrl" class="w-full h-full object-cover" />
                 <div v-else class="w-full h-full flex items-center justify-center bg-muted text-muted-foreground/30">
@@ -73,7 +78,7 @@
            <div class="size-20 rounded-full bg-card shadow-sm flex items-center justify-center text-muted-foreground/30 ring-1 ring-border">
               <NewspaperIcon class="w-10 h-10" />
            </div>
-           <p class="font-medium text-foreground text-lg">មិនទាន់មានដំណឹង</p>
+           <p class="font-medium text-foreground text-lg">{{ $t('admin.news.no_news') }}</p>
            <Button @click="openCreateModal" variant="outline" class="mt-4 rounded-xl border-border bg-background/50 font-medium">
               {{ $t('admin.news.add_new') }}
            </Button>
@@ -182,7 +187,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { PlusIcon, PencilIcon, TrashIcon, ImageIcon, CalendarIcon, ArrowLeftIcon, NewspaperIcon } from 'lucide-vue-next'
+import { PlusIcon, PencilIcon, TrashIcon, ImageIcon, CalendarIcon, ArrowLeftIcon, NewspaperIcon, SearchIcon } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -194,10 +199,19 @@ import { Badge } from '@/components/ui/badge'
 import { format } from 'date-fns'
 import { useNews, type NewsItem } from '~/composables/useNews'
 import { useCloudinary } from '~/composables/useCloudinary'
-import { Timestamp } from 'firebase/firestore'
 
 const { newsList, loading, fetchNews, addNews, updateNews, deleteNews } = useNews()
 const { uploadImage } = useCloudinary()
+
+const searchQuery = ref('')
+const filteredNews = computed(() => {
+    let items = newsList.value
+    if (searchQuery.value) {
+        const q = searchQuery.value.toLowerCase()
+        items = items.filter(i => i.title.toLowerCase().includes(q) || (i.content && i.content.toLowerCase().includes(q)))
+    }
+    return items
+})
 
 const showCreateModal = ref(false)
 const showDeleteConfirm = ref(false)
@@ -290,7 +304,7 @@ const handleSave = async () => {
     try {
         const data = {
             ...formData.value,
-            eventDate: formData.value.type === 'event' && formData.value.eventDate ? Timestamp.fromDate(new Date(formData.value.eventDate)) : null
+            eventDate: formData.value.type === 'event' && formData.value.eventDate ? new Date(formData.value.eventDate) : null
         }
 
         if (isEditing.value && editingId.value) {

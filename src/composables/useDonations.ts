@@ -1,3 +1,4 @@
+import { ref } from 'vue'
 import {
   collectionGroup,
   getDocs,
@@ -6,92 +7,84 @@ import {
   doc,
   runTransaction,
   serverTimestamp,
-} from "firebase/firestore";
+} from 'firebase/firestore'
+import { db } from '~/utils/firebase'
+import { useKhrRate } from '~/composables/useKhrRate'
 
 export interface Donation {
-  id?: string;
-  projectId?: string;
-  donorName: string;
-  amount: number;
-  currency: "USD" | "KHR";
-  paymentMethod: "cash" | "qr" | "transfer";
-  status?: "active" | "inactive";
-  createdAt?: any;
-  // ... other fields
+  id?: string
+  projectId?: string
+  donorName: string
+  amount: number
+  currency: 'USD' | 'KHR'
+  paymentMethod: 'cash' | 'qr' | 'transfer'
+  status?: 'active' | 'inactive'
+  createdAt?: any
 }
-import { db } from "~/utils/firebase";
-import { ref } from "vue";
 
 export const useDonations = () => {
-  const donations = ref<Donation[]>([]);
-  const loading = ref(false);
+  const { khrRate } = useKhrRate()
+  const donations = ref<Donation[]>([])
+  const loading = ref(false)
 
-  // Fetch ALL donations from all projects
+  // Fetch ALL donations from all projects (for dashboard overview)
   const fetchAllDonations = async () => {
-    loading.value = true;
+    loading.value = true
     try {
-      const q = query(collectionGroup(db, "donations"));
-      const snapshot = await getDocs(q);
+      const q = query(collectionGroup(db, 'donations'))
+      const snapshot = await getDocs(q)
       const raw = snapshot.docs.map((d) => ({
         id: d.id,
         projectId: d.ref.parent.parent?.id,
         ...d.data(),
-      })) as Donation[];
+      })) as Donation[]
 
       donations.value = raw.sort((a: any, b: any) => {
         const da = a.createdAt?.toDate
           ? a.createdAt.toDate()
-          : new Date(a.createdAt || 0);
+          : new Date(a.createdAt || 0)
         const db = b.createdAt?.toDate
           ? b.createdAt.toDate()
-          : new Date(b.createdAt || 0);
-        return db - da;
-      });
+          : new Date(b.createdAt || 0)
+        return db - da
+      })
     } catch (e) {
-      console.error("Error fetching donations:", e);
+      console.error('[useDonations] Error fetching donations:', e)
     } finally {
-      loading.value = false;
+      loading.value = false
     }
-  };
+  }
 
   const addDonation = async (
     projectId: string,
-    donationData: Omit<Donation, "id" | "createdAt" | "projectId">
+    donationData: Omit<Donation, 'id' | 'createdAt' | 'projectId'>
   ) => {
-    const projectRef = doc(db, "projects", projectId);
-    const donationsRef = collection(db, "projects", projectId, "donations");
+    const projectRef = doc(db, 'projects', projectId)
+    const donationsRef = collection(db, 'projects', projectId, 'donations')
 
     await runTransaction(db, async (transaction) => {
-      const projectDoc = await transaction.get(projectRef);
-      if (!projectDoc.exists()) throw new Error("Project does not exist");
+      const projectDoc = await transaction.get(projectRef)
+      if (!projectDoc.exists()) throw new Error('Project does not exist')
 
-      // Calculate value to add to project total (Normalized to USD)
-      const amount = Number(donationData.amount);
-      let incrementVal = amount;
-      // Simple normalization: 4100 KHR = 1 USD
-      if (donationData.currency === "KHR") {
-        incrementVal = amount / 4100;
-      }
+      // Normalize to USD using shared constant
+      const amount = Number(donationData.amount)
+      const incrementVal = donationData.currency === 'KHR'
+        ? amount / khrRate.value
+        : amount
 
-      const currentAmount = projectDoc.data().currentAmount || 0;
-      const newTotal = currentAmount + incrementVal;
-
-      const newDonationRef = doc(donationsRef);
+      const currentAmount = projectDoc.data().currentAmount || 0
+      const newDonationRef = doc(donationsRef)
 
       transaction.set(newDonationRef, {
         ...donationData,
         createdAt: serverTimestamp(),
-      });
+      })
 
       transaction.update(projectRef, {
-        currentAmount: newTotal,
-      });
-    });
+        currentAmount: currentAmount + incrementVal,
+      })
+    })
+  }
 
-    // Refresh list if we are viewing it
-    // But since list is global, we might not want to re-fetch all.
-    // Just let the UI update or user refresh.
-  };
-
-  return { donations, loading, fetchAllDonations, addDonation };
-};
+  return { donations, loading, fetchAllDonations, addDonation }
+}

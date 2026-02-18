@@ -266,10 +266,12 @@ import { formatKhmerDate } from '~/utils/date'
 import { useRoute } from 'vue-router'
 import { useProjects } from '@/composables/useProjects'
 import { useI18n } from 'vue-i18n'
+import { useKhrRate } from '~/composables/useKhrRate'
 
 const route = useRoute()
 const { getProject, donations, fetchDonations, fetchUpdates, updates, expenses, fetchExpenses } = useProjects()
 const { t } = useI18n()
+const { khrRate } = useKhrRate()
 
 const project = ref<any>(null)
 const loading = ref(true)
@@ -299,11 +301,10 @@ const totalExpenses = computed(() => {
 })
 
 const topDonors = computed(() => {
-  // Sort by highest single donation value (normalized to USD)
   return [...donations.value]
     .sort((a, b) => {
-        const valA = Number(a.amount) / (a.currency === 'KHR' ? 4100 : 1)
-        const valB = Number(b.amount) / (b.currency === 'KHR' ? 4100 : 1)
+        const valA = Number(a.amount) / (a.currency === 'KHR' ? khrRate.value : 1)
+        const valB = Number(b.amount) / (b.currency === 'KHR' ? khrRate.value : 1)
         return valB - valA
     })
     .slice(0, 3)
@@ -311,7 +312,7 @@ const topDonors = computed(() => {
 
 const progress = computed(() => {
   if (!project.value?.goalAmount) return 0
-  const totalInUsd = totalDonations.value.usd + (totalDonations.value.khr / 4100)
+  const totalInUsd = totalDonations.value.usd + (totalDonations.value.khr / khrRate.value)
   return (totalInUsd / project.value.goalAmount) * 100
 })
 

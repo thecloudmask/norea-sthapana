@@ -1,6 +1,7 @@
 import { db } from '~/utils/firebase'
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { ref } from 'vue'
+import { KHR_TO_USD_RATE } from '~/utils/constants'
 
 export const useSettings = () => {
     const loading = ref(false)
@@ -12,7 +13,8 @@ export const useSettings = () => {
         bankName: '',
         bankAccountNumber: '',
         bankAccountName: '',
-        qrCodeUrl: ''
+        qrCodeUrl: '',
+        khrRate: KHR_TO_USD_RATE
     })
 
     const fetchSettings = async () => {

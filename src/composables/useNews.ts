@@ -1,6 +1,7 @@
 import { 
   collection, 
   getDocs, 
+  getDoc,
   addDoc, 
   updateDoc, 
   deleteDoc, 
@@ -81,7 +82,19 @@ export const useNews = () => {
     }
   }
 
-
+  const getNews = async (id: string) => {
+    try {
+      const newsRef = doc(db, 'news', id)
+      const snap = await getDoc(newsRef)
+      if (snap.exists()) {
+        return { id: snap.id, ...snap.data() } as NewsItem
+      }
+      return null
+    } catch (error) {
+      console.error('Error getting news:', error)
+      return null
+    }
+  }
 
   return {
     newsList,
@@ -89,6 +102,7 @@ export const useNews = () => {
     fetchNews,
     addNews,
     updateNews,
-    deleteNews
+    deleteNews,
+    getNews
   }
 }

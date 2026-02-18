@@ -13,10 +13,13 @@ export type PaymentMethod =
   | 'other'
 
 export type ExpenseCategory = 
-  | 'supplies'
-  | 'service'
   | 'food'
-  | 'decoration'
+  | 'transport'
+  | 'venue'
+  | 'materials'
+  | 'service'
+  | 'monks'
+  | 'music'
   | 'other'
 
 // Ceremony Income (ចំណូល)
@@ -44,9 +47,9 @@ export interface CeremonyIncome {
   receiptUrl?: string // រូបភាពបង្កាន់ដៃ
   
   // Metadata
-  createdAt: Date
+  createdAt: any
   createdBy: string // Admin user ID
-  updatedAt?: Date
+  updatedAt?: any
   updatedBy?: string
 }
 
@@ -79,9 +82,9 @@ export interface CeremonyExpense {
   paidDate?: Date
   
   // Metadata
-  createdAt: Date
+  createdAt: any
   createdBy: string
-  updatedAt?: Date
+  updatedAt?: any
   updatedBy?: string
 }
 

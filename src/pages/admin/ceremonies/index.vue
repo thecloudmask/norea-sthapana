@@ -1,27 +1,32 @@
 <template>
   <div class="container py-10 space-y-10 transition-colors duration-300">
     <!-- Header Section -->
+    <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="space-y-4">
-        <RouterLink to="/admin" class="text-[11px] font-semibold uppercase tracking-wider text-primary flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <RouterLink to="/admin" class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 hover:text-primary transition-colors">
           <ArrowLeftIcon class="h-3.5 w-3.5" /> 
           {{ $t('admin.forms.back_to_dashboard') }}
         </RouterLink>
         <div>
-          <h1 class="text-3xl font-semibold text-foreground font-khmer">{{ $t('admin.ceremonies.title') }}</h1>
-          <p class="text-muted-foreground mt-1 font-medium">{{ $t('admin.ceremonies.subtitle') }}</p>
+          <h1 class="text-3xl md:text-4xl font-medium text-foreground font-khmer uppercase tracking-tight">{{ $t('admin.ceremonies.title') }}</h1>
+          <p class="text-muted-foreground mt-1 font-normal">{{ $t('admin.ceremonies.subtitle') }}</p>
         </div>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-wrap">
+        <div class="relative">
+          <SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
+          <Input v-model="searchQuery" :placeholder="$t('common.search_placeholder')" class="pl-9 h-11 w-[220px] rounded-xl border-border bg-card font-medium focus:ring-1 focus:ring-primary shadow-sm" />
+        </div>
         <Select v-model="statusFilter">
           <SelectTrigger class="w-[180px] rounded-xl border-border h-11 bg-card shadow-sm font-medium">
             <SelectValue :placeholder="$t('admin.ceremonies.status_filter')" />
           </SelectTrigger>
           <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg">
-            <SelectItem value="all" class="font-semibold">{{ $t('common.filter_all') }}</SelectItem>
-            <SelectItem value="published" class="font-semibold text-emerald-600">{{ $t('admin.forms.status_published') }}</SelectItem>
-            <SelectItem value="draft" class="font-semibold text-slate-500">{{ $t('admin.forms.status_draft') }}</SelectItem>
-            <SelectItem value="archived" class="font-semibold text-orange-500">{{ $t('admin.forms.status_archived') }}</SelectItem>
+            <SelectItem value="all" class="font-medium rounded-lg">{{ $t('common.filter_all') }}</SelectItem>
+            <SelectItem value="published" class="font-medium rounded-lg text-emerald-600">{{ $t('admin.forms.status_published') }}</SelectItem>
+            <SelectItem value="draft" class="font-medium rounded-lg text-slate-500">{{ $t('admin.forms.status_draft') }}</SelectItem>
+            <SelectItem value="archived" class="font-medium rounded-lg text-orange-500">{{ $t('admin.forms.status_archived') }}</SelectItem>
           </SelectContent>
         </Select>
         <Button @click="openCreateModal" class="rounded-xl shadow-sm bg-primary hover:bg-primary/90 text-white font-medium h-11 px-6 active:scale-[0.98] transition-all">
@@ -275,8 +280,8 @@
 
 <script setup lang="ts">
 
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -286,7 +291,7 @@ import {
   ArrowLeftIcon, 
   MapPinIcon, 
   ArrowRightIcon,
-  MonitorPlayIcon
+  SearchIcon
 } from 'lucide-vue-next'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -298,19 +303,14 @@ import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useArticles } from '~/composables/useArticles'
 import { useCloudinary } from '~/composables/useCloudinary'
-import { useUIStore } from '~/stores/ui'
 import { formatKhmerDate } from '~/utils/date'
 
 
 const { articles, loading, fetchArticles, addArticle, updateArticle, deleteArticle } = useArticles()
 const { uploadImage } = useCloudinary()
+const route = useRoute()
 const router = useRouter()
-const uiStore = useUIStore()
 
-const enterFinanceWorkspace = (ceremonyId: string) => {
-  uiStore.setFinanceWorkspace(true)
-  router.push(`/admin/ceremonies/${ceremonyId}`)
-}
 
 const showCreateModal = ref(false)
 const showDeleteConfirm = ref(false)
@@ -346,17 +346,29 @@ const ceremonies = computed(() => {
 })
 
 const statusFilter = ref('all')
+const searchQuery = ref('')
 
 const filteredCeremonies = computed(() => {
   let items = ceremonies.value
   if (statusFilter.value !== 'all') {
     items = items.filter(i => (i.status || 'draft') === statusFilter.value)
   }
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    items = items.filter(i => i.title.toLowerCase().includes(q) || (i.location && i.location.toLowerCase().includes(q)))
+  }
   return items
 })
 
 onMounted(() => {
   fetchArticles()
+  if (route.query.status) statusFilter.value = route.query.status as string
+})
+
+watch(statusFilter, (val) => {
+  const query: Record<string, string> = {}
+  if (val && val !== 'all') query.status = val
+  router.replace({ query })
 })
 
 const openCreateModal = () => {

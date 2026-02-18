@@ -14,6 +14,7 @@ import {
 } from 'firebase/firestore'
 
 import { db } from '~/utils/firebase'
+import { useKhrRate } from '~/composables/useKhrRate'
 
 export interface Project {
   id?: string
@@ -43,6 +44,7 @@ export interface ProjectUpdate {
 }
 
 export const useProjects = () => {
+  const { khrRate } = useKhrRate()
   const projects = ref<Project[]>([])
   const donations = ref<any[]>([])
   const expenses = ref<any[]>([])
@@ -50,21 +52,17 @@ export const useProjects = () => {
   const loading = ref(false)
 
   const fetchProjects = () => {
-    console.log('🔍 [useProjects] fetchProjects called')
-    console.log('🔍 [useProjects] db instance:', db)
     loading.value = true
     const q = query(collection(db, 'projects'))
-    
+
     return onSnapshot(q, (snapshot) => {
-      console.log('📦 [useProjects] Snapshot received, docs count:', snapshot.docs.length)
       projects.value = snapshot.docs.map(d => ({
         id: d.id,
         ...d.data()
       })) as Project[]
-      console.log('✅ [useProjects] Projects loaded:', projects.value.length)
       loading.value = false
     }, (error) => {
-      console.error('❌ [useProjects] Error fetching projects:', error)
+      console.error('[useProjects] Error fetching projects:', error)
       loading.value = false
     })
   }
@@ -114,38 +112,43 @@ export const useProjects = () => {
     })
   }
 
+  const updateUpdate = async (projectId: string, updateId: string, data: any) => {
+    return await updateDoc(
+      doc(db, 'projects', projectId, 'updates', updateId),
+      data
+    )
+  }
+
   const deleteUpdate = async (projectId: string, updateId: string) => {
     return await deleteDoc(doc(db, 'projects', projectId, 'updates', updateId))
   }
 
   const recalculateProjectProgress = async (projectId: string) => {
     // 1. Sum Donations
-    const donQ = query(collection(db, 'projects', projectId, 'donations'))
-    const donSnap = await getDocs(donQ)
+    const donSnap = await getDocs(query(collection(db, 'projects', projectId, 'donations')))
     let totalIncomeUsd = 0
-    donSnap.forEach((doc: any) => {
-      const data = doc.data()
+    donSnap.forEach((d) => {
+      const data = d.data()
       const amount = Number(data.amount) || 0
-      totalIncomeUsd += data.currency === 'KHR' ? amount / 4100 : amount
+      totalIncomeUsd += data.currency === 'KHR' ? amount / khrRate.value : amount
     })
 
     // 2. Sum Expenses
-    const expQ = query(collection(db, 'projects', projectId, 'expenses'))
-    const expSnap = await getDocs(expQ)
+    const expSnap = await getDocs(query(collection(db, 'projects', projectId, 'expenses')))
     let totalExpUsd = 0
-    expSnap.forEach((doc: any) => {
-      const data = doc.data()
+    expSnap.forEach((d) => {
+      const data = d.data()
       const amount = Number(data.amount) || 0
-      totalExpUsd += data.currency === 'KHR' ? amount / 4100 : amount
+      totalExpUsd += data.currency === 'KHR' ? amount / khrRate.value : amount
     })
 
     const projectRef = doc(db, 'projects', projectId)
     const projectSnap = await getDoc(projectRef)
-    
+
     if (projectSnap.exists()) {
       const currentIncome = projectSnap.data().currentAmount || 0
       const currentExp = projectSnap.data().totalExpensesUsd || 0
-      
+
       const updateData: any = {}
       if (Math.abs(currentIncome - totalIncomeUsd) > 0.01) {
         updateData.currentAmount = totalIncomeUsd
@@ -161,15 +164,11 @@ export const useProjects = () => {
   }
 
   const addDonation = async (projectId: string, donation: any) => {
-    // 1. Add donation record
     const donationRef = await addDoc(collection(db, 'projects', projectId, 'donations'), {
       ...donation,
       createdAt: Timestamp.now()
     })
-
-    // 2. Recalculate total
     await recalculateProjectProgress(projectId)
-
     return donationRef
   }
 
@@ -253,6 +252,7 @@ export const useProjects = () => {
     deleteExpense,
     fetchUpdates,
     addUpdate,
+    updateUpdate,
     deleteUpdate,
     recalculateProjectProgress
   }

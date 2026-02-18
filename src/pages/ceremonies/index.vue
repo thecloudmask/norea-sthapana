@@ -13,7 +13,7 @@
 
     <div class="container -mt-8 relative z-10 pb-20 px-4 md:px-6">
        <!-- Search & Filter -->
-       <div class="bg-card rounded-2xl shadow-xl p-4 md:p-6 mb-12 border border-border ring-1 ring-border/5 animate-in fade-in slide-in-from-bottom-4 duration-700">
+       <div class="bg-card rounded-2xl shadow-md p-4 md:p-6 mb-12 border border-border ring-1 ring-border/5 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div class="flex flex-col md:flex-row gap-6 items-center">
                 <div class="relative flex-1 w-full group">
                     <SearchIcon class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 h-5 w-5 group-focus-within:text-primary transition-colors" />
@@ -49,7 +49,7 @@
 
        <div v-else-if="filteredCeremonies.length > 0" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
            <RouterLink v-for="item in filteredCeremonies" :key="item.id" :to="`/ceremonies/${item.id}`" class="group h-full">
-               <Card class="h-full overflow-hidden border-none shadow-sm ring-1 ring-border bg-card hover:shadow-2xl hover:ring-primary/20 transition-all duration-500 flex flex-col rounded-3xl">
+               <Card class="h-full overflow-hidden border-none shadow-sm ring-1 ring-border bg-card hover:shadow-lg hover:ring-primary/20 transition-all duration-500 flex flex-col rounded-3xl">
                    <div class="aspect-video relative overflow-hidden bg-muted">
                        <img v-if="item.imageUrl" :src="item.imageUrl" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                        <div v-else class="w-full h-full flex items-center justify-center text-muted-foreground/20">
@@ -112,19 +112,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { SearchIcon, CalendarIcon, SearchXIcon, HistoryIcon, ArrowRightIcon, MapPinIcon } from 'lucide-vue-next'
 import { formatKhmerDate, toKhmerNumerals } from '~/utils/date'
 import { useArticles } from '~/composables/useArticles'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
+const route = useRoute()
+const router = useRouter()
 const { articles, loading, fetchArticles } = useArticles()
 const searchQuery = ref('')
 const filterStatus = ref<'all' | 'upcoming' | 'past'>('all')
 
 onMounted(() => {
     fetchArticles()
+    if (route.query.q) searchQuery.value = route.query.q as string
+    if (route.query.status) filterStatus.value = route.query.status as 'all' | 'upcoming' | 'past'
+})
+
+watch([searchQuery, filterStatus], () => {
+    const query: Record<string, string> = {}
+    if (searchQuery.value) query.q = searchQuery.value
+    if (filterStatus.value && filterStatus.value !== 'all') query.status = filterStatus.value
+    router.replace({ query })
 })
 
 const filteredCeremonies = computed(() => {

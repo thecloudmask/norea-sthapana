@@ -18,7 +18,7 @@
             <div class="text-3xl font-normal text-foreground tabular-nums tracking-tight">
               {{ $t('common.currency_usd') }}{{ summary.totalIncome.usd.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}
             </div>
-            <div v-if="summary.totalIncome.khr > 0" class="text-[11px] font-normal text-muted-foreground/40 uppercase tracking-tighter tabular-nums">
+            <div v-if="summary.totalIncome.khr > 0" class="text-lg font-medium text-muted-foreground/60 tabular-nums">
               {{ $t('common.currency_khr') }}{{ summary.totalIncome.khr.toLocaleString() }}
             </div>
           </div>
@@ -44,7 +44,7 @@
             <div class="text-3xl font-normal text-foreground tabular-nums tracking-tight">
               {{ $t('common.currency_usd') }}{{ summary.totalExpense.usd.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}
             </div>
-            <div v-if="summary.totalExpense.khr > 0" class="text-[11px] font-normal text-muted-foreground/40 uppercase tracking-tighter tabular-nums">
+            <div v-if="summary.totalExpense.khr > 0" class="text-lg font-medium text-muted-foreground/60 tabular-nums">
               {{ $t('common.currency_khr') }}{{ summary.totalExpense.khr.toLocaleString() }}
             </div>
           </div>
@@ -70,7 +70,7 @@
             <div class="text-3xl font-normal tabular-nums tracking-tight text-primary" :class="{'text-rose-500': summary.balance.usd < 0}">
               {{ $t('common.currency_usd') }}{{ summary.balance.usd.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}
             </div>
-            <div v-if="summary.balance.khr !== 0" class="text-[11px] font-normal text-muted-foreground/40 uppercase tracking-tighter tabular-nums" :class="{'text-rose-500/60': summary.balance.khr < 0}">
+            <div v-if="summary.balance.khr !== 0" class="text-lg font-medium text-muted-foreground/60 tabular-nums" :class="{'text-rose-500/60': summary.balance.khr < 0}">
               {{ $t('common.currency_khr') }}{{ summary.balance.khr.toLocaleString() }}
             </div>
           </div>
@@ -104,6 +104,10 @@
         </TabsList>
 
         <div class="flex items-center gap-3 w-full sm:w-auto">
+          <Button variant="outline" @click="handleExport" class="rounded-xl h-11 border-border bg-card shadow-sm font-medium hover:bg-muted">
+            <DownloadIcon class="size-4 mr-2" />
+            {{ $t('admin.reports.export_csv') }}
+          </Button>
           <div class="relative flex-1 sm:flex-none group">
             <SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input 
@@ -298,8 +302,9 @@
     
     <!-- View Income Details Modal -->
     <Dialog :open="!!selectedIncome" @update:open="(val) => !val && (selectedIncome = null)">
-      <DialogContent class="max-w-2xl rounded-[32px] border-none shadow-2xl p-0 overflow-hidden bg-card">
-        <div class="bg-emerald-600 p-8 text-white relative h-32 flex items-end">
+      <DialogContent class="max-w-2xl rounded-[32px] border-none shadow-2xl p-0 overflow-hidden bg-card max-h-[90vh] flex flex-col">
+        <!-- Fixed Header -->
+        <div class="bg-emerald-600 p-8 text-white relative h-32 flex items-end flex-shrink-0">
            <div class="absolute top-6 right-6 flex items-center gap-2">
               <Badge class="bg-white/20 text-white border-none backdrop-blur-md uppercase tracking-widest text-[10px]">{{ selectedIncome?.receiptNumber }}</Badge>
            </div>
@@ -309,7 +314,8 @@
            </div>
         </div>
 
-        <div class="p-8 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+        <!-- Scrollable Body -->
+        <div class="p-8 space-y-8 overflow-y-auto flex-1 custom-scrollbar">
            <div class="grid grid-cols-2 gap-8">
               <div class="space-y-1.5">
                  <Label class="text-[10px] uppercase tracking-widest text-muted-foreground font-normal">{{ $t('admin.ceremony_finance.donor_name') }}</Label>
@@ -339,12 +345,13 @@
            <div v-if="selectedIncome?.receiptUrl" class="space-y-3 border-t border-border pt-6">
               <Label class="text-[10px] uppercase tracking-widest text-muted-foreground font-normal">{{ $t('admin.ceremony_finance.receipt') }}</Label>
               <div class="rounded-2xl overflow-hidden border border-border bg-muted/30 p-2">
-                 <img :src="selectedIncome?.receiptUrl" class="w-full h-auto max-h-[300px] object-contain rounded-xl" />
+                 <img :src="selectedIncome?.receiptUrl" class="w-full h-auto max-h-[220px] object-contain rounded-xl" />
               </div>
            </div>
         </div>
 
-        <DialogFooter class="p-6 bg-muted/20 border-t border-border gap-3">
+        <!-- Fixed Footer -->
+        <DialogFooter class="p-6 bg-muted/20 border-t border-border gap-3 flex-shrink-0">
            <Button variant="outline" class="flex-1 rounded-xl h-11 font-normal border-border" @click="selectedIncome = null">{{ $t('common.close') }}</Button>
            <Button class="flex-1 rounded-xl h-11 font-normal bg-primary text-white" @click="editIncome(selectedIncome!)">{{ $t('admin.forms.edit') }}</Button>
         </DialogFooter>
@@ -353,8 +360,9 @@
 
     <!-- View Expense Details Modal -->
     <Dialog :open="!!selectedExpense" @update:open="(val) => !val && (selectedExpense = null)">
-      <DialogContent class="max-w-2xl rounded-[32px] border-none shadow-2xl p-0 overflow-hidden bg-card">
-        <div class="bg-rose-600 p-8 text-white relative h-32 flex items-end">
+      <DialogContent class="max-w-2xl rounded-[32px] border-none shadow-2xl p-0 overflow-hidden bg-card max-h-[90vh] flex flex-col">
+        <!-- Fixed Header -->
+        <div class="bg-rose-600 p-8 text-white relative h-32 flex items-end flex-shrink-0">
            <div class="absolute top-6 right-6 flex items-center gap-2">
               <Badge class="bg-white/20 text-white border-none backdrop-blur-md uppercase tracking-widest text-[10px]">{{ selectedExpense?.expenseNumber }}</Badge>
            </div>
@@ -364,7 +372,8 @@
            </div>
         </div>
 
-        <div class="p-8 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+        <!-- Scrollable Body -->
+        <div class="p-8 space-y-8 overflow-y-auto flex-1 custom-scrollbar">
            <div class="grid grid-cols-2 gap-8">
               <div class="space-y-1.5">
                  <Label class="text-[10px] uppercase tracking-widest text-muted-foreground font-normal">{{ $t('admin.ceremony_finance.item_name') }}</Label>
@@ -409,12 +418,13 @@
            <div v-if="selectedExpense?.receiptUrl" class="space-y-3 border-t border-border pt-6">
               <Label class="text-[10px] uppercase tracking-widest text-muted-foreground font-normal">{{ $t('admin.ceremony_finance.receipt') }}</Label>
               <div class="rounded-2xl overflow-hidden border border-border bg-muted/30 p-2">
-                 <img :src="selectedExpense?.receiptUrl" class="w-full h-auto max-h-[300px] object-contain rounded-xl" />
+                 <img :src="selectedExpense?.receiptUrl" class="w-full h-auto max-h-[220px] object-contain rounded-xl" />
               </div>
            </div>
         </div>
 
-        <DialogFooter class="p-6 bg-muted/20 border-t border-border gap-3">
+        <!-- Fixed Footer -->
+        <DialogFooter class="p-6 bg-muted/20 border-t border-border gap-3 flex-shrink-0">
            <Button variant="outline" class="flex-1 rounded-xl h-11 font-normal border-border" @click="selectedExpense = null">{{ $t('common.close') }}</Button>
            <Button class="flex-1 rounded-xl h-11 font-normal bg-primary text-white" @click="editExpense(selectedExpense!)">{{ $t('admin.forms.edit') }}</Button>
         </DialogFooter>
@@ -427,19 +437,20 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { format } from 'date-fns'
-import { 
-  TrendingUpIcon, 
-  TrendingDownIcon, 
-  WalletIcon, 
-  CoinsIcon, 
-  ReceiptIcon, 
+import {
+  TrendingUpIcon,
+  TrendingDownIcon,
+  WalletIcon,
+  CoinsIcon,
+  ReceiptIcon,
   PlusIcon,
   SearchIcon,
   PencilIcon,
   Trash2Icon,
   ActivityIcon,
   FolderOpenIcon,
-  EyeIcon
+  EyeIcon,
+  DownloadIcon
 } from 'lucide-vue-next'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -473,11 +484,11 @@ const props = defineProps<{
 const { t } = useI18n()
 const emit = defineEmits(['add-income', 'add-expense', 'edit-income', 'edit-expense'])
 
-const { 
-  incomes, 
-  expenses, 
-  summary, 
-  fetchIncomes, 
+const {
+  incomes,
+  expenses,
+  summary,
+  fetchIncomes,
   fetchExpenses,
   searchIncomes,
   deleteIncome,
@@ -573,5 +584,76 @@ const handleDelete = async () => {
   } finally {
     deleting.value = false
   }
+}
+
+const handleExport = () => {
+    // Collect all data
+    const data: any[] = []
+    
+    // Incomes
+    incomes.value.forEach(i => {
+        data.push({
+            type: t('admin.ceremony_finance.income'),
+            number: i.receiptNumber,
+            name: i.donorName,
+            category: t(`admin.ceremony_finance.payment_methods.${i.paymentMethod}`),
+            amount: i.amount,
+            currency: i.currency,
+            date: formatDate(i.createdAt),
+            description: i.description || ''
+        })
+    })
+    
+    // Expenses
+    expenses.value.forEach(e => {
+        data.push({
+            type: t('admin.ceremony_finance.expense'),
+            number: e.expenseNumber,
+            name: e.itemName,
+            category: t(`admin.ceremony_finance.expense_categories.${e.category}`),
+            amount: -e.amount,
+            currency: e.currency,
+            date: formatDate(e.createdAt),
+            description: e.description || ''
+        })
+    })
+    
+    if (data.length === 0) return
+    
+    // Create CSV
+    const headers = [
+        t('admin.table.type'),
+        t('admin.ceremony_finance.receipt_number'),
+        t('admin.ceremony_finance.donor_name'),
+        t('admin.ceremony_finance.category'),
+        t('admin.ceremony_finance.amount'),
+        t('admin.ceremony_finance.currency'),
+        t('admin.table.date'),
+        t('admin.ceremony_finance.description')
+    ]
+    
+    const csvContent = [
+        headers.join(','),
+        ...data.map(row => [
+            `"${row.type}"`,
+            `"${row.number}"`,
+            `"${row.name}"`,
+            `"${row.category}"`,
+            row.amount,
+            `"${row.currency}"`,
+            `"${row.date}"`,
+            `"${row.description.replace(/"/g, '""')}"`
+        ].join(','))
+    ].join('\n')
+    
+    const blob = new Blob([`\ufeff${csvContent}`], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `ceremony_finance_${props.ceremonyId}_${format(new Date(), 'yyyyMMdd')}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
 }
 </script>

@@ -11,6 +11,18 @@
     "donate_now": "បូជាបច្ច័យឥឡូវនេះ",
     "more": "ផ្សេងៗ"
   },
+  "expense_categories": {
+    "material": "សម្ភារៈកសាង",
+    "labor": "ថ្លៃឈ្នួល",
+    "food": "ស្បៀងអាហារ",
+    "utility": "ផ្សេងៗ"
+  },
+  "categories": {
+    "proverb": "សុភាសិត",
+    "history": "ប្រវត្តិបុណ្យ",
+    "buddhist_history": "ពុទ្ធប្រវត្តិ",
+    "general": "ទូទៅ"
+  },
   "hero": {
     "title_start": "រួមគ្នាកសាង ដើម្បី",
     "title_highlight": "ព្រះពុទ្ធសាសនា",
@@ -189,7 +201,8 @@
     "currency_khr": "៛",
     "finance_workspace": "ផ្ទាំងហិរញ្ញវត្ថុ",
     "exit_workspace": "ចាកចេញពីផ្ទាំងកិច្ចការ",
-    "close": "បិទ"
+    "close": "បិទ",
+    "search_placeholder": "ស្វែងរក..."
   },
   "footer": {
     "privacy_policy": "គោលការណ៍​ភាព​ឯកជន",
@@ -260,7 +273,8 @@
       "donation_list_desc": "បញ្ជីរាយនាមសប្បុរសជនទាំងអស់ក្នុងគម្រោង",
       "expense_audit": "សមតុល្យចំណាយ",
       "expense_audit_desc": "របាយការណ៍ចំណាយលម្អិតសម្រាប់ការចុះសវនកម្ម",
-      "download_csv": "ទាញយក CSV"
+      "download_csv": "ទាញយក CSV",
+      "export_csv": "ទាញយក CSV"
     },
     "project_report": {
       "title": "របាយការណ៍បិទគម្រោង",
@@ -387,7 +401,8 @@
       "buddhist_history": "ពុទ្ធប្រវត្តិ",
       "general": "ទូទៅ",
       "placeholder_title": "ឈ្មោះអត្ថបទ...",
-      "placeholder_content": "ខ្លឹមសារអត្ថបទ..."
+      "placeholder_content": "ខ្លឹមសារអត្ថបទ...",
+      "no_articles": "មិនទាន់មានអត្ថបទ"
     },
     "ceremonies": {
       "title": "គ្រប់គ្រងកម្មវិធីបុណ្យ",
@@ -424,7 +439,8 @@
       "type_news": "ដំណឹងទូទៅ",
       "type_event": "ព្រឹត្តិការណ៍",
       "placeholder_title": "ចំណងជើងដំណឹង...",
-      "placeholder_content": "ខ្លឹមសារដំណឹង..."
+      "placeholder_content": "ខ្លឹមសារដំណឹង...",
+      "no_news": "មិនទាន់មានដំណឹង"
     },
     "users": {
         "title": "គ្រប់គ្រងអ្នកប្រើប្រាស់",
@@ -449,7 +465,8 @@
         "admin": "អ្នកគ្រប់គ្រង",
         "super_admin": "អ្នកគ្រប់គ្រងជាន់ខ្ពស់",
         "active": "សកម្ម",
-        "disabled": "បិទ"
+        "disabled": "បិទ",
+        "no_users": "មិនទាន់មានអ្នកប្រើប្រាស់"
     },
     "settings": {
         "title": "ការកំណត់ប្រព័ន្ធ",
@@ -477,7 +494,7 @@
     },
     "expense_categories": {
       "material": "សម្ភារៈកសាង",
-      "labor": "ថ្លៃជាង",
+      "labor": "ថ្លៃឈ្នួល",
       "food": "ស្បៀងអាហារ",
       "utility": "ផ្សេងៗ"
     },
@@ -569,7 +586,10 @@
         "update_success": "បានកែប្រែដោយជោគជ័យ",
         "update_error": "មានបញ្ហាក្នុងការកែប្រែ",
         "delete_success": "បានលុបដោយជោគជ័យ",
-        "delete_error": "មានបញ្ហាក្នុងការលុប"
+        "delete_error": "មានបញ្ហាក្នុងការលុប",
+        "upload_success": "បានបញ្ជូនរូបភាពដោយជោគជ័យ",
+        "upload_success_desc": "រូបភាពត្រូវបានរក្សាទុកក្នុងប្រព័ន្ធ។",
+        "upload_error": "មានបញ្ហាក្នុងការបញ្ជូនរូបភាព"
       },
       "duplicate_warning": {
         "title": "ប្រុងប្រយ័ត្ន៖ ទិន្នន័យជាន់គ្នា",

@@ -786,6 +786,7 @@ import { useRoute } from 'vue-router'
 import { useProjects } from '~/composables/useProjects'
 import { useCloudinary } from '~/composables/useCloudinary'
 import { useAuthStore } from '~/stores/auth'
+import { useKhrRate } from '~/composables/useKhrRate'
 
 
 const route = useRoute()
@@ -806,10 +807,12 @@ const {
   updates,
   fetchUpdates,
   addUpdate,
+  updateUpdate,
   deleteUpdate
 } = useProjects()
 const { uploadImage } = useCloudinary()
 const authStore = useAuthStore()
+const { khrRate } = useKhrRate()
 
 const project = ref<any>(null)
 const loading = ref(true)
@@ -900,13 +903,13 @@ const totalBalance = computed(() => {
 })
 
 const analyticsStats = computed(() => {
-  const totalUsd = totalDonations.value.usd + (totalDonations.value.khr / 4100)
+  const totalUsd = totalDonations.value.usd + (totalDonations.value.khr / khrRate.value)
   const avg = donations.value.length ? totalUsd / donations.value.length : 0
 
   let max = 0
   let maxName = '-'
   donations.value.forEach(d => {
-    const val = Number(d.amount) / (d.currency === 'KHR' ? 4100 : 1)
+    const val = Number(d.amount) / (d.currency === 'KHR' ? khrRate.value : 1)
     if (val > max) {
       max = val
       maxName = d.donorName
@@ -915,7 +918,7 @@ const analyticsStats = computed(() => {
 
   const expByCat: Record<string, number> = {}
   expenses.value.forEach(e => {
-    const val = Number(e.amount) / (e.currency === 'KHR' ? 4100 : 1)
+    const val = Number(e.amount) / (e.currency === 'KHR' ? khrRate.value : 1)
     expByCat[e.category] = (expByCat[e.category] || 0) + val
   })
 
@@ -925,7 +928,7 @@ const analyticsStats = computed(() => {
     donByMethod[method] = (donByMethod[method] || 0) + 1
   })
 
-  const totalExpUsd = totalExpenses.value.usd + (totalExpenses.value.khr / 4100)
+  const totalExpUsd = totalExpenses.value.usd + (totalExpenses.value.khr / khrRate.value)
 
   return {
     avgDonation: avg,
@@ -939,7 +942,7 @@ const analyticsStats = computed(() => {
 
 const projectProgress = computed(() => {
   if (!project.value || !project.value.goalAmount) return 0
-  const totalUsd = totalDonations.value.usd + (totalDonations.value.khr / 4100)
+  const totalUsd = totalDonations.value.usd + (totalDonations.value.khr / khrRate.value)
   const percent = (totalUsd / project.value.goalAmount) * 100
   return Math.min(Math.round(percent), 100)
 })
@@ -1061,7 +1064,7 @@ const handleSaveUpdate = async () => {
   saving.value = true
   try {
     if (editingItem.value) {
-      console.warn('Update editing not fully wired in useProjects yet')
+      await updateUpdate(project.value.id, editingItem.value.id, { ...newUpdate.value })
     } else {
       await addUpdate(project.value.id, { ...newUpdate.value })
     }

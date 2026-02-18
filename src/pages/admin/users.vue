@@ -2,16 +2,16 @@
   <div class="container py-10 space-y-10 transition-colors duration-300">
     <div class="flex items-center justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-semibold text-foreground font-khmer">
+        <h1 class="text-3xl md:text-4xl font-semibold text-foreground font-khmer uppercase tracking-tight">
           {{ $t("admin.users.title") }}
         </h1>
-        <p class="text-muted-foreground mt-1 font-medium">
+        <p class="text-muted-foreground mt-1 font-normal">
           {{ $t("admin.users.subtitle") }}
         </p>
       </div>
       <Button
         @click="showAddUserModal = true"
-        class="rounded-xl shadow-lg shadow-primary/20 font-semibold h-11 px-6"
+        class="rounded-xl shadow-sm bg-primary hover:bg-primary/90 text-white font-medium h-11 px-6 active:scale-[0.98] transition-all"
       >
         <PlusIcon class="mr-2 h-4 w-4" />
         {{ $t("admin.users.add_new") }}
@@ -177,18 +177,18 @@
                             class="bg-card border-border rounded-xl p-1 shadow-2xl"
                           >
                             <DropdownMenuItem
-                              @click="updateUserRole(u, 'staff')"
+                              @click="handleUpdateRole(u, 'staff')"
                               class="rounded-lg font-semibold"
                               >{{ $t("admin.users.staff") }}</DropdownMenuItem
                             >
                             <DropdownMenuItem
-                              @click="updateUserRole(u, 'admin')"
+                              @click="handleUpdateRole(u, 'admin')"
                               class="rounded-lg font-semibold"
                               >{{ $t("admin.users.admin") }}</DropdownMenuItem
                             >
                             <DropdownMenuItem
                               v-if="authStore.isSuperAdmin"
-                              @click="updateUserRole(u, 'super_admin')"
+                              @click="handleUpdateRole(u, 'super_admin')"
                               class="text-rose-600 font-semibold rounded-lg"
                               >{{
                                 $t("admin.users.super_admin")
@@ -200,13 +200,13 @@
                       <DropdownMenuSeparator class="bg-border" />
                       <DropdownMenuItem
                         v-if="u.status !== 'active'"
-                        @click="updateUserStatus(u, 'active')"
+                        @click="handleUpdateStatus(u, 'active')"
                         class="text-emerald-600 font-semibold rounded-lg cursor-pointer"
                         >{{ $t("admin.users.set_active") }}</DropdownMenuItem
                       >
                       <DropdownMenuItem
                         v-if="u.status !== 'disabled'"
-                        @click="updateUserStatus(u, 'disabled')"
+                        @click="handleUpdateStatus(u, 'disabled')"
                         class="text-rose-600 font-semibold rounded-lg cursor-pointer"
                         >{{
                           $t("admin.users.disable_account")
@@ -238,7 +238,7 @@
                 colspan="6"
                 class="h-32 text-center text-muted-foreground italic font- khmer"
               >
-                មិនទាន់មានអ្នកប្រើប្រាស់នៅឡើយទេ
+                {{ $t("admin.users.no_users") }}
               </TableCell>
             </TableRow>
           </TableBody>
@@ -378,23 +378,32 @@ import {
 } from "lucide-vue-next";
 import RichEditor from "@/components/ui/RichEditor.vue";
 import {
-  collection,
-  query,
-  getDocs,
-  doc,
-  updateDoc,
-  serverTimestamp,
-  orderBy,
-} from "firebase/firestore";
-import { initFirebase } from "~/utils/firebase";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuthStore, type UserProfile } from "~/stores/auth";
 import { format } from "date-fns";
 import { km } from "date-fns/locale";
+import { useUsers } from "~/composables/useUsers";
 
 const authStore = useAuthStore();
-const { db } = initFirebase();
-const users = ref<UserProfile[]>([]);
-const loading = ref(true);
+const { 
+  users, 
+  loading, 
+  fetchUsers, 
+  updateUserStatus, 
+  updateUserRole, 
+  updateUserProfile 
+} = useUsers();
+
 const saving = ref(false);
 const showAddUserModal = ref(false);
 const showEditModal = ref(false);
@@ -407,28 +416,10 @@ const editForm = ref({
   note: "",
 });
 
-const fetchUsers = async () => {
-  loading.value = true;
-  try {
-    const q = query(collection(db, "users"), orderBy("updatedAt", "desc"));
-    const querySnapshot = await getDocs(q);
-    users.value = querySnapshot.docs.map(
-      (doc) =>
-        ({
-          ...doc.data(),
-          uid: doc.id,
-        } as UserProfile)
-    );
-  } catch (err) {
-    console.error(err);
-  } finally {
-    loading.value = false;
-  }
-};
 
-const updateUserStatus = async (
+const handleUpdateStatus = async (
   user: UserProfile,
-  newStatus: UserProfile["status"]
+  newStatus: string
 ) => {
   // Security Guard: Admin cannot disable Super Admin
   if (user.role === "super_admin" && !authStore.isSuperAdmin) return;
@@ -436,19 +427,15 @@ const updateUserStatus = async (
   if (user.uid === authStore.user?.uid) return;
 
   try {
-    await updateDoc(doc(db, "users", user.uid), {
-      status: newStatus,
-      updatedAt: serverTimestamp(),
-    });
-    user.status = newStatus;
+    await updateUserStatus(user.uid, newStatus);
   } catch (err) {
     console.error(err);
   }
 };
 
-const updateUserRole = async (
+const handleUpdateRole = async (
   user: UserProfile,
-  newRole: UserProfile["role"]
+  newRole: string
 ) => {
   // Security Guard: Admin cannot change Super Admin role
   if (user.role === "super_admin" && !authStore.isSuperAdmin) return;
@@ -456,11 +443,7 @@ const updateUserRole = async (
   if (newRole === "super_admin" && !authStore.isSuperAdmin) return;
 
   try {
-    await updateDoc(doc(db, "users", user.uid), {
-      role: newRole,
-      updatedAt: serverTimestamp(),
-    });
-    user.role = newRole;
+    await updateUserRole(user.uid, newRole);
   } catch (err) {
     console.error(err);
   }
@@ -481,12 +464,9 @@ const handleUpdateProfile = async () => {
   if (!editingUser.value) return;
   saving.value = true;
   try {
-    await updateDoc(doc(db, "users", editingUser.value.uid), {
-      ...editForm.value,
-      updatedAt: serverTimestamp(),
+    await updateUserProfile(editingUser.value.uid, {
+      ...editForm.value
     });
-    // Sync local state
-    Object.assign(editingUser.value, editForm.value);
     showEditModal.value = false;
   } catch (err) {
     console.error(err);
