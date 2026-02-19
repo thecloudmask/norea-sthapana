@@ -255,7 +255,7 @@
                           <span v-if="donation.paymentMethod === 'cash'" class="mr-2 size-2 rounded-full bg-orange-500"></span>
                           <span v-else-if="donation.paymentMethod === 'aba'" class="mr-2 size-2 rounded-full bg-blue-500"></span>
                           <span v-else class="mr-2 size-2 rounded-full bg-emerald-500"></span>
-                          {{ donation.paymentMethod || 'cash' }}
+                          {{ $t('donation.type_' + (donation.paymentMethod || 'cash')) }}
                         </Badge>
                       </div>
                     </TableCell>

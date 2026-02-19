@@ -82,6 +82,47 @@
       </Card>
     </div>
 
+    <!-- Charts Section -->
+    <div v-if="showSummaryCards && (incomes.length > 0 || expenses.length > 0)" class="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-3 duration-500">
+        <!-- Income By Method -->
+        <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden">
+             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2 border-b border-border bg-muted/20">
+                <CardTitle class="text-[11px] font-bold text-muted-foreground uppercase tracking-widest font-khmer flex items-center gap-2">
+                   <PieChartIcon class="size-3.5" />
+                   {{ $t('admin.ceremony_finance.income_by_method') }}
+                </CardTitle>
+             </CardHeader>
+             <CardContent class="p-6">
+                <div class="h-[250px] w-full flex items-center justify-center">
+                    <apexchart v-if="incomes.length > 0" type="donut" height="250" :options="incomeChartOptions" :series="incomeChartSeries" />
+                    <div v-else class="flex flex-col items-center justify-center text-muted-foreground/30 gap-2">
+                        <PieChartIcon class="size-8" />
+                        <span class="text-xs font-semibold uppercase tracking-widest">{{ $t('common.no_data') }}</span>
+                    </div>
+                </div>
+             </CardContent>
+        </Card>
+
+        <!-- Expense By Category -->
+        <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden">
+             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2 border-b border-border bg-muted/20">
+                <CardTitle class="text-[11px] font-bold text-muted-foreground uppercase tracking-widest font-khmer flex items-center gap-2">
+                   <BarChart3Icon class="size-3.5" />
+                   {{ $t('admin.ceremony_finance.expense_by_category') }}
+                </CardTitle>
+             </CardHeader>
+             <CardContent class="p-6">
+                <div class="h-[250px] w-full flex items-center justify-center">
+                    <apexchart v-if="expenses.length > 0" type="donut" height="250" :options="expenseChartOptions" :series="expenseChartSeries" />
+                    <div v-else class="flex flex-col items-center justify-center text-muted-foreground/30 gap-2">
+                        <BarChart3Icon class="size-8" />
+                        <span class="text-xs font-semibold uppercase tracking-widest">{{ $t('common.no_data') }}</span>
+                    </div>
+                </div>
+             </CardContent>
+        </Card>
+    </div>
+
     <!-- Main Content -->
      <Tabs default-value="income" class="space-y-8">
        <!-- Tab List & Search -->
@@ -288,7 +329,7 @@
         <DialogHeader>
           <DialogTitle>{{ $t('admin.confirmations.delete_title', { type: deleteType === 'income' ? $t('admin.ceremony_finance.income') : $t('admin.ceremony_finance.expense') }) }}</DialogTitle>
           <DialogDescription>
-            {{ $t('admin.confirmations.delete_desc', { name: deleteType === 'income' ? (itemToDelete as any)?.receiptNumber : (itemToDelete as any)?.expenseNumber }) }}
+            {{ $t('admin.confirmations.delete_desc', { name: deleteType === 'income' ? itemToDelete?.receiptNumber : itemToDelete?.expenseNumber }) }}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -352,6 +393,10 @@
 
         <!-- Fixed Footer -->
         <DialogFooter class="p-6 bg-muted/20 border-t border-border gap-3 flex-shrink-0">
+           <Button variant="outline" class="flex-1 rounded-xl h-11 font-normal border-border" @click="handlePrint(selectedIncome!)">
+              <PrinterIcon class="mr-2 h-4 w-4" />
+              {{ $t('common.print') }}
+           </Button>
            <Button variant="outline" class="flex-1 rounded-xl h-11 font-normal border-border" @click="selectedIncome = null">{{ $t('common.close') }}</Button>
            <Button class="flex-1 rounded-xl h-11 font-normal bg-primary text-white" @click="editIncome(selectedIncome!)">{{ $t('admin.forms.edit') }}</Button>
         </DialogFooter>
@@ -450,7 +495,10 @@ import {
   ActivityIcon,
   FolderOpenIcon,
   EyeIcon,
-  DownloadIcon
+  DownloadIcon,
+  PrinterIcon,
+  PieChartIcon,
+  BarChart3Icon
 } from 'lucide-vue-next'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -572,7 +620,6 @@ const confirmDelete = (type: 'income' | 'expense', item: any) => {
 
 const handleDelete = async () => {
   if (!itemToDelete.value || !deleteType.value) return
-  
   deleting.value = true
   try {
     if (deleteType.value === 'income') {
@@ -659,4 +706,171 @@ const handleExport = () => {
     link.click()
     document.body.removeChild(link)
 }
+
+const handlePrint = (income: CeremonyIncome) => {
+  if (!income) return
+  
+  const printWindow = window.open('', '_blank', 'width=800,height=600')
+  if (!printWindow) return
+
+  const amountDisplay = income.currency === 'USD' 
+    ? `$${income.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}` 
+    : `៛${income.amount.toLocaleString()}`
+
+  const dateDisplay = formatDate(income.createdAt)
+  const paymentMethod = t(`admin.ceremony_finance.payment_methods.${income.paymentMethod}`)
+
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Receipt - ${income.receiptNumber}</title>
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&display=swap');
+          body { font-family: 'Kantumruy Pro', sans-serif; padding: 40px; color: #1e293b; }
+          .receipt { max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 40px; }
+          .header { text-align: center; margin-bottom: 40px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 30px; }
+          .title { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
+          .subtitle { font-size: 16px; color: #64748b; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+          .info-item { display: flex; flex-direction: column; gap: 4px; }
+          .label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: 600; }
+          .value { font-size: 16px; font-weight: 500; color: #0f172a; }
+          .amount-box { background: #f0fdf4; border: 1px solid #dcfce7; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 30px; }
+          .amount-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: #166534; font-weight: 600; margin-bottom: 4px; }
+          .amount-value { font-size: 32px; font-weight: 700; color: #15803d; }
+          .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+          .signature { margin-top: 60px; display: flex; justify-content: space-between; padding: 0 40px; }
+          .sig-line { width: 200px; border-top: 1px solid #cbd5e1; text-align: center; padding-top: 8px; font-size: 12px; color: #64748b; }
+          @media print { .no-print { display: none; } body { padding: 0; } .receipt { border: none; } }
+        </style>
+      </head>
+      <body>
+        <div class="receipt">
+          <div class="header">
+            <div class="title">បង្កាន់ដៃទទួលប្រាក់</div>
+            <div class="subtitle">Official Receipt</div>
+          </div>
+          
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">លេខបង្កាន់ដៃ / Receipt No</span>
+              <span class="value">${income.receiptNumber}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">កាលបរិច្ឆេទ / Date</span>
+              <span class="value">${dateDisplay}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">អ្នកបរិច្ចាគ / Donor</span>
+              <span class="value">${income.donorName}</span>
+            </div>
+             <div class="info-item">
+              <span class="label">លេខទូរស័ព្ទ / Phone</span>
+              <span class="value">${income.donorPhone || '-'}</span>
+            </div>
+          </div>
+
+          <div class="amount-box">
+             <div class="amount-label">ចំនួនទឹកប្រាក់ / Amount</div>
+             <div class="amount-value">${amountDisplay}</div>
+          </div>
+
+          <div class="info-grid">
+             <div class="info-item">
+              <span class="label">វិធីបង់ប្រាក់ / Payment Method</span>
+              <span class="value">${paymentMethod}</span>
+            </div>
+             <div class="info-item">
+              <span class="label">បរិយាយ / Description</span>
+              <span class="value">${income.description || '-'}</span>
+            </div>
+          </div>
+
+          <div class="signature">
+             <div class="sig-line">ហត្ថលេខាអ្នកទទួល / Receiver</div>
+             <div class="sig-line">ហត្ថលេខាអ្នកបង់ប្រាក់ / Payer</div>
+          </div>
+
+          <div class="footer">
+            សូមអរគុណចំពោះសទ្ធាជ្រះថ្លារបស់លោកអ្នក! <br> Thank you for your donation!
+          </div>
+        </div>
+        <script>
+           window.onload = () => { window.print(); }
+        <\/script>
+      </body>
+    </html>
+  `)
+  printWindow.document.close()
+}
+
+// Charts Logic
+const incomeChartSeries = computed(() => {
+    const counts: Record<string, number> = {}
+    incomes.value.forEach(i => {
+        const method = i.paymentMethod || 'cash'
+        counts[method] = (counts[method] || 0) + 1
+    })
+    return Object.values(counts)
+})
+
+const incomeChartOptions = computed(() => {
+    const counts: Record<string, number> = {}
+    incomes.value.forEach(i => {
+        const method = i.paymentMethod || 'cash'
+        counts[method] = (counts[method] || 0) + 1
+    })
+    
+    return {
+        chart: { type: 'donut', fontFamily: 'inherit', background: 'transparent' },
+        labels: Object.keys(counts).map(key => t(`admin.ceremony_finance.payment_methods.${key}`)),
+        dataLabels: { enabled: false },
+        tooltip: {
+            y: {
+                formatter: function (val: number) {
+                    return val + " " + t('admin.ceremony_finance.income_count')
+                }
+            }
+        },
+        legend: { position: 'bottom', fontSize: '10px' },
+        colors: ['#10b981', '#3b82f6', '#f59e0b', '#6366f1', '#ec4899'],
+        plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: t('common.total'), formatter: () => incomes.value.length.toString() } } } } },
+        stroke: { show: false }
+    }
+})
+
+const expenseChartSeries = computed(() => {
+    const counts: Record<string, number> = {}
+    expenses.value.forEach(e => {
+        const cat = e.category || 'other'
+        counts[cat] = (counts[cat] || 0) + 1
+    })
+    return Object.values(counts)
+})
+
+const expenseChartOptions = computed(() => {
+    const counts: Record<string, number> = {}
+    expenses.value.forEach(e => {
+        const cat = e.category || 'other'
+        counts[cat] = (counts[cat] || 0) + 1
+    })
+    
+    return {
+         chart: { type: 'donut', fontFamily: 'inherit', background: 'transparent' },
+        labels: Object.keys(counts).map(key => t(`admin.ceremony_finance.expense_categories.${key}`)),
+        dataLabels: { enabled: false },
+         tooltip: {
+            y: {
+                formatter: function (val: number) {
+                    return val + " " + t('admin.ceremony_finance.expense_count')
+                }
+            }
+        },
+        legend: { position: 'bottom', fontSize: '10px' },
+        colors: ['#f43f5e', '#f97316', '#8b5cf6', '#0ea5e9', '#84cc16'],
+         plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: t('common.total'), formatter: () => expenses.value.length.toString() } } } } },
+         stroke: { show: false }
+    }
+})
+
 </script>

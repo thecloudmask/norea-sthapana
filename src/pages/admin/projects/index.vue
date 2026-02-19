@@ -110,7 +110,7 @@
                  </div>
               </div>
 
-              <Progress :model-value="((project.currentAmount || 0) / (project.goalAmount || 1)) * 100" class="h-1.5 bg-muted" />
+              <Progress :model-value="Math.min(100, ((project.currentAmount || 0) / (project.goalAmount || 1)) * 100)" class="h-1.5 bg-muted" />
            </div>
         </CardContent>
         <CardFooter class="px-6 pb-6 pt-0">
@@ -281,7 +281,6 @@
 </template>
 
 <script setup lang="ts">
-console.log('🏁 [Admin Projects] Script setup starting...')
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { PlusIcon, FolderIcon, MoreVerticalIcon, PencilIcon, Trash2Icon, ArrowRightIcon, FolderOpenIcon, UploadIcon, QrCodeIcon, TrashIcon, ArrowUpCircleIcon, ArrowDownCircleIcon, SearchIcon } from 'lucide-vue-next'
@@ -464,8 +463,6 @@ const handleDelete = async () => {
 
 // Fetch projects on mount
 onMounted(() => {
-   console.log('📋 [Admin Projects] onMounted called')
-   console.log('📋 [Admin Projects] Fetching projects...')
    fetchProjects()
 })
 

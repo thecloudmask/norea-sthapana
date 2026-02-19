@@ -202,6 +202,8 @@
     "finance_workspace": "ផ្ទាំងហិរញ្ញវត្ថុ",
     "exit_workspace": "ចាកចេញពីផ្ទាំងកិច្ចការ",
     "close": "បិទ",
+    "total": "សរុប",
+    "no_data": "មិនមានទិន្នន័យ",
     "search_placeholder": "ស្វែងរក..."
   },
   "footer": {
@@ -519,6 +521,8 @@
       "total_balance": "សមតុល្យ",
       "income_count": "ឯកសារចំណូល",
       "expense_count": "ឯកសារចំណាយ",
+      "income_by_method": "ចំណូលតាមវិធីបង់ប្រាក់",
+      "expense_by_category": "ចំណាយតាមប្រភេទ",
       "add_income": "កត់ត្រាចំណូល",
       "add_expense": "កត់ត្រាចំណាយ",
       "edit_income": "កែប្រែកំណត់ត្រាចំណូល",

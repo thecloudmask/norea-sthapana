@@ -224,7 +224,55 @@
 
            <!-- Sidebar (Donation Info) -->
            <div class="space-y-6">
-             <Card class="bg-primary text-primary-foreground border-none shadow-xl shadow-primary/20 sticky top-24 overflow-hidden">
+             <!-- Completed Status -->
+             <Card v-if="project.status === 'completed'" class="bg-emerald-600 text-white border-none shadow-xl shadow-emerald-600/20 sticky top-24 overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10">
+                  <CheckCircleIcon :size="120" />
+                </div>
+                <CardHeader class="relative z-10 text-center pb-2">
+                  <div class="mx-auto bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm">
+                      <CheckCircleIcon :size="32" class="text-white" />
+                  </div>
+                  <CardTitle class="text-2xl font-black text-white font-khmer">គម្រោងបានបញ្ចប់</CardTitle>
+                  <CardDescription class="text-emerald-50 font-medium font-khmer mt-2 text-base">គម្រោងនេះបានបញ្ចប់ដោយជោគជ័យ!<br>សូមអរគុណដល់សប្បុរសជនទាំងអស់។</CardDescription>
+                </CardHeader>
+                <CardContent class="relative z-10 pb-8">
+                   <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm text-center border border-white/20">
+                      <p class="font-bold text-lg text-white font-khmer">ការបរិច្ចាគត្រូវបានបិទ</p>
+                   </div>
+                </CardContent>
+             </Card>
+
+             <!-- Paused Status -->
+             <Card v-else-if="project.status === 'paused'" class="bg-amber-500 text-white border-none shadow-xl shadow-amber-500/20 sticky top-24 overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10">
+                  <PauseCircleIcon :size="120" />
+                </div>
+                <CardHeader class="relative z-10 text-center pb-2">
+                  <div class="mx-auto bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm">
+                      <PauseCircleIcon :size="32" class="text-white" />
+                  </div>
+                  <CardTitle class="text-2xl font-black text-white font-khmer">គម្រោងបានផ្អាក</CardTitle>
+                  <CardDescription class="text-amber-50 font-medium font-khmer mt-2 text-base">ការបរិច្ចាគត្រូវបានផ្អាកបណ្តោះអាសន្ន។</CardDescription>
+                </CardHeader>
+             </Card>
+
+             <!-- Cancelled Status -->
+             <Card v-else-if="project.status === 'cancelled'" class="bg-rose-600 text-white border-none shadow-xl shadow-rose-600/20 sticky top-24 overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10">
+                  <XCircleIcon :size="120" />
+                </div>
+                <CardHeader class="relative z-10 text-center pb-2">
+                  <div class="mx-auto bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm">
+                      <XCircleIcon :size="32" class="text-white" />
+                  </div>
+                  <CardTitle class="text-2xl font-black text-white font-khmer">គម្រោងបានលុបចោល</CardTitle>
+                  <CardDescription class="text-rose-50 font-medium font-khmer mt-2 text-base">គម្រោងនេះត្រូវបានលុបចោល។</CardDescription>
+                </CardHeader>
+             </Card>
+
+             <!-- Active Status (Default) -->
+             <Card v-else class="bg-primary text-primary-foreground border-none shadow-xl shadow-primary/20 sticky top-24 overflow-hidden">
                <div class="absolute top-0 right-0 p-4 opacity-10">
                  <HeartIcon :size="120" />
                </div>
@@ -261,7 +309,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { QrCodeIcon, HeartIcon, Target, TrendingUp, Users, Calendar, DollarSign, Trophy, CheckIcon, CreditCard, Wallet } from 'lucide-vue-next'
+import { QrCodeIcon, HeartIcon, Target, TrendingUp, Users, Calendar, DollarSign, Trophy, CheckIcon, CreditCard, Wallet, CheckCircleIcon, PauseCircleIcon, XCircleIcon } from 'lucide-vue-next'
 import { formatKhmerDate } from '~/utils/date'
 import { useRoute } from 'vue-router'
 import { useProjects } from '@/composables/useProjects'
@@ -339,8 +387,14 @@ onUnmounted(() => {
 
 const getDonationTypeLabel = (donor: any) => {
   if (donor.type === 'item') return t('donation.type_item')
-  if (donor.paymentMethod === 'qr') return t('donation.type_qr')
-  if (donor.paymentMethod === 'transfer') return t('donation.type_transfer')
+  
+  const pm = donor.paymentMethod
+  if (pm === 'aba') return t('donation.type_aba')
+  if (pm === 'acleda') return t('donation.type_acleda')
+  if (pm === 'wing') return t('donation.type_wing')
+  if (pm === 'qr') return t('donation.type_qr')
+  if (pm === 'other_bank') return t('donation.type_other_bank')
+  
   return t('donation.type_cash')
 }
 

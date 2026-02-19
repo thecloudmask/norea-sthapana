@@ -207,6 +207,8 @@
     "currency_usd": "$",
     "currency_khr": "៛",
     "close": "Close",
+    "total": "Total",
+    "no_data": "No Data",
     "search_placeholder": "Search..."
   },
   "footer": {
@@ -528,6 +530,8 @@
       "total_balance": "Balance",
       "income_count": "Income Records",
       "expense_count": "Expense Records",
+      "income_by_method": "Income by Payment Method",
+      "expense_by_category": "Expense by Category",
       "add_income": "Add Income",
       "add_expense": "Add Expense",
       "edit_income": "Edit Income",

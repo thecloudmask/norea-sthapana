@@ -250,7 +250,11 @@ const incomeCategoryOptions = computed(() => {
         legend: { position: 'bottom', fontSize: '10px' },
         plotOptions: { pie: { donut: { size: '70%' } } },
         stroke: { show: false },
-        dataLabels: { enabled: false }
+        tooltip: {
+            y: {
+                formatter: (val: number) => '$' + val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+            }
+        }
     }
 })
 
@@ -283,7 +287,11 @@ const categoryOptions = computed(() => {
         legend: { position: 'bottom', fontSize: '10px' },
         plotOptions: { pie: { donut: { size: '70%' } } },
         stroke: { show: false },
-        dataLabels: { enabled: false }
+        tooltip: {
+            y: {
+                formatter: (val: number) => '$' + val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+            }
+        }
     }
 })
 
@@ -534,25 +542,25 @@ watch(reportMode, () => {
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-muted-foreground">Opening Balance</span>
                         <span class="font-mono font-medium" :class="openingBalance.khr >= 0 ? 'text-primary' : 'text-rose-500'">
-                            ៛{{ openingBalance.khr.toLocaleString() }}
+                            ៛{{ openingBalance.khr.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}
                         </span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-muted-foreground">+ Total Income</span>
                         <span class="font-mono font-medium text-emerald-500">
-                            ៛{{ totalRevenue.khr.toLocaleString() }}
+                            ៛{{ totalRevenue.khr.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}
                         </span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-muted-foreground">- Total Expenses</span>
                         <span class="font-mono font-medium text-rose-500">
-                            ៛{{ totalExpenses.khr.toLocaleString() }}
+                            ៛{{ totalExpenses.khr.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}
                         </span>
                     </div>
                     <div class="pt-4 border-t border-dashed border-border flex justify-between items-center">
                         <span class="text-sm font-bold uppercase">Closing Balance</span>
                         <span class="font-mono font-bold text-lg" :class="closingBalance.khr >= 0 ? 'text-foreground' : 'text-rose-500'">
-                            ៛{{ closingBalance.khr.toLocaleString() }}
+                            ៛{{ closingBalance.khr.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}
                         </span>
                     </div>
                 </div>
@@ -579,7 +587,7 @@ watch(reportMode, () => {
                         </div>
                     </div>
                     <div class="text-lg font-medium text-muted-foreground/60 tabular-nums">
-                        {{ t('common.currency_khr') }} {{ totalRevenue.khr.toLocaleString() }}
+                        {{ t('common.currency_khr') }} {{ totalRevenue.khr.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}
                     </div>
                 </div>
             </CardContent>
@@ -600,7 +608,7 @@ watch(reportMode, () => {
                         {{ t('common.currency_usd') }} {{ totalExpenses.usd.toLocaleString(undefined, {minimumFractionDigits: 2}) }}
                     </div>
                     <div class="text-lg font-medium text-muted-foreground/60 tabular-nums">
-                        {{ t('common.currency_khr') }} {{ totalExpenses.khr.toLocaleString() }}
+                        {{ t('common.currency_khr') }} {{ totalExpenses.khr.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}
                     </div>
                 </div>
             </CardContent>
@@ -621,7 +629,7 @@ watch(reportMode, () => {
                         {{ t('common.currency_usd') }} {{ netBalance.usd.toLocaleString(undefined, {minimumFractionDigits: 2}) }}
                     </div>
                     <div class="text-lg font-medium text-muted-foreground/60 tabular-nums">
-                        {{ t('common.currency_khr') }} {{ netBalance.khr.toLocaleString() }}
+                        {{ t('common.currency_khr') }} {{ netBalance.khr.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }}
                     </div>
                 </div>
             </CardContent>
@@ -756,7 +764,7 @@ watch(reportMode, () => {
                             <td class="p-4 px-6 text-right">
                                 <div class="flex flex-col items-end">
                                     <span class="text-sm font-bold tabular-nums" :class="item._type === 'income' ? 'text-foreground' : 'text-rose-500'">
-                                        <span class="text-[10px] font-medium mr-1 opacity-50">{{ item.currency === 'KHR' ? 'áŸ›' : '$' }}</span>{{ item.amount.toLocaleString() }}
+                                        <span class="text-[10px] font-medium mr-1 opacity-50">{{ item.currency === 'KHR' ? '៛' : '$' }}</span>{{ Number(item.amount).toLocaleString(undefined, { minimumFractionDigits: item.currency === 'KHR' ? 0 : 2, maximumFractionDigits: item.currency === 'KHR' ? 0 : 2 }) }}
                                     </span>
                                 </div>
                             </td>

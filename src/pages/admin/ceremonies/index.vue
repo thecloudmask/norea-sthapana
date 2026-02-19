@@ -68,8 +68,6 @@
                     </div>
                 </div>
 
-
-
                 <!-- Status Badge -->
                 <div class="absolute top-4 left-4 drop-shadow-lg flex flex-col gap-2">
                      <Badge 
