@@ -22,7 +22,7 @@
           <SelectTrigger class="w-[150px] rounded-xl border-border h-11 bg-card shadow-sm font-medium">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
-          <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg">
+          <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg z-[100]">
             <SelectItem value="all" class="font-medium rounded-lg">{{ $t('admin.projects_admin.filter_all') }}</SelectItem>
             <SelectItem value="published" class="font-medium rounded-lg text-emerald-600">{{ $t('admin.forms.status_published') }}</SelectItem>
             <SelectItem value="draft" class="font-medium rounded-lg text-slate-500">{{ $t('admin.forms.status_draft') }}</SelectItem>
@@ -138,7 +138,7 @@
                           <SelectTrigger class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11 text-left">
                               <SelectValue placeholder="Select Status" />
                           </SelectTrigger>
-                          <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg">
+                          <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg z-[100]">
                               <SelectItem value="draft" class="rounded-lg font-normal text-slate-600">Draft (ព្រាង)</SelectItem>
                               <SelectItem value="published" class="rounded-lg font-semibold text-emerald-600">Published (ផ្សាយ)</SelectItem>
                               <SelectItem value="archived" class="rounded-lg font-normal text-orange-600">Archived (រក្សាទុក)</SelectItem>
@@ -152,7 +152,7 @@
                         <SelectTrigger class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11 text-left">
                             <SelectValue :placeholder="$t('admin.forms.select')" />
                         </SelectTrigger>
-                        <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg">
+                        <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg z-[100]">
                             <SelectItem value="proverb" class="rounded-lg font-normal">{{ $t('admin.library.proverb') }} (Proverb)</SelectItem>
                             <SelectItem value="history" class="rounded-lg font-normal">{{ $t('admin.library.history') }} (History)</SelectItem>
                             <SelectItem value="buddhist_history" class="rounded-lg font-normal">{{ $t('admin.library.buddhist_history') }} (Buddhist History)</SelectItem>

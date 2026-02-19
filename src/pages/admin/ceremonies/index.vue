@@ -22,7 +22,7 @@
           <SelectTrigger class="w-[180px] rounded-xl border-border h-11 bg-card shadow-sm font-medium">
             <SelectValue :placeholder="$t('admin.ceremonies.status_filter')" />
           </SelectTrigger>
-          <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg">
+          <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg z-[100]">
             <SelectItem value="all" class="font-medium rounded-lg">{{ $t('common.filter_all') }}</SelectItem>
             <SelectItem value="published" class="font-medium rounded-lg text-emerald-600">{{ $t('admin.forms.status_published') }}</SelectItem>
             <SelectItem value="draft" class="font-medium rounded-lg text-slate-500">{{ $t('admin.forms.status_draft') }}</SelectItem>
@@ -150,7 +150,7 @@
                             <SelectTrigger class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11 text-left">
                                 <SelectValue :placeholder="$t('admin.forms.select_status')" />
                             </SelectTrigger>
-                            <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg">
+                            <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg z-[100]">
                                 <SelectItem value="draft" class="rounded-lg font-normal text-slate-600">{{ $t('admin.forms.status_draft') }}</SelectItem>
                                 <SelectItem value="published" class="rounded-lg font-semibold text-emerald-600">{{ $t('admin.forms.status_published') }}</SelectItem>
                                 <SelectItem value="archived" class="rounded-lg font-normal text-orange-600">{{ $t('admin.forms.status_archived') }}</SelectItem>

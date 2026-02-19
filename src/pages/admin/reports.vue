@@ -442,7 +442,7 @@ watch(reportMode, () => {
                         <SelectTrigger class="rounded-xl h-11 bg-muted/30 border-none ring-1 ring-border/50 focus:ring-primary">
                             <SelectValue placeholder="All Projects" />
                         </SelectTrigger>
-                        <SelectContent class="rounded-xl">
+                        <SelectContent class="rounded-xl z-[100]">
                             <SelectItem value="all">All Projects</SelectItem>
                             <SelectItem v-for="p in projects" :key="p.id" :value="p.id!">
                                 {{ p.title }}
@@ -454,7 +454,7 @@ watch(reportMode, () => {
                         <SelectTrigger class="rounded-xl h-11 bg-muted/30 border-none ring-1 ring-border/50 focus:ring-primary">
                             <SelectValue placeholder="All Ceremonies" />
                         </SelectTrigger>
-                        <SelectContent class="rounded-xl">
+                        <SelectContent class="rounded-xl z-[100]">
                             <SelectItem value="all">All Ceremonies</SelectItem>
                             <SelectItem v-for="c in ceremonies" :key="c.id" :value="c.id!">
                                 {{ c.title }}

@@ -515,7 +515,7 @@
                   <SelectTrigger class="w-[85px] rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent class="rounded-xl p-1 shadow-lg border-border bg-card">
+                  <SelectContent class="rounded-xl p-1 shadow-lg border-border bg-card z-[100]">
                     <SelectItem value="USD" class="rounded-lg font-normal">$</SelectItem>
                     <SelectItem value="KHR" class="rounded-lg font-normal">៛</SelectItem>
                   </SelectContent>
@@ -528,7 +528,7 @@
                 <SelectTrigger class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11">
                   <SelectValue :placeholder="$t('admin.forms.select')" />
                 </SelectTrigger>
-                <SelectContent class="rounded-xl p-1 shadow-lg border-border bg-card">
+                <SelectContent class="rounded-xl p-1 shadow-lg border-border bg-card z-[100]">
                   <SelectItem value="cash" class="rounded-lg font-normal">{{ $t('donation.type_cash') }}</SelectItem>
                   <SelectItem value="item" class="rounded-lg font-normal">{{ $t('donation.type_item') }}</SelectItem>
                 </SelectContent>
@@ -543,7 +543,7 @@
                 <SelectTrigger class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent class="rounded-xl p-1 shadow-lg border-border bg-card">
+                <SelectContent class="rounded-xl p-1 shadow-lg border-border bg-card z-[100]">
                   <SelectItem value="cash" class="rounded-lg font-normal">{{ $t('donation.type_cash') }}</SelectItem>
                   <SelectItem value="aba" class="rounded-lg font-normal">{{ $t('donation.type_aba') }}</SelectItem>
                   <SelectItem value="acleda" class="rounded-lg font-normal">{{ $t('donation.type_acleda') }}</SelectItem>
@@ -598,7 +598,7 @@
                   <SelectTrigger class="w-[85px] rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent class="rounded-xl p-1 shadow-lg border-border bg-card">
+                  <SelectContent class="rounded-xl p-1 shadow-lg border-border bg-card z-[100]">
                     <SelectItem value="USD" class="rounded-lg font-normal">$</SelectItem>
                     <SelectItem value="KHR" class="rounded-lg font-normal">៛</SelectItem>
                   </SelectContent>
@@ -611,7 +611,7 @@
                 <SelectTrigger>
                   <SelectValue :placeholder="$t('admin.forms.select')" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent class="z-[100]">
                   <SelectItem value="material">{{ $t('admin.expense_categories.material') }}</SelectItem>
                   <SelectItem value="labor">{{ $t('admin.expense_categories.labor') }}</SelectItem>
                   <SelectItem value="food">{{ $t('admin.expense_categories.food') }}</SelectItem>
@@ -753,7 +753,7 @@
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent class="z-[100]">
                   <SelectItem value="active">{{ $t('common.status_active') }}</SelectItem>
                   <SelectItem value="paused">{{ $t('common.status_paused') }}</SelectItem>
                   <SelectItem value="completed" :disabled="!authStore.isAdmin">

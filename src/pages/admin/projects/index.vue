@@ -14,7 +14,7 @@
           <SelectTrigger class="w-[180px] rounded-xl border-border shadow-sm font-semibold h-11 bg-card">
             <SelectValue :placeholder="$t('admin.forms.status')" />
           </SelectTrigger>
-          <SelectContent class="rounded-xl p-1 shadow-xl border-border">
+          <SelectContent class="rounded-xl p-1 shadow-xl border-border z-[100]">
             <SelectItem value="all" class="rounded-lg font-semibold">{{ $t('admin.projects_admin.filter_all') }}</SelectItem>
             <SelectItem value="planning" class="rounded-lg font-semibold">{{ $t('common.status_planning') }}</SelectItem>
             <SelectItem value="draft" class="rounded-lg font-semibold">{{ $t('admin.projects_admin.filter_draft') }}</SelectItem>
@@ -173,7 +173,7 @@
                                 <SelectTrigger class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11 text-left">
                                     <SelectValue :placeholder="$t('admin.forms.status')" />
                                 </SelectTrigger>
-                                <SelectContent class="rounded-xl p-1 shadow-lg border-border bg-card">
+                                <SelectContent class="rounded-xl p-1 shadow-lg border-border bg-card z-[100]">
                                     <SelectItem value="planning" class="rounded-lg font-normal">{{ $t('common.status_planning') }}</SelectItem>
                                     <SelectItem value="draft" class="rounded-lg font-normal">{{ $t('admin.projects_admin.filter_draft') }}</SelectItem>
                                     <SelectItem value="active" class="rounded-lg font-normal">{{ $t('admin.projects_admin.filter_active') }}</SelectItem>

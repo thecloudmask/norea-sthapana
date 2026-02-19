@@ -112,7 +112,7 @@
                         <SelectTrigger class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11 text-left">
                             <SelectValue :placeholder="$t('admin.forms.select')" />
                         </SelectTrigger>
-                        <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg">
+                        <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg z-[100]">
                             <SelectItem value="news" class="rounded-lg font-normal">{{ $t('admin.news.type_news') }}</SelectItem>
                             <SelectItem value="event" class="rounded-lg font-semibold text-primary">{{ $t('admin.news.type_event') }}</SelectItem>
                         </SelectContent>
