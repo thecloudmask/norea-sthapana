@@ -323,8 +323,19 @@
       "expenses_by_category_subtitle": "ការបែងចែកថវិកាចំណាយសរុប",
       "donation_methods_subtitle": "ការចូលរួមតាមរយៈមធ្យោបាយផ្សេងៗ",
       "no_donation_data": "មិនមានទិន្នន័យបច្ច័យ",
+      "no_expense_data": "មិនមានទិន្នន័យចំណាយ",
       "loading_data": "កំពុងទាញទិន្នន័យ...",
+      "monthly_trend": "និន្នាការប្រចាំខែ",
+      "monthly_trend_subtitle": "ការប្រៀបធៀបចំណូល និង ចំណាយប្រចាំខែ",
       "times": "ដង"
+    },
+    "reports_list": {
+      "financial_summary": "សេចក្តីសង្ខេបហិរញ្ញវត្ថុ",
+      "financial_summary_desc": "របាយការណ៍បូកសរុបចំណូល និង ចំណាយប្រចាំខែ",
+      "donation_list": "បញ្ជីឈ្មោះសប្បុរសជន",
+      "donation_list_desc": "បញ្ជីរាយនាមសប្បុរសជន និង ចំនួនទឹកប្រាក់បច្ច័យ",
+      "expense_audit": "តុល្យភាពចំណាយ",
+      "expense_audit_desc": "របាយការណ៍ចំណាយលម្អិតសម្រាប់ការត្រួតពិនិត្យ"
     },
     "forms": {
       "edit_donation": "កែសម្រួលព៌ត៌មានសប្បុរសជន",

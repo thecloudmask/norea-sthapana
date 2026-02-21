@@ -328,8 +328,19 @@
       "expenses_by_category_subtitle": "Breakdown of total budget expenses",
       "donation_methods_subtitle": "Participation via various methods",
       "no_donation_data": "No donation data available",
+      "no_expense_data": "No expense data available",
       "loading_data": "Loading data...",
+      "monthly_trend": "Monthly Trend",
+      "monthly_trend_subtitle": "Comparison of monthly income and expenses",
       "times": "times"
+    },
+    "reports_list": {
+      "financial_summary": "Financial Summary",
+      "financial_summary_desc": "Monthly summary report of income and expenses",
+      "donation_list": "Donors List",
+      "donation_list_desc": "Detailed list of all donors and their contributions",
+      "expense_audit": "Expense Audit",
+      "expense_audit_desc": "Detailed expense reporting for auditing purposes"
     },
     "forms": {
       "edit_donation": "Edit Donor Information",

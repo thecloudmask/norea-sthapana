@@ -215,7 +215,7 @@
                    />
                    <div v-else class="h-full flex flex-col items-center justify-center text-muted-foreground/30 gap-4">
                         <RefreshCwIcon class="size-10 animate-spin opacity-20" />
-                        <span class="text-xs font-semibold uppercase tracking-widest">áž€áŸ†áž–áž»áž„áž‘áž¶áž‰áž‘áž·áž“áŸ’áž“áž“áŸáž™...</span>
+                        <span class="text-xs font-semibold uppercase tracking-widest">{{ $t('admin.analytics_labels.loading_data') }}</span>
                    </div>
                  </div>
                </div>
@@ -250,7 +250,7 @@
                     </div>
                     <div class="text-right">
                        <div class="text-lg font-semibold tabular-nums tracking-tighter" :class="Number(d.amount) > 0 ? 'text-emerald-500' : 'text-rose-500'">
-                          <span class="text-[10px] font-semibold mr-1 opacity-60">{{ d.currency === 'KHR' ? 'áŸ›' : '$' }}</span>{{ Number(d.amount).toLocaleString() }}
+                          <span class="text-[10px] font-semibold mr-1 opacity-60">{{ d.currency === 'KHR' ? $t('common.currency_khr') : '$' }}</span>{{ Number(d.amount).toLocaleString() }}
                        </div>
                        <div class="text-[9px] text-muted-foreground/30 font-semibold tabular-nums uppercase tracking-widest italic">{{ formatDateShort(d.createdAt) }}</div>
                     </div>
@@ -294,7 +294,7 @@
                 />
                 <div v-else class="h-full flex flex-col items-center justify-center text-muted-foreground/20 gap-4">
                     <PieChartIcon class="size-16 opacity-10" />
-                    <span class="text-xs font-semibold uppercase tracking-widest">áž˜áž·áž“áž˜áž¶áž“áž‘áž·áž“áŸ’áž“áž“áŸáž™áž…áŸ†ážŽáž¶áž™</span>
+                    <span class="text-xs font-semibold uppercase tracking-widest">{{ $t('admin.analytics_labels.no_expense_data') }}</span>
                 </div>
               </div>
             </CardContent>
@@ -317,7 +317,7 @@
                 />
                 <div v-else class="h-full flex flex-col items-center justify-center text-muted-foreground/20 gap-4">
                     <ActivityIcon class="size-16 opacity-10" />
-                    <span class="text-xs font-semibold uppercase tracking-widest">áž˜áž·áž“áž˜áž¶áž“áž‘áž·áž“áŸ’áž“áž“áŸáž™áž”áž…áŸ’áž…áŸáž™</span>
+                    <span class="text-xs font-semibold uppercase tracking-widest">{{ $t('admin.analytics_labels.no_donation_data') }}</span>
                 </div>
               </div>
             </CardContent>
@@ -327,8 +327,8 @@
         <!-- Monthly Trends -->
         <Card class="rounded-3xl border-none ring-1 ring-border bg-card shadow-sm overflow-hidden">
           <CardHeader class="border-b border-border bg-muted/30 pb-4">
-            <CardTitle class="text-lg font-semibold text-foreground uppercase tracking-tight font-khmer">áž“áž·áž“áŸ’áž“áž¶áž€áž¶ážšáž”áŸ’ážšáž…áž¶áŸ†ážáŸ‚ (USD)</CardTitle>
-            <CardDescription class="font-medium text-muted-foreground">áž€áž¶ážšáž”áŸ’ážšáŸ€áž”áž’áŸ€áž” áž…áŸ†ážŽáž¼áž› áž“áž·áž„ áž…áŸ†ážŽáž¶áž™ áž”áŸ’ážšáž…áž¶áŸ†ážáŸ‚</CardDescription>
+            <CardTitle class="text-lg font-semibold text-foreground uppercase tracking-tight font-khmer">{{ $t('admin.analytics_labels.monthly_trend') }} (USD)</CardTitle>
+            <CardDescription class="font-medium text-muted-foreground">{{ $t('admin.analytics_labels.monthly_trend_subtitle') }}</CardDescription>
           </CardHeader>
           <CardContent class="h-[450px] pt-10 overflow-hidden">
             <div>
@@ -341,7 +341,7 @@
               />
               <div v-else class="h-full flex flex-col items-center justify-center text-muted-foreground/20 gap-4">
                     <ActivityIcon class="size-16 opacity-10" />
-                    <span class="text-xs font-semibold uppercase tracking-widest">áž€áŸ†áž–áž»áž„áž‘áž¶áž‰áž‘áž·áž“áŸ’áž“áž“áŸáž™...</span>
+                    <span class="text-xs font-semibold uppercase tracking-widest">{{ $t('admin.analytics_labels.loading_data') }}</span>
               </div>
             </div>
           </CardContent>
@@ -356,11 +356,11 @@
               <div class="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6 transition-transform group-hover:scale-110 group-hover:rotate-3 border border-primary/20">
                 <component :is="report.icon" class="h-8 w-8" />
               </div>
-              <CardTitle class="text-xl font-semibold text-foreground uppercase tracking-tight font-khmer">{{ report.title }}</CardTitle>
-              <CardDescription class="text-sm font-medium text-muted-foreground mt-2 leading-relaxed">{{ report.description }}</CardDescription>
+              <CardTitle class="text-xl font-semibold text-foreground uppercase tracking-tight font-khmer">{{ $t(`admin.reports_list.${report.id}`) }}</CardTitle>
+              <CardDescription class="text-sm font-medium text-muted-foreground mt-2 leading-relaxed">{{ $t(`admin.reports_list.${report.id}_desc`) }}</CardDescription>
             </CardHeader>
             <CardFooter class="p-4 pt-0">
-              <Button variant="ghost" class="w-full h-14 rounded-2xl justify-between group px-6 bg-muted/30 font-semibold uppercase tracking-widest text-[10px] hover:bg-primary/10 hover:text-primary transition-all" @click="handleExport(report.id)">
+              <Button variant="ghost" class="w-full h-14 rounded-2xl justify-between group px-6 bg-muted/30 font-semibold uppercase tracking-widest text-[10px] hover:bg-primary/10 hover:text-primary transition-all shadow-sm" @click="handleExport(report.id)">
                 <span>Download CSV Report</span>
                 <DownloadIcon class="h-4 w-4 transition-transform group-hover:translate-y-1" />
               </Button>
@@ -389,8 +389,7 @@ import {
   ClipboardListIcon,
   RefreshCwIcon,
   UsersIcon,
-  FolderOpenIcon,
-  SparklesIcon
+  FolderOpenIcon
 } from 'lucide-vue-next'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
@@ -523,7 +522,7 @@ const formatDateShort = (date: any) => {
 
 const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-// 1. Revenue Trend (Area Chart) â€” projects + ceremonies combined
+// 1. Revenue Trend (Area Chart) — projects + ceremonies combined
 const revenueTrendSeries = computed(() => {
   const data = new Array(12).fill(0)
   donations.value.forEach(d => {
@@ -664,7 +663,7 @@ const methodDonutOptions = computed(() => {
   }
 })
 
-// 4. Trend Line Chart â€” projects + ceremonies combined
+// 4. Trend Line Chart — projects + ceremonies combined
 const trendSeries = computed(() => {
   const incomeData = new Array(12).fill(0)
   const expenseData = new Array(12).fill(0)
@@ -733,9 +732,9 @@ const trendOptions = computed(() => ({
 
 // Reports Configuration
 const reportTypes = [
-  { id: 'financial_summary', title: 'ážŸáž„áŸ’ážáŸáž”áž áž·ážšáž‰áŸ’áž‰ážœážáŸ’ážáž»', description: 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž”áž¼áž€ážŸážšáž»áž”áž…áŸ†ážŽáž¼áž›áž…áŸ†ážŽáž¶áž™áž”áŸ’ážšáž…áž¶áŸ†ážáŸ‚', icon: FileBarChartIcon },
-  { id: 'donation_list', title: 'áž”áž‰áŸ’áž‡áž¸ážŸáž”áŸ’áž”áž»ážšážŸáž‡áž“', description: 'áž”áž‰áŸ’áž‡áž¸ážšáž¶áž™áž“áž¶áž˜ážŸáž”áŸ’áž”áž»ážšážŸáž‡áž“áž‘áž¶áŸ†áž„áž¢ážŸáŸ‹', icon: ClipboardListIcon },
-  { id: 'expense_audit', title: 'ážŸáž˜ážáž»áž›áŸ’áž™áž…áŸ†ážŽáž¶áž™', description: 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž…áŸ†ážŽáž¶áž™áž›áž˜áŸ’áž¢áž·ážážŸáž˜áŸ’ážšáž¶áž”áŸ‹áž€áž¶ážšáž…áž»áŸ‡ážŸážœáž“áž€áž˜áŸ’áž˜', icon: PieChartIcon },
+  { id: 'financial_summary', icon: FileBarChartIcon },
+  { id: 'donation_list', icon: ClipboardListIcon },
+  { id: 'expense_audit', icon: PieChartIcon },
 ]
 
 const handleExport = (id: string) => {
