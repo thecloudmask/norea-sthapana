@@ -273,7 +273,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { SunIcon, MoonIcon, MonitorIcon, QrCodeIcon, UploadCloudIcon, TrashIcon, CheckCircleIcon, TrendingUpIcon } from 'lucide-vue-next'
 import { useSettings } from '~/composables/useSettings'
 import { useCloudinary } from '~/composables/useCloudinary'
@@ -305,23 +305,33 @@ const form = ref({
     qrCodeUrl: ''
 })
 
-onMounted(async () => {
-    await fetchSettings()
-    if (settings.value) {
+let unsubscribe: any
+
+// Sync settings data to local form
+watch(settings, (newVal) => {
+    if (newVal) {
         form.value = {
-            templeName: settings.value.templeName || '',
-            address: settings.value.address || '',
-            contactPhone: settings.value.contactPhone || '',
-            email: settings.value.email || '',
-            bankName: settings.value.bankName || '',
-            bankAccountNumber: settings.value.bankAccountNumber || '',
-            bankAccountName: settings.value.bankAccountName || '',
-            qrCodeUrl: settings.value.qrCodeUrl || ''
+            templeName: newVal.templeName || '',
+            address: newVal.address || '',
+            contactPhone: newVal.contactPhone || '',
+            email: newVal.email || '',
+            bankName: newVal.bankName || '',
+            bankAccountNumber: newVal.bankAccountNumber || '',
+            bankAccountName: newVal.bankAccountName || '',
+            qrCodeUrl: newVal.qrCodeUrl || ''
         }
-        if ((settings.value as any).khrRate) {
-            rateForm.value = (settings.value as any).khrRate
+        if ((newVal as any).khrRate) {
+            rateForm.value = (newVal as any).khrRate
         }
     }
+}, { immediate: true })
+
+onMounted(async () => {
+    unsubscribe = fetchSettings()
+})
+
+onUnmounted(() => {
+    if (unsubscribe) unsubscribe()
 })
 
 const isDarkTheme = computed(() => colorMode.value === 'dark')

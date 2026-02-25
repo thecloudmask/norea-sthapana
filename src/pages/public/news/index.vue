@@ -28,7 +28,7 @@
         <RouterLink v-for="item in filteredNews" :key="item.id" :to="`/news/${item.id}`" class="group h-full">
             <Card class="flex flex-col h-full overflow-hidden border-none shadow-sm transition-all hover:shadow-lg bg-card rounded-3xl ring-1 ring-border">
                 <div class="aspect-video w-full bg-muted relative overflow-hidden">
-                    <img v-if="item.imageUrl" :src="item.imageUrl" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <img v-if="item.imageUrl" :src="item.imageUrl" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
                     <div v-else class="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
                         <ImageIcon class="h-12 w-12 opacity-20" />
                     </div>
@@ -46,7 +46,7 @@
                     </div>
                     <h3 class="text-xl font-semibold mb-3 line-clamp-2">{{ item.title }}</h3>
                     <p class="text-muted-foreground text-sm line-clamp-3 leading-relaxed mb-4">
-                        {{ stripHtml(item.content) }}
+                        {{ item.strippedContent }}
                     </p>
                     
                     <div v-if="item.type === 'event' && item.eventDate" class="bg-primary/5 p-3 rounded-lg border border-primary/10 flex items-center gap-3">
@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { CalendarIcon, ImageIcon } from 'lucide-vue-next'
 import { formatKhmerDate } from '~/utils/date'
@@ -84,9 +84,15 @@ const router = useRouter()
 const { newsList, loading, fetchNews } = useNews()
 const filterType = ref('all')
 
+let unsubscribe: any
+
 onMounted(() => {
-    fetchNews()
+    unsubscribe = fetchNews()
     if (route.query.type) filterType.value = route.query.type as string
+})
+
+onUnmounted(() => {
+    if (unsubscribe) unsubscribe()
 })
 
 watch(filterType, (val) => {
@@ -100,11 +106,7 @@ const filteredNews = computed(() => {
     return newsList.value.filter(item => item.type === filterType.value)
 })
 
-const stripHtml = (html: string) => {
-    if (!html) return "";
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    return doc.body.textContent || "";
-}
+
 
 const formatDate = (date: any) => formatKhmerDate(date)
 </script>

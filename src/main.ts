@@ -35,13 +35,9 @@ const router = createRouter({
   },
 })
 
-router.beforeEach(async (to, _from, next) => {
+router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore()
   
-  if (authStore.loading) {
-    await authStore.initPromise
-  }
-
   const isAuthPage = to.path === '/login'
   const isAdminPage = to.path.startsWith('/admin')
   
@@ -83,9 +79,13 @@ const app = createApp(App)
 
 app.use(head)
 app.use(createPinia())
+
+// Initialize Auth State from LocalStorage
+const authStore = useAuthStore()
+authStore.initAuth()
+
 app.use(router)
 app.use(i18n)
 app.component('apexchart', VueApexCharts)
-
 
 app.mount('#app')

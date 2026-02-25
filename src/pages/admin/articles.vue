@@ -45,7 +45,7 @@
     <div v-else class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         <Card v-for="item in filteredArticles" :key="item.id" class="group flex flex-col overflow-hidden border-none shadow-sm ring-1 ring-border rounded-3xl transition-all hover:shadow-xl bg-card">
             <div class="aspect-video w-full bg-muted relative overflow-hidden">
-                <img v-if="item.imageUrl" :src="item.imageUrl" class="w-full h-full object-cover" />
+                <img v-if="item.imageUrl" :src="item.imageUrl" class="w-full h-full object-cover" loading="lazy" />
                 <div v-else class="w-full h-full flex items-center justify-center bg-muted text-muted-foreground/30">
                     <ImageIcon class="h-12 w-12" />
                 </div>
@@ -88,7 +88,7 @@
                 </div>
             </div>
             <CardContent class="flex-1 p-6 space-y-4">
-                <p class="text-sm font-medium text-muted-foreground line-clamp-3 leading-relaxed font-khmer text-left">{{ item.content }}</p>
+                <p class="text-sm font-medium text-muted-foreground line-clamp-3 leading-relaxed font-khmer text-left">{{ (item as any).strippedContent }}</p>
                 <div v-if="item.category === 'ceremony' && item.eventDate" class="pt-4 border-t border-border flex items-center gap-2 text-[11px] font-medium text-primary">
                     <CalendarIcon class="h-3.5 w-3.5" />
                     <span>កាលបរិច្ឆេទបុណ្យ: {{ formatDate(item.eventDate) }}</span>
@@ -405,12 +405,6 @@ const getCategoryLabel = (cat: ArticleCategory) => {
     }
 }
 
-// Fetch articles on mount
-onMounted(() => {
-    console.log('📝 [Admin Articles] onMounted called')
-    console.log('📝 [Admin Articles] Fetching articles...')
-    fetchArticles()
-})
 </script>
 
 <route lang="yaml">

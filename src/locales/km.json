@@ -204,7 +204,8 @@
     "close": "បិទ",
     "total": "សរុប",
     "no_data": "មិនមានទិន្នន័យ",
-    "search_placeholder": "ស្វែងរក..."
+    "search_placeholder": "ស្វែងរក...",
+    "print": "បោះពុម្ព"
   },
   "footer": {
     "privacy_policy": "គោលការណ៍​ភាព​ឯកជន",
@@ -327,7 +328,9 @@
       "loading_data": "កំពុងទាញទិន្នន័យ...",
       "monthly_trend": "និន្នាការប្រចាំខែ",
       "monthly_trend_subtitle": "ការប្រៀបធៀបចំណូល និង ចំណាយប្រចាំខែ",
-      "times": "ដង"
+      "times": "ដង",
+      "income": "ចំណូល",
+      "expenses": "ចំណាយ"
     },
     "reports_list": {
       "financial_summary": "សេចក្តីសង្ខេបហិរញ្ញវត្ថុ",
@@ -374,8 +377,10 @@
       "create_project": "បង្កើតគម្រោងថ្មី",
       "status_published": "ផ្សព្វផ្សាយ (Published)",
       "status_draft": "ព្រាង (Draft)",
+      "status_completed": "បានបញ្ចប់ (Completed)",
       "status_archived": "កត់ក្នុងបញ្ជី (Archived)",
       "select_status": "ជ្រើសរើសស្ថានភាព",
+      "edit": "កែសម្រួល",
       "location": "ទីតាំង",
       "deadline": "ថ្ងៃបញ្ចប់",
       "banner_image": "រូបភាពតំណាង",
@@ -508,8 +513,15 @@
     "expense_categories": {
       "material": "សម្ភារៈកសាង",
       "labor": "ថ្លៃឈ្នួល",
-      "food": "ស្បៀងអាហារ",
-      "utility": "ផ្សេងៗ"
+      "food": "ចង្ហាន់ និង ភេសជ្ជៈ",
+      "utility": "ប្រើប្រាស់",
+      "transport": "សោហ៊ុយធ្វើដំណើរ",
+      "venue": "រោង និង តុបតែង",
+      "materials": "សម្ភារៈប្រើប្រាស់",
+      "service": "ថ្លៃសេវាកម្ម",
+      "monks": "បច្ច័យប្រគេនព្រះសង្ឃ",
+      "music": "ភ្លេង និង ការសម្តែង",
+      "other": "ផ្សេងៗ"
     },
     "confirmations": {
       "delete_title": "លុប {type}?",

@@ -51,7 +51,7 @@
            <RouterLink v-for="article in filteredArticles" :key="article.id" :to="`/articles/${article.id}`" class="group h-full">
                <Card class="h-full overflow-hidden border-none shadow-sm ring-1 ring-border bg-card hover:shadow-2xl hover:ring-primary/20 transition-all duration-500 flex flex-col rounded-3xl">
                    <div class="aspect-video relative overflow-hidden bg-muted">
-                       <img v-if="article.imageUrl" :src="article.imageUrl" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                       <img v-if="article.imageUrl" :src="article.imageUrl" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
                        <div v-else class="w-full h-full flex items-center justify-center text-muted-foreground/20">
                            <BookOpenIcon class="h-16 w-16" />
                        </div>
@@ -64,7 +64,7 @@
                            {{ article.title }}
                        </h3>
                        <p class="text-muted-foreground line-clamp-3 text-sm font-medium leading-relaxed mb-8 flex-1">
-                           {{ stripHtml(article.content) }}
+                           {{ (article as any).strippedContent }}
                        </p>
                        <div class="flex items-center justify-between pt-6 border-t border-border">
                             <div class="flex items-center text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest tabular-nums italic">
@@ -95,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { SearchIcon, BookOpenIcon, CalendarIcon, SearchXIcon, ArrowRightIcon } from 'lucide-vue-next'
 import { formatKhmerDate } from '~/utils/date'
@@ -113,8 +113,10 @@ const selectedCategory = ref<string>('all')
 const route = useRoute()
 const router = useRouter()
 
+let unsubscribe: any
+
 onMounted(() => {
-    fetchArticles()
+    unsubscribe = fetchArticles()
     if (route.query.category) {
         selectedCategory.value = route.query.category as string
     }
@@ -125,6 +127,10 @@ onMounted(() => {
     if (selectedCategory.value === 'ceremony') {
         router.push('/ceremonies')
     }
+})
+
+onUnmounted(() => {
+    if (unsubscribe) unsubscribe()
 })
 
 watch([searchQuery, selectedCategory], () => {
@@ -164,11 +170,7 @@ const getCategoryLabel = (cat: string) => {
     }
 }
 
-const stripHtml = (html: string) => {
-    if (!html) return "";
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    return doc.body.textContent || "";
-}
+
 
 const formatDate = (date: any) => formatKhmerDate(date)
 </script>

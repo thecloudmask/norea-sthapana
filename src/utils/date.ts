@@ -8,9 +8,15 @@ export const toKhmerNumerals = (num: string | number) => {
 
 export const formatKhmerDate = (date: any, formatStr: string = 'dd MMMM yyyy') => {
   if (!date) return '-'
-  const d = date.toDate ? date.toDate() : new Date(date)
-  const formatted = format(d, formatStr, { locale: km })
-  return toKhmerNumerals(formatted)
+  try {
+    const d = date.toDate ? date.toDate() : (date instanceof Date ? date : new Date(date))
+    if (isNaN(d.getTime())) return '-'
+    const formatted = format(d, formatStr, { locale: km })
+    return toKhmerNumerals(formatted)
+  } catch (error) {
+    console.error('[formatKhmerDate] Error:', error, date)
+    return '-'
+  }
 }
 
 export const formatKhmerDateTime = (date: any) => {

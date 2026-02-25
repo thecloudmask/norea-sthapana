@@ -1,35 +1,38 @@
-import { 
-  collection, 
-  query, 
-  getDocs, 
-  doc, 
-  updateDoc, 
-  serverTimestamp, 
-  orderBy,
-  getCountFromServer 
-} from 'firebase/firestore'
-import { db } from '~/utils/firebase'
 import { ref } from 'vue'
-import type { UserProfile } from '~/stores/auth' // Assuming types are exported from store or types file
+import { db } from '@/services/firebase'
+import { collection, onSnapshot, query, doc, updateDoc, getCountFromServer, type Unsubscribe } from 'firebase/firestore'
+import type { LaravelUser as UserProfile } from '~/stores/auth'
 
 export const useUsers = () => {
   const users = ref<UserProfile[]>([])
   const loading = ref(false)
 
-  const fetchUsers = async () => {
+  const mapUser = (id: string, data: any): UserProfile & { uid: string; displayName?: string; photoURL?: string; phoneNumber?: string; lastLoginAt?: any } => ({
+    id,
+    uid: id,
+    ...data,
+    name: data.name || data.displayName || '',
+    profile_picture: data.profile_picture || data.photoURL || '',
+    phone: data.phone || data.phoneNumber || '',
+    last_login_at: data.last_login_at || data.lastLoginAt || '',
+    // For users.vue compatibility
+    displayName: data.displayName || data.name || '',
+    photoURL: data.photoURL || data.profile_picture || '',
+    phoneNumber: data.phoneNumber || data.phone || '',
+    lastLoginAt: data.lastLoginAt || data.last_login_at || ''
+  })
+
+  const fetchUsers = (): Unsubscribe => {
     loading.value = true
-    try {
-      const q = query(collection(db, 'users'), orderBy('updatedAt', 'desc'))
-      const querySnapshot = await getDocs(q)
-      users.value = querySnapshot.docs.map(doc => ({
-        uid: doc.id,
-        ...doc.data()
-      })) as UserProfile[]
-    } catch (error) {
-      console.error('Error fetching users:', error)
-    } finally {
+    const q = query(collection(db, 'users'))
+    
+    return onSnapshot(q, (snapshot) => {
+      users.value = snapshot.docs.map(doc => mapUser(doc.id, doc.data()) as UserProfile)
       loading.value = false
-    }
+    }, (error) => {
+      console.error('Error fetching users:', error)
+      loading.value = false
+    })
   }
 
   const fetchTotalUsersCount = async () => {
@@ -38,53 +41,35 @@ export const useUsers = () => {
       const snapshot = await getCountFromServer(coll)
       return snapshot.data().count
     } catch (error) {
-      console.error('Error fetching user count:', error)
+      if (users.value.length > 0) return users.value.length
       return 0
     }
   }
 
-  const updateUserStatus = async (uid: string, status: string) => {
+  const updateUserStatus = async (id: string, status: string) => {
     try {
-      const userRef = doc(db, 'users', uid)
-      await updateDoc(userRef, {
-        status,
-        updatedAt: serverTimestamp()
-      })
-      // Update local state
-      const user = users.value.find(u => u.uid === uid)
-      if (user) user.status = status as any
+      const docRef = doc(db, 'users', id)
+      await updateDoc(docRef, { status })
     } catch (error) {
       console.error('Error updating user status:', error)
       throw error
     }
   }
 
-  const updateUserRole = async (uid: string, role: string) => {
+  const updateUserRole = async (id: string, role: string) => {
     try {
-      const userRef = doc(db, 'users', uid)
-      await updateDoc(userRef, {
-        role,
-        updatedAt: serverTimestamp()
-      })
-      // Update local state
-      const user = users.value.find(u => u.uid === uid)
-      if (user) user.role = role as any
+      const docRef = doc(db, 'users', id)
+      await updateDoc(docRef, { role })
     } catch (error) {
       console.error('Error updating user role:', error)
       throw error
     }
   }
 
-  const updateUserProfile = async (uid: string, data: Partial<UserProfile>) => {
+  const updateUserProfile = async (id: string, data: Partial<UserProfile>) => {
     try {
-      const userRef = doc(db, 'users', uid)
-      await updateDoc(userRef, {
-        ...data,
-        updatedAt: serverTimestamp()
-      })
-      // Update local state
-      const user = users.value.find(u => u.uid === uid)
-      if (user) Object.assign(user, data)
+      const docRef = doc(db, 'users', id)
+      await updateDoc(docRef, data)
     } catch (error) {
       console.error('Error updating user profile:', error)
       throw error

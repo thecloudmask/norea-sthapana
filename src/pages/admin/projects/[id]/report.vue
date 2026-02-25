@@ -201,7 +201,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProjects } from '~/composables/useProjects'
 import { format } from 'date-fns'
@@ -219,20 +219,28 @@ const project = ref<any>(null)
 const loading = ref(true)
 const logoUrl = ref('/logo.png') // Update with actual logo path
 
+let unsubDonations: any
+let unsubExpenses: any
+
 // Fetch project data
 onMounted(async () => {
   try {
     project.value = await getProject(projectId)
     
     // Fetch donations and expenses
-    fetchDonations(projectId)
-    fetchExpenses(projectId)
+    unsubDonations = fetchDonations(projectId)
+    unsubExpenses = fetchExpenses(projectId)
     
     loading.value = false
   } catch (e) {
     console.error(e)
     loading.value = false
   }
+})
+
+onUnmounted(() => {
+    if (unsubDonations) unsubDonations()
+    if (unsubExpenses) unsubExpenses()
 })
 
 // Calculate total income

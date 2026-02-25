@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { CalendarIcon, HistoryIcon, FacebookIcon, TwitterIcon, LinkIcon, ArrowLeftIcon, MaximizeIcon, XIcon } from 'lucide-vue-next'
 import { formatKhmerDate } from '~/utils/date'
 import { Badge } from '@/components/ui/badge'
@@ -103,20 +103,16 @@ const { t } = useI18n()
 
 const newsItem = ref<any>(null)
 const loading = ref(true)
-const { getNews } = useNews()
+const { fetchNewsItem } = useNews()
 
-const fetchNewsById = async (id: string) => {
+let unsubscribe: any
+
+const fetchNewsById = (id: string) => {
     loading.value = true
-    try {
-        const data = await getNews(id)
-        if (data) {
-            newsItem.value = data
-        }
-    } catch (e) {
-        console.error(e)
-    } finally {
+    unsubscribe = fetchNewsItem(id, (data) => {
+        newsItem.value = data
         loading.value = false
-    }
+    })
 }
 
 const stripHtml = (html: string) => {
@@ -145,6 +141,10 @@ useHead({
 
 onMounted(() => {
     fetchNewsById(route.params.id as string)
+})
+
+onUnmounted(() => {
+    if (unsubscribe) unsubscribe()
 })
 
 const formatDate = (date: any) => formatKhmerDate(date)

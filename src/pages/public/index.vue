@@ -142,14 +142,22 @@
           >
             <!-- Image -->
             <div class="aspect-[4/3] overflow-hidden relative">
-              <img
-                :src="
-                  project.bannerUrl ||
-                  'https://images.unsplash.com/photo-1542125387-c71a34d5218d?q=80&w=2070'
-                "
-                :alt="project.title"
-                class="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
-              />
+              <template v-if="project.bannerUrl">
+                <img
+                  :src="project.bannerUrl"
+                  :alt="project.title"
+                  class="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
+                  loading="lazy"
+                />
+              </template>
+
+              <template v-else>
+                <div class="w-full h-full bg-gray-100 flex flex-col items-center justify-center text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-off-icon lucide-image-off"><line x1="2" x2="22" y1="2" y2="22"/><path d="M10.41 10.41a2 2 0 1 1-2.83-2.83"/><line x1="13.5" x2="6" y1="13.5" y2="21"/><line x1="18" x2="21" y1="12" y2="15"/><path d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59"/><path d="M21 15V5a2 2 0 0 0-2-2H9"/></svg>
+                  <span class="text-sm">No Image</span>
+                </div>
+              </template>
+
               <div class="absolute top-4 right-4">
                 <StatusBadge :status="project.status" />
               </div>
@@ -164,7 +172,7 @@
                   {{ project.title }}
                 </h3>
                 <p class="text-muted-foreground text-sm line-clamp-2">
-                  {{ project.description }}
+                  {{ (project as any).strippedDescription }}
                 </p>
               </div>
 
@@ -286,18 +294,37 @@
             :key="item.id"
             class="group flex flex-col border-none shadow-sm ring-1 ring-border rounded-[2.5rem] transition-all hover:shadow-xl bg-card overflow-hidden"
           >
-            <!-- Image Area -->
             <div class="aspect-[16/10] w-full bg-muted relative overflow-hidden">
-               <img v-if="item.imageUrl" :src="item.imageUrl" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-               <div v-else class="w-full h-full flex items-center justify-center bg-muted text-muted-foreground/30">
-                  <BookOpenIcon class="h-12 w-12" />
-               </div>
-               
-               <div class="absolute top-6 left-6">
-                 <Badge class="bg-white/90 backdrop-blur-md text-slate-900 border-none shadow-xl px-4 py-1.5 uppercase tracking-widest text-[9px] font-bold">
-                   {{ getCategoryLabel(item.category) }}
-                 </Badge>
-               </div>
+              <!-- Image -->
+              <img
+                v-if="item.imageUrl && !imageErrors[item.id || '']"
+                :src="item.imageUrl"
+                :alt="item.title"
+                loading="lazy"
+                @error="imageErrors[item.id || ''] = true"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+
+              <!-- Placeholder -->
+              <div
+                v-else
+                class="w-full h-full flex flex-col items-center justify-center bg-muted text-muted-foreground/40"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-off-icon lucide-image-off"><line x1="2" x2="22" y1="2" y2="22"/><path d="M10.41 10.41a2 2 0 1 1-2.83-2.83"/><line x1="13.5" x2="6" y1="13.5" y2="21"/><line x1="18" x2="21" y1="12" y2="15"/><path d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59"/><path d="M21 15V5a2 2 0 0 0-2-2H9"/></svg>
+                <span class="text-xs uppercase tracking-wider font-medium">
+                  No Image
+                </span>
+              </div>
+
+              <!-- Category Badge -->
+              <div class="absolute top-6 left-6">
+                <Badge
+                  class="bg-white/90 backdrop-blur-md text-slate-900 border-none shadow-xl px-4 py-1.5 uppercase tracking-widest text-[9px] font-bold"
+                >
+                  {{ getCategoryLabel(item.category) }}
+                </Badge>
+              </div>
+
             </div>
 
             <!-- Content -->
@@ -311,7 +338,7 @@
                 </h3>
               </div>
               <p class="text-muted-foreground text-sm line-clamp-3 leading-relaxed font-khmer">
-                {{ stripHtml(item.content) }}
+                {{ (item as any).strippedContent }}
               </p>
             </CardContent>
 
@@ -344,7 +371,7 @@
         </RouterLink>
       </div>
 
-      <div v-if="loadingArticles" class="grid md:grid-cols-3 gap-8">
+      <div v-if="loadingCeremonies" class="grid md:grid-cols-3 gap-8">
         <div
           v-for="i in 3"
           :key="i"
@@ -363,27 +390,48 @@
             class="h-full border border-border hover:border-primary/20 shadow-sm hover:shadow-lg transition-all duration-300 rounded-2xl overflow-hidden bg-card"
           >
             <div class="relative h-48 overflow-hidden">
+              <!-- Image -->
               <img
-                :src="
-                  event.imageUrl ||
-                  'https://placehold.co/600x400/orange/white?text=Event'
-                "
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                v-if="event.imageUrl"
+                :src="event.imageUrl"
+                :alt="event.title"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                loading="lazy"
               />
+
+              <!-- Placeholder -->
+              <div
+                v-else
+                class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400"
+              >
+                <div class="flex flex-col items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-off-icon lucide-image-off"><line x1="2" x2="22" y1="2" y2="22"/><path d="M10.41 10.41a2 2 0 1 1-2.83-2.83"/><line x1="13.5" x2="6" y1="13.5" y2="21"/><line x1="18" x2="21" y1="12" y2="15"/><path d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59"/><path d="M21 15V5a2 2 0 0 0-2-2H9"/></svg>
+                  <span class="text-sm font-medium">No Event Image</span>
+                </div>
+              </div>
+
               <!-- Date Badge -->
               <div
                 class="absolute top-4 left-4 bg-card rounded-xl p-2 text-center shadow-md min-w-[60px]"
               >
                 <span
                   class="block text-xs font-semibold text-muted-foreground uppercase tracking-widest"
-                  >{{ getMonth(event.eventDate || event.createdAt) }}</span
                 >
+                  {{ getMonth(event.eventDate || event.createdAt) }}
+                </span>
+
                 <span
                   class="block text-2xl font-semibold text-foreground leading-none pb-1"
-                  >{{ getDay(event.eventDate || event.createdAt) }}</span
                 >
+                  {{ getDay(event.eventDate || event.createdAt) }}
+                </span>
+
                 <div v-if="event.endDate" class="mt-1 pt-1 border-t border-muted">
-                    <span class="text-[8px] font-black text-primary uppercase tracking-[0.2em] leading-none block">{{ $t('admin.ceremonies.multi_day_toggle') || 'Multi-day' }}</span>
+                  <span
+                    class="text-[8px] font-black text-primary uppercase tracking-[0.2em] leading-none block"
+                  >
+                    {{ $t('admin.ceremonies.multi_day_toggle') || 'Multi-day' }}
+                  </span>
                 </div>
               </div>
             </div>
@@ -401,7 +449,7 @@
                 {{ event.title }}
               </h3>
               <p class="text-muted-foreground text-sm line-clamp-2 mb-4">
-                {{ stripHtml(event.content) }}
+                {{ (event as any).strippedContent }}
               </p>
               <div class="pt-4 border-t border-border flex items-center text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest tabular-nums italic">
                   <CalendarIcon class="h-3.5 w-3.5 mr-2 opacity-50 text-primary" />
@@ -426,20 +474,23 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from "vue";
+import { onMounted, onUnmounted, computed, ref } from "vue";
 import { ArrowRightIcon, CalendarIcon, MapPinIcon, BookOpenIcon } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useProjects } from "~/composables/useProjects";
 import { useArticles } from "~/composables/useArticles";
+import { useCeremonies } from "~/composables/useCeremonies";
 import { formatKhmerDate } from '~/utils/date'
 import StatusBadge from "~/components/StatusBadge.vue";
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
+const imageErrors = ref<Record<string, boolean>>({})
 const { projects, loading: loadingProjects, fetchProjects } = useProjects();
 const { articles, loading: loadingArticles, fetchArticles } = useArticles();
+const { ceremonies, loading: loadingCeremonies, fetchCeremonies } = useCeremonies();
 
 // Helper function to safely convert to Date
 const toDate = (dateValue: any): Date => {
@@ -451,17 +502,16 @@ const toDate = (dateValue: any): Date => {
   return new Date(dateValue)
 }
 
-// Upcoming Events: category 'ceremony'
+// Upcoming Events: from ceremonies table
 const upcomingEvents = computed(() => {
   const now = new Date()
   now.setHours(0, 0, 0, 0)
 
-  return articles.value
-    .filter((a) => {
-      if (a.category !== "ceremony" || !a.eventDate) return false
-      const eventDate = toDate(a.eventDate)
-      const endDate = a.endDate ? toDate(a.endDate) : eventDate
-      // Event is upcoming if it hasn't ended yet
+  return ceremonies.value
+    .filter((c) => {
+      if (!c.eventDate) return false
+      const eventDate = toDate(c.eventDate)
+      const endDate = c.endDate ? toDate(c.endDate) : eventDate
       return endDate >= now
     })
     .sort((a, b) => {
@@ -517,11 +567,7 @@ const getDay = (date: any) => {
   return formatKhmerDate(toDate(date), "dd");
 };
 
-const stripHtml = (html: string) => {
-  if (!html) return "";
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  return doc.body.textContent || "";
-};
+
 
 const formatDateLabel = (date: any) => {
   if (!date) return "";
@@ -543,9 +589,20 @@ const formatDateRange = (start: any, end: any) => {
   return `${formatKhmerDate(startD, "dd")} - ${formattedEnd}`;
 };
 
+let unsubProjects: any;
+let unsubArticles: any;
+let unsubCeremonies: any;
+
 // Fetch data on mount
 onMounted(() => {
-  fetchProjects()
-  fetchArticles()
+  unsubProjects = fetchProjects()
+  unsubArticles = fetchArticles()
+  unsubCeremonies = fetchCeremonies()
+})
+
+onUnmounted(() => {
+  if (unsubProjects) unsubProjects()
+  if (unsubArticles) unsubArticles()
+  if (unsubCeremonies) unsubCeremonies()
 })
 </script>

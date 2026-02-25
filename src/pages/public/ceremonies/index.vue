@@ -51,7 +51,7 @@
            <RouterLink v-for="item in filteredCeremonies" :key="item.id" :to="`/ceremonies/${item.id}`" class="group h-full">
                <Card class="h-full overflow-hidden border-none shadow-sm ring-1 ring-border bg-card hover:shadow-lg hover:ring-primary/20 transition-all duration-500 flex flex-col rounded-3xl">
                    <div class="aspect-video relative overflow-hidden bg-muted">
-                       <img v-if="item.imageUrl" :src="item.imageUrl" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                       <img v-if="item.imageUrl" :src="item.imageUrl" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
                        <div v-else class="w-full h-full flex items-center justify-center text-muted-foreground/20">
                            <CalendarIcon class="h-16 w-16" />
                        </div>
@@ -81,7 +81,7 @@
                            {{ item.title }}
                        </h3>
                        <p class="text-muted-foreground line-clamp-3 text-sm font-medium leading-relaxed flex-1">
-                           {{ stripHtml(item.content) }}
+                           {{ (item as any).strippedContent }}
                        </p>
                        <div class="pt-6 border-t border-border flex items-center justify-between">
                             <div class="flex items-center text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest tabular-nums italic">
@@ -112,24 +112,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { SearchIcon, CalendarIcon, SearchXIcon, HistoryIcon, ArrowRightIcon, MapPinIcon } from 'lucide-vue-next'
 import { formatKhmerDate, toKhmerNumerals } from '~/utils/date'
-import { useArticles } from '~/composables/useArticles'
+import { useCeremonies } from '~/composables/useCeremonies'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
 const route = useRoute()
 const router = useRouter()
-const { articles, loading, fetchArticles } = useArticles()
+const { ceremonies, loading, fetchCeremonies } = useCeremonies()
 const searchQuery = ref('')
 const filterStatus = ref<'all' | 'upcoming' | 'past'>('all')
 
+let unsubscribe: any
+
 onMounted(() => {
-    fetchArticles()
+    unsubscribe = fetchCeremonies()
     if (route.query.q) searchQuery.value = route.query.q as string
     if (route.query.status) filterStatus.value = route.query.status as 'all' | 'upcoming' | 'past'
+})
+
+onUnmounted(() => {
+    if (unsubscribe) unsubscribe()
 })
 
 watch([searchQuery, filterStatus], () => {
@@ -140,9 +146,7 @@ watch([searchQuery, filterStatus], () => {
 })
 
 const filteredCeremonies = computed(() => {
-    return articles.value.filter(item => {
-        // Filter only ceremonies
-        if (item.category !== 'ceremony') return false
+    return ceremonies.value.filter(item => {
         
         // Filter by Status (Upcoming/Past)
         if (filterStatus.value !== 'all') {
@@ -180,11 +184,7 @@ const isPast = (start: any, end: any) => {
     return d < today
 }
 
-const stripHtml = (html: string) => {
-    if (!html) return "";
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    return doc.body.textContent || "";
-}
+
 
 const formatDateRange = (start: any, end: any) => {
     if (!start) return ''

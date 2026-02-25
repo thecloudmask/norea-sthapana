@@ -1,6 +1,6 @@
-import { db } from '~/utils/firebase'
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { ref } from 'vue'
+import { db } from '@/services/firebase'
+import { doc, getDoc, setDoc, onSnapshot, type Unsubscribe } from 'firebase/firestore'
 import { KHR_TO_USD_RATE } from '~/utils/constants'
 
 export const useSettings = () => {
@@ -17,35 +17,34 @@ export const useSettings = () => {
         khrRate: KHR_TO_USD_RATE
     })
 
-    const fetchSettings = async () => {
+    const fetchSettings = (): Unsubscribe => {
         loading.value = true
-        try {
-            const docRef = doc(db, 'settings', 'general')
-            const snap = await getDoc(docRef)
-            if (snap.exists()) {
-                settings.value = { ...settings.value, ...snap.data() }
-            } else {
-                // Initialize default if not exists
-                await setDoc(docRef, settings.value)
+        const docRef = doc(db, 'settings', 'general')
+        
+        return onSnapshot(docRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data()
+                if (data.khrRate) data.khrRate = Number(data.khrRate)
+                settings.value = { ...settings.value, ...data }
             }
-        } catch (e) {
-            console.error(e)
-        } finally {
             loading.value = false
-        }
+        }, (error) => {
+            console.error('Error fetching settings:', error)
+            loading.value = false
+        })
     }
 
     const saveSettings = async (newSettings: any) => {
         loading.value = true
         try {
-             const docRef = doc(db, 'settings', 'general')
-             await updateDoc(docRef, newSettings)
-             settings.value = { ...settings.value, ...newSettings }
+            const docRef = doc(db, 'settings', 'general')
+            await setDoc(docRef, newSettings, { merge: true })
+            settings.value = { ...settings.value, ...newSettings }
         } catch (e) {
-             console.error(e)
-             throw e
+            console.error('Error saving settings:', e)
+            throw e
         } finally {
-             loading.value = false
+            loading.value = false
         }
     }
 

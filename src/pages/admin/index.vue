@@ -31,7 +31,7 @@
       <!-- Overview Tab -->
       <TabsContent value="overview" class="space-y-10 focus-visible:outline-none animate-in fade-in slide-in-from-bottom-4 duration-500">
         <!-- Metrics Cards Row 1: Projects -->
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
           <!-- Project Revenue -->
           <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all">
             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3 bg-muted/30">
@@ -114,10 +114,35 @@
               </div>
             </CardContent>
           </Card>
+
+          <!-- Project Grand Total in USD -->
+          <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all">
+            <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3 bg-muted/30">
+              <div>
+                <p class="text-[9px] font-semibold text-primary/60 uppercase tracking-widest mb-0.5">{{ $t('admin.sidebar.projects') }}</p>
+                <CardTitle class="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">Grand Total (USD)</CardTitle>
+              </div>
+              <div class="h-10 w-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500 border border-orange-500/20">
+                <PieChartIcon class="h-5 w-5" />
+              </div>
+            </CardHeader>
+            <CardContent class="pt-6">
+              <div v-if="loading" class="h-16 w-full bg-muted animate-pulse rounded-2xl"></div>
+              <div v-else class="space-y-1">
+                <div class="text-3xl font-medium text-orange-500 tabular-nums tracking-tight">
+                  ${{ projectGrandTotalUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                </div>
+                <div class="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-tighter space-y-0.5">
+                  <div>USD {{ projectRevenue.usd.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</div>
+                  <div>KHR {{ projectRevenue.khr.toLocaleString() }}</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <!-- Metrics Cards Row 2: Ceremonies -->
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
           <!-- Ceremony Revenue -->
           <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all">
             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3 bg-muted/30">
@@ -178,7 +203,7 @@
             </CardContent>
           </Card>
 
-          <!-- Combined Net Balance -->
+          <!-- Ceremony Balance -->
           <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all">
             <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3 bg-muted/30">
               <CardTitle class="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{{ $t('admin.balance') }}</CardTitle>
@@ -191,6 +216,31 @@
               <div v-else class="space-y-1">
                 <div class="text-3xl font-medium tabular-nums tracking-tight font-sans text-primary">{{ $t('common.currency_usd') }} {{ netBalance.usd.toLocaleString(undefined, {minimumFractionDigits: 2}) }}</div>
                 <div class="text-[11px] font-medium text-muted-foreground/40 uppercase tracking-tighter">{{ $t('common.currency_khr') }} {{ netBalance.khr.toLocaleString() }}</div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <!-- Ceremony Grand Total in USD -->
+          <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all">
+            <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3 bg-muted/30">
+              <div>
+                <p class="text-[9px] font-semibold text-violet-500/70 uppercase tracking-widest mb-0.5">{{ $t('admin.sidebar.ceremonies') }}</p>
+                <CardTitle class="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">Grand Total (USD)</CardTitle>
+              </div>
+              <div class="h-10 w-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500 border border-orange-500/20">
+                <PieChartIcon class="h-5 w-5" />
+              </div>
+            </CardHeader>
+            <CardContent class="pt-6">
+              <div v-if="loading" class="h-16 w-full bg-muted animate-pulse rounded-2xl"></div>
+              <div v-else class="space-y-1">
+                <div class="text-3xl font-medium text-orange-500 tabular-nums tracking-tight">
+                  ${{ ceremonyGrandTotalUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                </div>
+                <div class="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-tighter space-y-0.5">
+                  <div>USD {{ ceremonyRevenue.usd.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</div>
+                  <div>KHR {{ ceremonyRevenue.khr.toLocaleString() }}</div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -373,9 +423,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useColorMode } from '@vueuse/core'
-import { format } from 'date-fns'
+import { formatKhmerDate } from '~/utils/date'
 
 import {
   CalendarIcon,
@@ -402,16 +453,15 @@ import { useCeremonyFinance } from '~/composables/useCeremonyFinance'
 import { useUsers } from '~/composables/useUsers'
 import { useKhrRate } from '~/composables/useKhrRate'
 
+const { t } = useI18n()
 const { khrRate } = useKhrRate()
 const { fetchTotalUsersCount } = useUsers()
 const { donations, fetchAllDonations, loading: loadingDonations } = useDonations()
 const { expenses, fetchAllExpenses, loading: loadingExpenses } = useExpenses()
-const { projects, fetchProjects, loading: loadingProjects, recalculateProjectProgress } = useProjects()
+const { projects, fetchProjects, loading: loadingProjects } = useProjects()
+
+// We only need useCeremonyFinance for its add/update/delete methods, not for fetching whole collections
 const {
-  incomes: ceremonyIncomes,
-  expenses: ceremonyExpenses,
-  fetchAllIncomes: fetchAllCeremonyIncomes,
-  fetchAllExpenses: fetchAllCeremonyExpenses,
   loading: loadingCeremonyFinance
 } = useCeremonyFinance()
 
@@ -436,28 +486,30 @@ const loading = computed(() => loadingDonations.value || loadingExpenses.value |
 
 const recalculatingAll = ref(false)
 const recalculateAll = async () => {
+    // Progress is now managed in real-time via FireStore
     recalculatingAll.value = true
-    try {
-        for (const p of projects.value) {
-            if (p.id) await recalculateProjectProgress(p.id)
-        }
-    } catch (err) {
-        console.error(err)
-    } finally {
+    setTimeout(() => {
         recalculatingAll.value = false
-    }
+    }, 1000)
 }
 
 // --- Project-only metrics ---
-const projectRevenue = computed(() => ({
-    usd: donations.value.filter(d => d.currency !== 'KHR').reduce((sum, d) => sum + (Number(d.amount) || 0), 0),
-    khr: donations.value.filter(d => d.currency === 'KHR').reduce((sum, d) => sum + (Number(d.amount) || 0), 0)
-}))
+const projectRevenue = computed(() => {
+    // Legacy support for both projectId and project_id
+    const filtered = donations.value.filter(d => !!(d.projectId || (d as any).project_id))
+    return {
+        usd: filtered.filter(d => d.currency !== 'KHR').reduce((sum, d) => sum + (Number(d.amount) || 0), 0),
+        khr: filtered.filter(d => d.currency === 'KHR').reduce((sum, d) => sum + (Number(d.amount) || 0), 0)
+    }
+})
 
-const projectExpenses = computed(() => ({
-    usd: expenses.value.filter(e => (e as any).currency !== 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0),
-    khr: expenses.value.filter(e => (e as any).currency === 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0)
-}))
+const projectExpenses = computed(() => {
+    const filtered = expenses.value.filter(e => !!(e.projectId || (e as any).project_id))
+    return {
+        usd: filtered.filter(e => e.currency !== 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0),
+        khr: filtered.filter(e => e.currency === 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0)
+    }
+})
 
 const projectBalance = computed(() => ({
     usd: projectRevenue.value.usd - projectExpenses.value.usd,
@@ -465,30 +517,55 @@ const projectBalance = computed(() => ({
 }))
 
 // --- Ceremony-only metrics ---
-const ceremonyRevenue = computed(() => ({
-    usd: ceremonyIncomes.value.filter(i => i.currency !== 'KHR').reduce((sum, i) => sum + (Number(i.amount) || 0), 0),
-    khr: ceremonyIncomes.value.filter(i => i.currency === 'KHR').reduce((sum, i) => sum + (Number(i.amount) || 0), 0)
-}))
+const ceremonyRevenue = computed(() => {
+    const filtered = donations.value.filter(d => !!(d.ceremonyId || (d as any).ceremony_id))
+    return {
+        usd: filtered.filter(e => e.currency !== 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0),
+        khr: filtered.filter(e => e.currency === 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0)
+    }
+})
 
-const ceremonyExpensesTotal = computed(() => ({
-    usd: ceremonyExpenses.value.filter(e => e.currency !== 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0),
-    khr: ceremonyExpenses.value.filter(e => e.currency === 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0)
-}))
+const ceremonyExpensesTotal = computed(() => {
+    const filtered = expenses.value.filter(e => !!(e.ceremonyId || (e as any).ceremony_id))
+    return {
+        usd: filtered.filter(e => e.currency !== 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0),
+        khr: filtered.filter(e => e.currency === 'KHR').reduce((sum, e) => sum + (Number(e.amount) || 0), 0)
+    }
+})
 
 const ceremonyBalance = computed(() => ({
     usd: ceremonyRevenue.value.usd - ceremonyExpensesTotal.value.usd,
     khr: ceremonyRevenue.value.khr - ceremonyExpensesTotal.value.khr
 }))
 
+// Grand totals converted entirely to USD
+const projectGrandTotalUsd = computed(() => {
+    const rate = khrRate.value || 4100
+    return projectRevenue.value.usd + (projectRevenue.value.khr / rate)
+})
+
+const ceremonyGrandTotalUsd = computed(() => {
+    const rate = khrRate.value || 4100
+    return ceremonyRevenue.value.usd + (ceremonyRevenue.value.khr / rate)
+})
+
 // Keep combined for charts
-const totalRevenue = computed(() => ({
-    usd: projectRevenue.value.usd + ceremonyRevenue.value.usd,
-    khr: projectRevenue.value.khr + ceremonyRevenue.value.khr
-}))
-const totalExpenses = computed(() => ({
-    usd: projectExpenses.value.usd + ceremonyExpensesTotal.value.usd,
-    khr: projectExpenses.value.khr + ceremonyExpensesTotal.value.khr
-}))
+const totalRevenue = computed(() => {
+    return donations.value.reduce((acc, d) => {
+        if (d.currency === 'KHR') acc.khr += (Number(d.amount) || 0)
+        else acc.usd += (Number(d.amount) || 0)
+        return acc
+    }, { usd: 0, khr: 0 })
+})
+
+const totalExpenses = computed(() => {
+    return expenses.value.reduce((acc, e) => {
+        if (e.currency === 'KHR') acc.khr += (Number(e.amount) || 0)
+        else acc.usd += (Number(e.amount) || 0)
+        return acc
+    }, { usd: 0, khr: 0 })
+})
+
 const netBalance = computed(() => ({
     usd: totalRevenue.value.usd - totalExpenses.value.usd,
     khr: totalRevenue.value.khr - totalExpenses.value.khr
@@ -512,32 +589,39 @@ const recentDonations = computed(() => {
     }))
 })
 
+// Data Helpers
+const toDate = (date: any) => {
+    if (!date) return new Date(0)
+    if (date.toDate) return date.toDate()
+    const d = new Date(date)
+    return isNaN(d.getTime()) ? new Date(0) : d
+}
+
 const formatDateShort = (date: any) => {
     if (!date) return ''
-    const d = date.toDate ? date.toDate() : new Date(date)
-    return format(d, 'dd/MM/yy')
+    return formatKhmerDate(date, 'dd/MM/yy')
 }
 
 // --- ApexCharts Configuration ---
 
 const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-// 1. Revenue Trend (Area Chart) — projects + ceremonies combined
+// 1. Revenue Trend (Area Chart) — projects + ceremonies combined (Safely from all incomes)
 const revenueTrendSeries = computed(() => {
   const data = new Array(12).fill(0)
+  
+  // donations.value already contains all records from 'incomes' collection
   donations.value.forEach(d => {
-    const date = d.createdAt?.toDate ? d.createdAt.toDate() : new Date(d.createdAt || Date.now())
+    const date = toDate(d.createdAt)
     const month = date.getMonth()
+    // Skip invalid dates (month 0 of 1970) unless actually from then
+    if (date.getFullYear() < 2000) return 
+
     const amount = Number(d.amount) || 0
-    data[month] += d.currency === 'KHR' ? amount / khrRate.value : amount
+    data[month] += d.currency === 'KHR' ? amount / (khrRate.value || 4100) : amount
   })
-  ceremonyIncomes.value.forEach(i => {
-    const date = (i.createdAt as any)?.toDate ? (i.createdAt as any).toDate() : new Date((i.createdAt as any) || Date.now())
-    const month = date.getMonth()
-    const amount = Number(i.amount) || 0
-    data[month] += i.currency === 'KHR' ? amount / khrRate.value : amount
-  })
-  return [{ name: 'Revenue', data }]
+  
+  return [{ name: t('admin.revenue'), data }]
 })
 
 const revenueTrendOptions = computed(() => ({
@@ -594,9 +678,9 @@ const revenueTrendOptions = computed(() => ({
 const expenseSeries = computed(() => {
   const categories: Record<string, number> = {}
   expenses.value.forEach(e => {
-    const cat = e.category || 'Other'
+    const cat = e.category || 'other'
     const amount = Number(e.amount) || 0
-    const val = (e as any).currency === 'KHR' ? amount / khrRate.value : amount
+    const val = (e as any).currency === 'KHR' ? amount / (khrRate.value || 4100) : amount
     categories[cat] = (categories[cat] || 0) + val
   })
   return Object.values(categories)
@@ -605,14 +689,23 @@ const expenseSeries = computed(() => {
 const expensePieOptions = computed(() => {
   const categories: Record<string, number> = {}
   expenses.value.forEach(e => {
-    const cat = e.category || 'Other'
+    const cat = e.category || 'other'
     categories[cat] = (categories[cat] || 0) + 1
   })
   return {
-    labels: Object.keys(categories),
+    labels: Object.keys(categories).map(key => {
+      // Try project categories first, then ceremony categories, then fall back to raw key
+      const projectKey = `admin.expense_categories.${key}`
+      const ceremonyKey = `admin.ceremony_finance.expense_categories.${key}`
+      const projectLabel = t(projectKey)
+      if (projectLabel !== projectKey) return projectLabel
+      const ceremonyLabel = t(ceremonyKey)
+      if (ceremonyLabel !== ceremonyKey) return ceremonyLabel
+      return key
+    }),
     theme: { mode: isDark.value ? 'dark' : 'light' },
     chart: { background: 'transparent' },
-    colors: ['#f97316', '#fb923c', '#fdba74', '#fed7aa', '#ffedd5'],
+    colors: ['#f97316', '#fb923c', '#fdba74', '#fed7aa', '#ffedd5', '#ea580c', '#c2410c'],
     legend: { position: 'bottom', labels: { colors: isDark.value ? '#94a3b8' : '#64748b' } },
     dataLabels: { enabled: true, dropShadow: { enabled: false } },
     stroke: { width: 0 }
@@ -663,32 +756,32 @@ const methodDonutOptions = computed(() => {
   }
 })
 
-// 4. Trend Line Chart — projects + ceremonies combined
+// 4. Trend Line Chart — projects + ceremonies combined (already unified in donations/expenses)
 const trendSeries = computed(() => {
   const incomeData = new Array(12).fill(0)
   const expenseData = new Array(12).fill(0)
 
   donations.value.forEach(d => {
-    const month = (d.createdAt?.toDate ? d.createdAt.toDate() : new Date(d.createdAt || Date.now())).getMonth()
-    incomeData[month] += d.currency === 'KHR' ? Number(d.amount) / khrRate.value : Number(d.amount)
-  })
-  ceremonyIncomes.value.forEach(i => {
-    const month = ((i.createdAt as any)?.toDate ? (i.createdAt as any).toDate() : new Date((i.createdAt as any) || Date.now())).getMonth()
-    incomeData[month] += i.currency === 'KHR' ? Number(i.amount) / khrRate.value : Number(i.amount)
+    const date = toDate(d.createdAt)
+    const month = date.getMonth()
+    if (date.getFullYear() < 2000) return 
+
+    const amount = Number(d.amount) || 0
+    incomeData[month] += d.currency === 'KHR' ? amount / (khrRate.value || 4100) : amount
   })
 
   expenses.value.forEach(e => {
-    const month = (e.createdAt?.toDate ? e.createdAt.toDate() : new Date(e.createdAt || Date.now())).getMonth()
-    expenseData[month] += (e as any).currency === 'KHR' ? Number(e.amount) / khrRate.value : Number(e.amount)
-  })
-  ceremonyExpenses.value.forEach(e => {
-    const month = ((e.createdAt as any)?.toDate ? (e.createdAt as any).toDate() : new Date((e.createdAt as any) || Date.now())).getMonth()
-    expenseData[month] += e.currency === 'KHR' ? Number(e.amount) / khrRate.value : Number(e.amount)
+    const date = toDate(e.createdAt)
+    const month = date.getMonth()
+    if (date.getFullYear() < 2000) return 
+
+    const amount = Number(e.amount) || 0
+    expenseData[month] += e.currency === 'KHR' ? amount / (khrRate.value || 4100) : amount
   })
 
   return [
-    { name: 'Income', data: incomeData },
-    { name: 'Expense', data: expenseData }
+    { name: t('admin.analytics_labels.income'), data: incomeData },
+    { name: t('admin.analytics_labels.expenses'), data: expenseData }
   ]
 })
 
@@ -799,13 +892,30 @@ const handleExport = (id: string) => {
   document.body.removeChild(link)
 }
 
+let unsubDonations: any
+let unsubExpenses: any
+let unsubProjects: any
+
 onMounted(() => {
-    fetchAllDonations()
-    fetchAllExpenses()
-    fetchProjects()
+    unsubDonations = fetchAllDonations()
+    unsubExpenses = fetchAllExpenses()
+    unsubProjects = fetchProjects()
     fetchTotalUsers()
-    fetchAllCeremonyIncomes()
-    fetchAllCeremonyExpenses()
+    
+    // // Add debugging
+    // watch([donations, expenses, projects], () => {
+    //     console.log('[Admin Dashboard] Data update:', {
+    //         incomes: donations.value.length,
+    //         expenses: expenses.value.length,
+    //         projects: projects.value.length
+    //     })
+    // }, { immediate: true })
+})
+
+onUnmounted(() => {
+    if (unsubDonations) unsubDonations()
+    if (unsubExpenses) unsubExpenses()
+    if (unsubProjects) unsubProjects()
 })
 </script>
 

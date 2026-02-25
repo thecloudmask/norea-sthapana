@@ -209,7 +209,8 @@
     "close": "Close",
     "total": "Total",
     "no_data": "No Data",
-    "search_placeholder": "Search..."
+    "search_placeholder": "Search...",
+    "print": "Print"
   },
   "footer": {
     "privacy_policy": "Privacy Policy",
@@ -332,7 +333,9 @@
       "loading_data": "Loading data...",
       "monthly_trend": "Monthly Trend",
       "monthly_trend_subtitle": "Comparison of monthly income and expenses",
-      "times": "times"
+      "times": "times",
+      "income": "Income",
+      "expenses": "Expenses"
     },
     "reports_list": {
       "financial_summary": "Financial Summary",
@@ -379,8 +382,10 @@
       "create_project": "Create New Project",
       "status_published": "Published",
       "status_draft": "Draft",
+      "status_completed": "Completed",
       "status_archived": "Archived",
       "select_status": "Select Status",
+      "edit": "Edit",
       "location": "Location",
       "deadline": "Deadline",
       "banner_image": "Banner Image",
@@ -511,7 +516,10 @@
         "qr_code_url": "QR Code Image URL"
     },
     "expense_categories": {
+      "material": "Construction Materials",
+      "labor": "Labor",
       "food": "Food & Beverage",
+      "utility": "Utilities",
       "transport": "Transportation",
       "venue": "Venue & Decoration",
       "materials": "Materials",

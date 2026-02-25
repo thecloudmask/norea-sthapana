@@ -186,7 +186,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { PlusIcon, PencilIcon, TrashIcon, ImageIcon, CalendarIcon, ArrowLeftIcon, NewspaperIcon, SearchIcon } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -231,6 +231,16 @@ const formData = ref({
     eventDate: null as Date | string | null
 })
 
+let unsubscribe: (() => void) | null = null
+
+onMounted(() => {
+    unsubscribe = fetchNews()
+})
+
+onUnmounted(() => {
+    if (unsubscribe) unsubscribe()
+})
+
 // Computed for date input (YYYY-MM-DD)
 const eventDateInput = computed({
     get: () => {
@@ -244,9 +254,6 @@ const eventDateInput = computed({
     }
 })
 
-onMounted(() => {
-    fetchNews()
-})
 
 const openCreateModal = () => {
     isEditing.value = false

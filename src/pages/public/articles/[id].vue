@@ -136,7 +136,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { CalendarIcon, UserIcon, QuoteIcon, DownloadIcon, FacebookIcon, TwitterIcon, LinkIcon, ArrowLeftIcon, MapPinIcon, MaximizeIcon, XIcon } from 'lucide-vue-next'
 import { formatKhmerDate } from '~/utils/date'
 import * as htmlToImage from 'html-to-image'
@@ -152,20 +152,16 @@ const { t } = useI18n()
 
 const article = ref<any>(null)
 const loading = ref(true)
-const { getArticle } = useArticles()
+const { fetchArticle } = useArticles()
 
-const fetchArticleById = async (id: string) => {
+let unsubscribe: any
+
+const fetchArticleById = (id: string) => {
     loading.value = true
-    try {
-        const data = await getArticle(id)
-        if (data) {
-            article.value = data
-        }
-    } catch (e) {
-        console.error(e)
-    } finally {
+    unsubscribe = fetchArticle(id, (data) => {
+        article.value = data
         loading.value = false
-    }
+    })
 }
 
 useHead({
@@ -192,6 +188,10 @@ useHead({
 
 onMounted(() => {
     fetchArticleById(route.params.id as string)
+})
+
+onUnmounted(() => {
+    if (unsubscribe) unsubscribe()
 })
 
 const stripHtml = (html: string) => {

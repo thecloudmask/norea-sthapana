@@ -420,9 +420,9 @@ const handleSubmit = async () => {
     let result;
     
     if (isEditing.value && props.initialData) {
-        result = await updateIncome(props.initialData.id, formData, props.userId)
+        result = await updateIncome(props.initialData.id, formData)
     } else {
-        result = await addIncome(props.ceremonyId, formData, props.userId)
+        result = await addIncome(props.ceremonyId, formData)
     }
     
     if (result.success) {

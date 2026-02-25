@@ -92,7 +92,7 @@
 
           <TabsContent value="overview" class="space-y-6 pt-6">
             <!-- Summary Grid -->
-            <div class="grid gap-6 md:grid-cols-4">
+            <div class="grid gap-6 md:grid-cols-5">
               <!-- Income Card -->
               <Card class="rounded-2xl border-none shadow-md bg-card ring-1 ring-border/10 overflow-hidden group">
                 <div class="p-6 space-y-4">
@@ -168,6 +168,27 @@
                     </div>
                     <div class="h-2 w-full bg-muted rounded-full overflow-hidden shadow-inner">
                       <div class="h-full bg-primary rounded-full transition-all duration-700 shadow-sm" :style="{ width: `${projectProgress}%` }"></div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              <!-- Grand Total in USD Card -->
+              <Card class="rounded-2xl border-none shadow-md bg-card ring-1 ring-border/10 overflow-hidden group">
+                <div class="p-6 space-y-4">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-foreground/60 font-khmer">Grand Total (USD)</span>
+                    <div class="size-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 ring-1 ring-amber-500/20 shadow-sm">
+                      <Users class="size-5" />
+                    </div>
+                  </div>
+                  <div class="space-y-1">
+                    <div class="text-3xl font-bold text-amber-600 tracking-tight">
+                      ${{ totalGrandUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                    </div>
+                    <div class="text-[11px] font-medium text-muted-foreground/60 space-y-0.5">
+                      <div>USD <span class="tabular-nums">{{ totalDonations.usd.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</span></div>
+                      <div v-if="totalDonations.khr > 0">KHR <span class="tabular-nums">{{ totalDonations.khr.toLocaleString() }}</span></div>
                     </div>
                   </div>
                 </div>
@@ -945,6 +966,11 @@ const projectProgress = computed(() => {
   const totalUsd = totalDonations.value.usd + (totalDonations.value.khr / khrRate.value)
   const percent = (totalUsd / project.value.goalAmount) * 100
   return Math.min(Math.round(percent), 100)
+})
+
+const totalGrandUsd = computed(() => {
+  const rate = khrRate.value || 4100
+  return totalDonations.value.usd + (totalDonations.value.khr / rate)
 })
 
 const showAddDonation = ref(false)

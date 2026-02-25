@@ -1,26 +1,23 @@
 import { ref, computed } from 'vue'
+import { db } from '@/services/firebase'
 import { 
   collection, 
+  onSnapshot, 
+  query, 
+  doc, 
   addDoc, 
   updateDoc, 
   deleteDoc, 
-  doc, 
-  query, 
-  where, 
-  orderBy, 
-  onSnapshot,
-  getDocs,
-  Timestamp,
-  limit
+  serverTimestamp,
+  where,
+  type Unsubscribe 
 } from 'firebase/firestore'
-import { db } from '~/utils/firebase'
 import type { 
   CeremonyIncome, 
   CeremonyExpense, 
   CeremonyFinanceSummary,
   IncomeFormData,
-  ExpenseFormData,
-  DuplicateCheckResult
+  ExpenseFormData
 } from '~/types/ceremonyFinance'
 
 export function useCeremonyFinance() {
@@ -29,221 +26,107 @@ export function useCeremonyFinance() {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  // Collections
-  const incomesCollection = collection(db, 'ceremonyIncomes')
-  const expensesCollection = collection(db, 'ceremonyExpenses')
+  const mapIncome = (id: string, item: any): CeremonyIncome => ({
+    ...item,
+    id,
+    ceremonyId: item.ceremonyId || item.ceremony_id,
+    ceremony_id: item.ceremonyId || item.ceremony_id,
+    donorName: item.donorName || item.donor_name,
+    donor_name: item.donorName || item.donor_name,
+    donorPhone: item.donorPhone || item.donor_phone,
+    donor_phone: item.donorPhone || item.donor_phone,
+    receiptNumber: item.receiptNumber || item.receipt_number,
+    receipt_number: item.receiptNumber || item.receipt_number,
+    paymentMethod: item.paymentMethod || item.payment_method,
+    payment_method: item.paymentMethod || item.payment_method,
+    createdAt: item.createdAt || item.created_at,
+    created_at: item.createdAt || item.created_at,
+    updatedAt: item.updatedAt || item.updated_at,
+    updated_at: item.updatedAt || item.updated_at
+  })
+
+  const mapExpense = (id: string, item: any): CeremonyExpense => ({
+    ...item,
+    id,
+    ceremonyId: item.ceremonyId || item.ceremony_id,
+    ceremony_id: item.ceremonyId || item.ceremony_id,
+    title: item.title || item.itemName || item.item_name,
+    itemName: item.itemName || item.item_name || item.title,
+    item_name: item.item_name || item.itemName || item.title,
+    expenseNumber: item.expenseNumber || item.expense_number,
+    expense_number: item.expense_number || item.expenseNumber,
+    receiptUrl: item.receiptUrl || item.receipt_url,
+    receipt_url: item.receipt_url || item.receiptUrl,
+    paidBy: item.paidBy || item.paid_by,
+    paid_by: item.paid_by || item.paidBy,
+    paidDate: item.paidDate || item.paid_date,
+    paid_date: item.paid_date || item.paidDate,
+    unitPrice: item.unitPrice || item.unit_price,
+    unit_price: item.unitPrice || item.unit_price,
+    createdAt: item.createdAt || item.created_at,
+    created_at: item.createdAt || item.created_at,
+    updatedAt: item.updatedAt || item.updated_at,
+    updated_at: item.updatedAt || item.updated_at
+  })
 
   // ==================== INCOME METHODS ====================
 
-  /**
-   * Generate next receipt number for income
-   * Format: INC-0001, INC-0002, etc.
-   */
-  const generateIncomeReceiptNumber = async (): Promise<string> => {
-    try {
-      const q = query(incomesCollection, orderBy('receiptNumber', 'desc'), limit(1))
-      const snapshot = await getDocs(q)
-      
-      if (snapshot.empty) {
-        return 'INC-0001'
-      }
-      
-      const lastReceipt = snapshot.docs[0].data().receiptNumber as string
-      const lastNumber = parseInt(lastReceipt.split('-')[1])
-      const nextNumber = lastNumber + 1
-      
-      return `INC-${String(nextNumber).padStart(4, '0')}`
-    } catch (err) {
-      console.error('Error generating receipt number:', err)
-      return 'INC-0001'
-    }
-  }
-
-  const normalize = (str: string) => str.toLowerCase().replace(/[\s\u200b\u200c\u200d\ufeff]+/g, '').trim()
-
-  /**
-   * Check for potential duplicate incomes (Client-side)
-   * ពិនិត្យការបញ្ចូលស្ទួន (លើទិន្នន័យដែលមានស្រាប់)
-   */
-  const checkDuplicateIncomesLocal = (
-    existingIncomes: CeremonyIncome[],
-    donorName: string,
-    amount: number,
-    currency: string
-  ): DuplicateCheckResult => {
-    try {
-      if (!donorName || !amount) {
-        return { isDuplicate: false, similarRecords: [], confidence: 'low' }
-      }
-
-      const yesterday = new Date()
-      yesterday.setHours(yesterday.getHours() - 24)
-
-      const duplicates = existingIncomes.filter(income => {
-        // Check date (within last 24h)
-        let matchesDate = true
-        if (income.createdAt) {
-          const createdDate = (income.createdAt as any).toDate ? (income.createdAt as any).toDate() : new Date(income.createdAt)
-          matchesDate = createdDate >= yesterday
-        }
-        
-        const nameMatch = normalize(income.donorName) === normalize(donorName)
-        const amountMatch = income.amount === amount
-        const currencyMatch = income.currency === currency
-          
-        return matchesDate && nameMatch && amountMatch && currencyMatch
-      })
-
-      return {
-        isDuplicate: duplicates.length > 0,
-        similarRecords: duplicates,
-        confidence: duplicates.length > 0 ? 'high' : 'low'
-      }
-    } catch (err) {
-      console.error('Error checking duplicates local:', err)
-      return { isDuplicate: false, similarRecords: [], confidence: 'low' }
-    }
-  }
-
-  /**
-   * Check for potential duplicate incomes (Server-side)
-   * ពិនិត្យការបញ្ចូលស្ទួន
-   */
-  const checkDuplicateIncome = async (
-    ceremonyId: string,
-    donorName: string,
-    amount: number,
-    currency: string
-  ): Promise<DuplicateCheckResult> => {
-    try {
-      // Check within last 24 hours
-      const yesterday = new Date()
-      yesterday.setHours(yesterday.getHours() - 24)
-      
-      const q = query(
-        incomesCollection,
-        where('ceremonyId', '==', ceremonyId)
-      )
-      
-      const snapshot = await getDocs(q)
-      
-      const duplicates = snapshot.docs
-        .map(doc => {
-          const data = doc.data()
-          return {
-            id: doc.id,
-            ...data,
-            createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt || Date.now()),
-            updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : undefined
-          } as CeremonyIncome
-        })
-        .filter(income => {
-          // Check date (client-side filter)
-          let matchesDate = true
-          if (income.createdAt) {
-            const createdDate = (income.createdAt as any).toDate ? (income.createdAt as any).toDate() : new Date(income.createdAt)
-            matchesDate = createdDate >= yesterday
-          }
-
-          const nameMatch = normalize(income.donorName) === normalize(donorName)
-          const amountMatch = income.amount === amount
-          const currencyMatch = income.currency === currency
-          
-          return matchesDate && nameMatch && amountMatch && currencyMatch
-        })
-      
-      return {
-        isDuplicate: duplicates.length > 0,
-        similarRecords: duplicates,
-        confidence: duplicates.length > 0 ? 'high' : 'low'
-      }
-    } catch (err) {
-      console.error('Error checking duplicates:', err)
-      return { isDuplicate: false, similarRecords: [], confidence: 'low' }
-    }
-  }
-
-  /**
-   * Fetch incomes for a ceremony (real-time)
-   * ទាញយកចំណូលតាម Ceremony
-   */
-  const fetchIncomes = (ceremonyId: string) => {
+  const fetchIncomes = (ceremonyId: string): Unsubscribe => {
     loading.value = true
-    error.value = null
-    
     const q = query(
       collection(db, 'ceremonyIncomes'), 
-      where('ceremonyId', '==', ceremonyId),
-      // orderBy('createdAt', 'desc')
+      where('ceremonyId', '==', ceremonyId)
     )
     
-    const toDate = (t: any) => t?.toDate ? t.toDate() : new Date(t || Date.now())
-
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        incomes.value = snapshot.docs.map(doc => {
-          const data = doc.data()
-          return {
-            id: doc.id,
-            ...data,
-            createdAt: toDate(data.createdAt),
-            updatedAt: data.updatedAt ? toDate(data.updatedAt) : undefined,
-            paidDate: data.paidDate ? toDate(data.paidDate) : undefined
-          } as unknown as CeremonyIncome
-        })
-        
-        loading.value = false
-      },
-      (err) => {
-        console.error('Error fetching incomes:', err)
-        error.value = err.message
-        loading.value = false
-      }
-    )
-    
-    return unsubscribe
+    return onSnapshot(q, (snapshot) => {
+      const results = snapshot.docs.map(doc => mapIncome(doc.id, doc.data()))
+      incomes.value = results.sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0)
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0)
+        return dateB.getTime() - dateA.getTime()
+      })
+      loading.value = false
+    }, (err) => {
+      console.error('Error fetching incomes:', err)
+      error.value = err.message
+      loading.value = false
+    })
   }
 
-  const fetchAllIncomes = async () => {
+  const fetchAllIncomes = (): Unsubscribe => {
     loading.value = true
-    try {
-      const q = query(incomesCollection)
-      const snapshot = await getDocs(q)
-      incomes.value = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as CeremonyIncome[]
-    } catch (err: any) {
+    const q = query(collection(db, 'ceremonyIncomes'))
+    
+    return onSnapshot(q, (snapshot) => {
+      const results = snapshot.docs.map(doc => mapIncome(doc.id, doc.data()))
+      incomes.value = results.sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0)
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0)
+        return dateB.getTime() - dateA.getTime()
+      })
+      loading.value = false
+    }, (err) => {
       console.error('Error fetching all incomes:', err)
       error.value = err.message
-    } finally {
       loading.value = false
-    }
+    })
   }
 
-  /**
-   * Add new income
-   * បន្ថែមចំណូលថ្មី
-   */
-  const addIncome = async (ceremonyId: string, data: IncomeFormData, userId: string) => {
+  const addIncome = async (ceremonyId: string, data: IncomeFormData) => {
     try {
       loading.value = true
       error.value = null
       
-      const receiptNumber = await generateIncomeReceiptNumber()
-      
-      const incomeData = {
+      const payload = {
         ...data,
-        ceremonyId,
-        receiptNumber,
-        createdAt: Timestamp.now(),
-        createdBy: userId
+        ceremonyId: ceremonyId,
+        receiptNumber: `INC-${Date.now()}`,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
       }
       
-      await addDoc(incomesCollection, incomeData)
-      
-      return { success: true, receiptNumber }
+      const docRef = await addDoc(collection(db, 'ceremonyIncomes'), payload)
+      return { success: true, id: docRef.id }
     } catch (err: any) {
       console.error('Error adding income:', err)
       error.value = err.message
@@ -253,22 +136,12 @@ export function useCeremonyFinance() {
     }
   }
 
-  /**
-   * Update income
-   * កែប្រែចំណូល
-   */
-  const updateIncome = async (incomeId: string, data: Partial<IncomeFormData>, userId: string) => {
+  const updateIncome = async (incomeId: string, data: Partial<IncomeFormData>) => {
     try {
       loading.value = true
       error.value = null
-      
-      const incomeRef = doc(db, 'ceremonyIncomes', incomeId)
-      await updateDoc(incomeRef, {
-        ...data,
-        updatedAt: Timestamp.now(),
-        updatedBy: userId
-      })
-      
+      const docRef = doc(db, 'ceremonyIncomes', incomeId)
+      await updateDoc(docRef, { ...data, updatedAt: serverTimestamp() })
       return { success: true }
     } catch (err: any) {
       console.error('Error updating income:', err)
@@ -279,18 +152,11 @@ export function useCeremonyFinance() {
     }
   }
 
-  /**
-   * Delete income
-   * លុបចំណូល
-   */
   const deleteIncome = async (incomeId: string) => {
     try {
       loading.value = true
       error.value = null
-      
-      const incomeRef = doc(db, 'ceremonyIncomes', incomeId)
-      await deleteDoc(incomeRef)
-      
+      await deleteDoc(doc(db, 'ceremonyIncomes', incomeId))
       return { success: true }
     } catch (err: any) {
       console.error('Error deleting income:', err)
@@ -301,130 +167,64 @@ export function useCeremonyFinance() {
     }
   }
 
-  /**
-   * Search incomes by donor name or phone
-   * ស្វែងរកតាមឈ្មោះ ឬ លេខទូរស័ព្ទ
-   */
-  const searchIncomes = (ceremonyId: string, searchTerm: string) => {
-    const normalized = searchTerm.toLowerCase().trim()
+  // ==================== EXPENSE METHODS ====================
+
+  const fetchExpenses = (ceremonyId: string): Unsubscribe => {
+    loading.value = true
+    const q = query(
+      collection(db, 'ceremonyExpenses'), 
+      where('ceremonyId', '==', ceremonyId)
+    )
     
-    return incomes.value.filter(income => {
-      if (income.ceremonyId !== ceremonyId) return false
-      
-      const nameMatch = income.donorName.toLowerCase().includes(normalized)
-      const phoneMatch = income.donorPhone?.includes(normalized) || false
-      const receiptMatch = income.receiptNumber.toLowerCase().includes(normalized)
-      
-      return nameMatch || phoneMatch || receiptMatch
+    return onSnapshot(q, (snapshot) => {
+      const results = snapshot.docs.map(doc => mapExpense(doc.id, doc.data()))
+      expenses.value = results.sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0)
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0)
+        return dateB.getTime() - dateA.getTime()
+      })
+      loading.value = false
+    }, (err) => {
+      console.error('Error fetching expenses:', err)
+      error.value = err.message
+      loading.value = false
     })
   }
 
-  // ==================== EXPENSE METHODS ====================
-
-  /**
-   * Generate next expense number
-   * Format: EXP-0001, EXP-0002, etc.
-   */
-  const generateExpenseNumber = async (): Promise<string> => {
-    try {
-      const q = query(expensesCollection, orderBy('expenseNumber', 'desc'), limit(1))
-      const snapshot = await getDocs(q)
-      
-      if (snapshot.empty) {
-        return 'EXP-0001'
-      }
-      
-      const lastExpense = snapshot.docs[0].data().expenseNumber as string
-      const lastNumber = parseInt(lastExpense.split('-')[1])
-      const nextNumber = lastNumber + 1
-      
-      return `EXP-${String(nextNumber).padStart(4, '0')}`
-    } catch (err) {
-      console.error('Error generating expense number:', err)
-      return 'EXP-0001'
-    }
-  }
-
-  /**
-   * Fetch expenses for a ceremony (real-time)
-   * ទាញយកចំណាយតាម Ceremony
-   */
-  const fetchExpenses = (ceremonyId: string) => {
+  const fetchAllExpenses = (): Unsubscribe => {
     loading.value = true
-    error.value = null
+    const q = query(collection(db, 'ceremonyExpenses'))
     
-    const q = query(
-      expensesCollection,
-      where('ceremonyId', '==', ceremonyId),
-      // orderBy('createdAt', 'desc')
-    )
-    
-    const toDate = (t: any) => t?.toDate ? t.toDate() : new Date(t || Date.now())
-
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        expenses.value = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          createdAt: toDate(doc.data().createdAt),
-          updatedAt: doc.data().updatedAt ? toDate(doc.data().updatedAt) : undefined,
-          paidDate: doc.data().paidDate ? toDate(doc.data().paidDate) : undefined
-        })) as CeremonyExpense[]
-        
-        loading.value = false
-      },
-
-      (err) => {
-        console.error('Error fetching expenses:', err)
-        error.value = err.message
-        loading.value = false
-      }
-    )
-    
-    return unsubscribe
-  }
-
-  const fetchAllExpenses = async () => {
-    loading.value = true
-    try {
-      const q = query(expensesCollection)
-      const snapshot = await getDocs(q)
-      expenses.value = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as CeremonyExpense[]
-    } catch (err: any) {
+    return onSnapshot(q, (snapshot) => {
+      const results = snapshot.docs.map(doc => mapExpense(doc.id, doc.data()))
+      expenses.value = results.sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0)
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0)
+        return dateB.getTime() - dateA.getTime()
+      })
+      loading.value = false
+    }, (err) => {
       console.error('Error fetching all expenses:', err)
       error.value = err.message
-    } finally {
       loading.value = false
-    }
+    })
   }
 
-  /**
-   * Add new expense
-   * បន្ថែមចំណាយថ្មី
-   */
-  const addExpense = async (ceremonyId: string, data: ExpenseFormData, userId: string) => {
+  const addExpense = async (ceremonyId: string, data: ExpenseFormData) => {
     try {
       loading.value = true
       error.value = null
       
-      const expenseNumber = await generateExpenseNumber()
-      
-      const expenseData = {
+      const payload = {
         ...data,
-        ceremonyId,
-        expenseNumber,
-        createdAt: Timestamp.now(),
-        createdBy: userId,
-        paidDate: data.paidDate ? Timestamp.fromDate(data.paidDate) : null
+        ceremonyId: ceremonyId,
+        expenseNumber: `EXP-${Date.now()}`,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
       }
       
-      await addDoc(expensesCollection, expenseData)
-      
-      return { success: true, expenseNumber }
+      const docRef = await addDoc(collection(db, 'ceremonyExpenses'), payload)
+      return { success: true, id: docRef.id }
     } catch (err: any) {
       console.error('Error adding expense:', err)
       error.value = err.message
@@ -434,28 +234,12 @@ export function useCeremonyFinance() {
     }
   }
 
-  /**
-   * Update expense
-   * កែប្រែចំណាយ
-   */
-  const updateExpense = async (expenseId: string, data: Partial<ExpenseFormData>, userId: string) => {
+  const updateExpense = async (expenseId: string, data: Partial<ExpenseFormData>) => {
     try {
       loading.value = true
       error.value = null
-      
-      const expenseRef = doc(db, 'ceremonyExpenses', expenseId)
-      const updateData: any = {
-        ...data,
-        updatedAt: Timestamp.now(),
-        updatedBy: userId
-      }
-      
-      if (data.paidDate) {
-        updateData.paidDate = Timestamp.fromDate(data.paidDate)
-      }
-      
-      await updateDoc(expenseRef, updateData)
-      
+      const docRef = doc(db, 'ceremonyExpenses', expenseId)
+      await updateDoc(docRef, { ...data, updatedAt: serverTimestamp() })
       return { success: true }
     } catch (err: any) {
       console.error('Error updating expense:', err)
@@ -466,18 +250,11 @@ export function useCeremonyFinance() {
     }
   }
 
-  /**
-   * Delete expense
-   * លុបចំណាយ
-   */
   const deleteExpense = async (expenseId: string) => {
     try {
       loading.value = true
       error.value = null
-      
-      const expenseRef = doc(db, 'ceremonyExpenses', expenseId)
-      await deleteDoc(expenseRef)
-      
+      await deleteDoc(doc(db, 'ceremonyExpenses', expenseId))
       return { success: true }
     } catch (err: any) {
       console.error('Error deleting expense:', err)
@@ -490,17 +267,13 @@ export function useCeremonyFinance() {
 
   // ==================== COMPUTED SUMMARY ====================
 
-  /**
-   * Calculate financial summary
-   * គណនាសង្ខេបហិរញ្ញវត្ថុ
-   */
   const summary = computed<CeremonyFinanceSummary>(() => {
     const totalIncome = incomes.value.reduce(
       (acc, income) => {
         if (income.currency === 'USD') {
-          acc.usd += income.amount
+          acc.usd += Number(income.amount)
         } else {
-          acc.khr += income.amount
+          acc.khr += Number(income.amount)
         }
         return acc
       },
@@ -510,9 +283,9 @@ export function useCeremonyFinance() {
     const totalExpense = expenses.value.reduce(
       (acc, expense) => {
         if (expense.currency === 'USD') {
-          acc.usd += expense.amount
+          acc.usd += Number(expense.amount)
         } else {
-          acc.khr += expense.amount
+          acc.khr += Number(expense.amount)
         }
         return acc
       },
@@ -532,30 +305,39 @@ export function useCeremonyFinance() {
   })
 
   return {
-    // State
     incomes,
     expenses,
     loading,
     error,
     summary,
-    
-    // Income methods
     fetchIncomes,
     addIncome,
     updateIncome,
     deleteIncome,
-    searchIncomes,
-    checkDuplicateIncome,
-    checkDuplicateIncomesLocal,
-    
-    // Expense methods
     fetchExpenses,
     fetchAllExpenses,
     addExpense,
     updateExpense,
     deleteExpense,
-    
-    // Global fetch
-    fetchAllIncomes
+    fetchAllIncomes,
+    checkDuplicateIncomesLocal: (
+      existingIncomes: CeremonyIncome[],
+      name: string,
+      amount: number,
+      currency: string
+    ) => {
+      const similarRecords = existingIncomes.filter(income => {
+        const nameMatch = income.donorName.toLowerCase().trim() === name.toLowerCase().trim()
+        const amountMatch = Number(income.amount) === Number(amount)
+        const currencyMatch = income.currency === currency
+        return nameMatch && amountMatch && currencyMatch
+      })
+
+      return {
+        isDuplicate: similarRecords.length > 0,
+        similarRecords,
+        confidence: similarRecords.length > 0 ? 'high' : 'low'
+      } as any
+    }
   }
 }

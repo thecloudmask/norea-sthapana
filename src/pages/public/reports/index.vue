@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { HeartHandshakeIcon } from 'lucide-vue-next'
 import { formatKhmerDate } from '~/utils/date'
 import { useDonations } from '~/composables/useDonations'
@@ -69,8 +69,14 @@ import { Badge } from '@/components/ui/badge'
 
 const { donations, loading, fetchAllDonations } = useDonations()
 
+let unsubscribe: any
+
 onMounted(() => {
-    fetchAllDonations()
+    unsubscribe = fetchAllDonations()
+})
+
+onUnmounted(() => {
+    if (unsubscribe) unsubscribe()
 })
 
 const formatDate = (date: any) => formatKhmerDate(date)

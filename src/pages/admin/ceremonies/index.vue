@@ -25,6 +25,7 @@
           <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg z-[100]">
             <SelectItem value="all" class="font-medium rounded-lg">{{ $t('common.filter_all') }}</SelectItem>
             <SelectItem value="published" class="font-medium rounded-lg text-emerald-600">{{ $t('admin.forms.status_published') }}</SelectItem>
+            <SelectItem value="completed" class="font-medium rounded-lg text-blue-600">{{ $t('admin.forms.status_completed') || 'Completed' }}</SelectItem>
             <SelectItem value="draft" class="font-medium rounded-lg text-slate-500">{{ $t('admin.forms.status_draft') }}</SelectItem>
             <SelectItem value="archived" class="font-medium rounded-lg text-orange-500">{{ $t('admin.forms.status_archived') }}</SelectItem>
           </SelectContent>
@@ -45,7 +46,7 @@
     <div v-else class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         <Card v-for="item in filteredCeremonies" :key="item.id" class="group flex flex-col overflow-hidden border-none shadow-sm ring-1 ring-border rounded-3xl transition-all hover:shadow-xl bg-card">
             <div class="aspect-video w-full bg-muted relative overflow-hidden">
-                <img v-if="item.imageUrl" :src="item.imageUrl" class="w-full h-full object-cover" />
+                <img v-if="item.imageUrl" :src="item.imageUrl" class="w-full h-full object-cover" loading="lazy" />
                 <div v-else class="w-full h-full flex items-center justify-center bg-muted text-muted-foreground/30">
                     <ImageIcon class="h-12 w-12" />
                 </div>
@@ -74,6 +75,7 @@
                         class="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-1 shadow-sm border-none ring-1 ring-black/5"
                         :class="{
                           'bg-emerald-500 text-white': item.status === 'published',
+                          'bg-blue-500 text-white': item.status === 'completed',
                           'bg-slate-500 text-white': item.status === 'draft', 
                           'bg-orange-500 text-white': item.status === 'archived'
                         }"
@@ -86,7 +88,7 @@
                 </div>
             </div>
             <CardContent class="flex-1 p-6 space-y-4">
-                <p class="text-sm font-medium text-muted-foreground line-clamp-3 leading-relaxed font-khmer text-left">{{ stripHtml(item.content) }}</p>
+                <p class="text-sm font-medium text-muted-foreground line-clamp-3 leading-relaxed font-khmer text-left">{{ (item as any).strippedContent }}</p>
                 <div class="grid grid-cols-2 gap-4 text-xs font-medium text-muted-foreground border-t border-border pt-4">
                     <div class="flex items-center gap-2">
                         <MapPinIcon class="h-3.5 w-3.5 text-primary" />
@@ -151,6 +153,7 @@
                             <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg z-[100]">
                                 <SelectItem value="draft" class="rounded-lg font-normal text-slate-600">{{ $t('admin.forms.status_draft') }}</SelectItem>
                                 <SelectItem value="published" class="rounded-lg font-semibold text-emerald-600">{{ $t('admin.forms.status_published') }}</SelectItem>
+                                <SelectItem value="completed" class="rounded-lg font-semibold text-blue-600">{{ $t('admin.forms.status_completed') || 'Completed' }}</SelectItem>
                                 <SelectItem value="archived" class="rounded-lg font-normal text-orange-600">{{ $t('admin.forms.status_archived') }}</SelectItem>
                             </SelectContent>
                         </Select>
@@ -345,7 +348,7 @@
                   :open="detailShowAddIncomeModal"
                   @update:open="(val: any) => !val && detailHandleCloseIncome()"
                   :ceremony-id="detailCeremony?.id || ''"
-                  :user-id="user?.uid || ''"
+                  :user-id="user?.id || ''"
                   :initial-data="detailEditingIncome"
                   @success="() => {}"
                 />
@@ -355,7 +358,7 @@
                   :open="detailShowAddExpenseModal"
                   @update:open="(val: any) => !val && detailHandleCloseExpense()"
                   :ceremony-id="detailCeremony?.id || ''"
-                  :user-id="user?.uid || ''"
+                  :user-id="user?.id || ''"
                   :initial-data="detailEditingExpense"
                   @success="() => {}"
                 />
@@ -367,7 +370,7 @@
 
 <script setup lang="ts">
 
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { 
   PlusIcon, 
@@ -389,7 +392,7 @@ import { Label } from '@/components/ui/label'
 import RichEditor from '@/components/ui/RichEditor.vue'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { useArticles } from '~/composables/useArticles'
+import { useCeremonies } from '~/composables/useCeremonies'
 import { useCloudinary } from '~/composables/useCloudinary'
 import { formatKhmerDate } from '~/utils/date'
 import CeremonyFinanceTab from './CeremonyFinanceTab.vue'
@@ -398,17 +401,16 @@ import AddExpenseModal from './AddExpenseModal.vue'
 import { useCeremonyFinance } from '~/composables/useCeremonyFinance'
 import { useAuthStore } from '@/stores/auth'
 import { useUIStore } from '@/stores/ui'
-import { FileXIcon, MinusIcon } from 'lucide-vue-next'
+import { FileXIcon } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
-import { type Article } from '~/composables/useArticles'
+import type { Ceremony } from '~/composables/useCeremonies'
 import type { CeremonyIncome, CeremonyExpense } from '~/types/ceremonyFinance'
 
 
-const { articles, loading, fetchArticles, addArticle, updateArticle, deleteArticle } = useArticles()
+const { ceremonies, loading, fetchCeremonies, addCeremony, updateCeremony, deleteCeremony, getCeremony, checkCeremonyExpirations } = useCeremonies()
 const { uploadImage } = useCloudinary()
 const route = useRoute()
 const router = useRouter()
-
 
 const showCreateModal = ref(false)
 const showDeleteConfirm = ref(false)
@@ -429,23 +431,17 @@ const formData = ref({
   content: '',
   schedule: '',
   committee: '',
-  category: 'ceremony',
-  eventDate: null as Date | null,
-  endDate: null as Date | null,
+  eventDate: null as any,
+  endDate: null as any,
   imageUrl: '',
   isFeatured: false,
-  status: 'draft' as 'draft' | 'published' | 'archived',
+  status: 'draft' as 'draft' | 'published' | 'completed' | 'archived',
   location: ''
 })
 
 const eventDateInput = ref('')
 const endDateInput = ref('')
 const isMultiDay = ref(false)
-
-// Filter only ceremony articles
-const ceremonies = computed(() => {
-  return articles.value.filter(a => a.category === 'ceremony')
-})
 
 const statusFilter = ref('all')
 const searchQuery = ref('')
@@ -462,14 +458,26 @@ const filteredCeremonies = computed(() => {
   return items
 })
 
-onMounted(async () => {
-  await fetchArticles()
+let unsubCeremonies: any
+
+onMounted(() => {
+  unsubCeremonies = fetchCeremonies()
   if (route.query.status) statusFilter.value = route.query.status as string
   if (route.query.ceremonyId) {
-    // If ID is valid string
     const id = route.query.ceremonyId as string
     if (id) openDetail(id)
   }
+
+  // Trigger auto-sweep
+  watch(ceremonies, (newList) => {
+    if (newList.length > 0) {
+      checkCeremonyExpirations()
+    }
+  }, { once: true })
+})
+
+onUnmounted(() => {
+  if (unsubCeremonies) unsubCeremonies()
 })
 
 watch(statusFilter, (val) => {
@@ -488,7 +496,6 @@ const openCreateModal = () => {
     content: '',
     schedule: '',
     committee: '',
-    category: 'ceremony',
     eventDate: null,
     endDate: null,
     imageUrl: '',
@@ -511,7 +518,6 @@ const openEditModal = (item: any) => {
     content: item.content,
     schedule: item.schedule || '',
     committee: item.committee || '',
-    category: 'ceremony',
     eventDate: item.eventDate,
     endDate: item.endDate || null,
     imageUrl: item.imageUrl || '',
@@ -520,11 +526,11 @@ const openEditModal = (item: any) => {
     location: item.location || ''
   }
   if (item.eventDate) {
-    const date = item.eventDate.toDate ? item.eventDate.toDate() : new Date(item.eventDate)
+    const date = toDate(item.eventDate)
     eventDateInput.value = date.toISOString().split('T')[0]
   }
   if (item.endDate) {
-    const date = item.endDate.toDate ? item.endDate.toDate() : new Date(item.endDate)
+    const date = toDate(item.endDate)
     endDateInput.value = date.toISOString().split('T')[0]
     isMultiDay.value = true
   } else {
@@ -554,19 +560,17 @@ const handleSave = async () => {
   try {
     const data = {
       ...formData.value,
-      category: 'ceremony' as const,
-      eventDate: eventDateInput.value ? new Date(eventDateInput.value) : null,
-      endDate: isMultiDay.value && endDateInput.value ? new Date(endDateInput.value) : null
+      eventDate: eventDateInput.value || null,
+      endDate: isMultiDay.value && endDateInput.value ? endDateInput.value : null
     }
 
     if (isEditing.value && editingId.value) {
-      await updateArticle(editingId.value, data)
+      await updateCeremony(editingId.value, data as any)
     } else {
-      await addArticle(data)
+      await addCeremony(data as any)
     }
     
     showCreateModal.value = false
-    await fetchArticles()
   } catch (err) {
     console.error(err)
   } finally {
@@ -583,10 +587,9 @@ const handleDelete = async () => {
   if (!itemToDelete.value) return
   deleting.value = true
   try {
-    await deleteArticle(itemToDelete.value.id)
+    await deleteCeremony(itemToDelete.value.id)
     showDeleteConfirm.value = false
     itemToDelete.value = null
-    await fetchArticles()
   } catch (err) {
     console.error(err)
   } finally {
@@ -596,30 +599,21 @@ const handleDelete = async () => {
 
 const formatDate = (date: any) => {
   if (!date) return ''
-  const d = date.toDate ? date.toDate() : new Date(date)
-  return formatKhmerDate(d, 'dd/MM/yyyy')
+  return formatKhmerDate(date, 'dd/MM/yyyy')
 }
 
 const formatDateRange = (start: any, end: any) => {
     if (!start) return ''
-    const startDate = start.toDate ? start.toDate() : new Date(start)
-    const formattedStart = formatKhmerDate(startDate, 'dd/MM/yyyy')
+    const formattedStart = formatKhmerDate(start, 'dd/MM/yyyy')
     
     if (!end) return formattedStart
     
-    const endDate = end.toDate ? end.toDate() : new Date(end)
-    const formattedEnd = formatKhmerDate(endDate, 'dd/MM/yyyy')
+    const formattedEnd = formatKhmerDate(end, 'dd/MM/yyyy')
     
     if (formattedStart === formattedEnd) return formattedStart
     
-    // Check if same month and year to shorten if needed, but for now simple range
-    return `${formatKhmerDate(startDate, 'dd')} - ${formattedEnd}`
-}
-
-const stripHtml = (html: string) => {
-    if (!html) return "";
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    return doc.body.textContent || "";
+    const startD = start.toDate ? start.toDate() : new Date(start)
+    return `${formatKhmerDate(startD, 'dd')} - ${formattedEnd}`
 }
 
 const openDetail = async (id: string) => {
@@ -642,13 +636,12 @@ const closeDetail = () => {
 }
 
 // Detail Logic
-const { getArticle } = useArticles()
 const { fetchIncomes } = useCeremonyFinance()
 const authStore = useAuthStore()
 const uiStore = useUIStore()
 const { user } = storeToRefs(authStore)
 
-const detailCeremony = ref<Article | null>(null)
+const detailCeremony = ref<Ceremony | null>(null)
 const detailLoading = ref(true)
 const detailShowAddIncomeModal = ref(false)
 const detailShowAddExpenseModal = ref(false)
@@ -657,11 +650,13 @@ const detailEditingExpense = ref<CeremonyExpense | null>(null)
 
 const detailDisplayDate = (date: any) => {
   if (!date) return ''
-  const d = date?.toDate ? date.toDate() : new Date(date)
-  return formatKhmerDate(d)
+  return formatKhmerDate(date)
 }
 
-const toDate = (t: any) => t?.toDate ? t.toDate() : new Date(t || Date.now())
+const toDate = (t: any) => {
+  if (!t) return new Date()
+  return t.toDate ? t.toDate() : new Date(t)
+}
 
 const detailHandleAddIncome = () => {
   detailEditingIncome.value = null
@@ -710,7 +705,7 @@ const loadDetailData = async (id: string) => {
     fetchIncomes(id)
     
     try {
-      const data = await getArticle(id)
+      const data = await getCeremony(id)
       if (data) {
         detailCeremony.value = data
       }

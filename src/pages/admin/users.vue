@@ -41,7 +41,7 @@
               <TableHead
                 :class="[
                   'font-semibold text-[11px] uppercase tracking-[0.1em] text-muted-foreground/60 py-5',
-                  km ? 'font-Kantumruy' : 'font-Popins',
+                  isKhmer ? 'font-khmer' : 'font-sans',
                 ]"
                 >{{ $t("admin.users.table_status") }}</TableHead
               >
@@ -369,7 +369,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import {
   PlusIcon,
   MoreVerticalIcon,
@@ -389,10 +389,34 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuthStore, type UserProfile } from "~/stores/auth";
+import { useAuthStore, type LaravelUser as UserProfile } from "~/stores/auth";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
-import { km } from "date-fns/locale";
 import { useUsers } from "~/composables/useUsers";
+import { useI18n } from "vue-i18n";
+
+const { locale } = useI18n();
+const isKhmer = computed(() => locale.value === "km");
 
 const authStore = useAuthStore();
 const { 
@@ -481,7 +505,15 @@ const formatDateTime = (ts: any) => {
   return format(date, "dd/MM/yy HH:mm");
 };
 
-onMounted(fetchUsers);
+let unsubscribe: any
+
+onMounted(() => {
+    unsubscribe = fetchUsers()
+});
+
+onUnmounted(() => {
+    if (unsubscribe) unsubscribe()
+})
 </script>
 
 <route lang="yaml">

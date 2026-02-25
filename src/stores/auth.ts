@@ -1,122 +1,116 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { type User, onAuthStateChanged, signOut } from 'firebase/auth'
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp, Timestamp } from 'firebase/firestore'
-import { auth, db } from '~/utils/firebase'
+import { authService } from '@/services/auth.service'
 
-export interface UserProfile {
-  // 1. Identity
+export interface LaravelUser {
+  id: string
   uid: string
-  email: string | null
-  displayName: string | null
-  photoURL?: string | null
-  phoneNumber?: string | null
-
-  // 2. Access Control
-  role: 'super_admin' | 'admin' | 'staff'
-  status: 'active' | 'disabled' | 'pending'
-  
-  // 3. Metadata
-  telegramHandle?: string | null
-  note?: string | null
-  
-  // 4. Audit Timestamps
-  createdAt: Timestamp | any
-  updatedAt: Timestamp | any
-  lastLoginAt: Timestamp | any
-  createdBy?: string | null
+  name: string
+  displayName?: string
+  email: string
+  role: 'super_admin' | 'admin' | 'staff' | 'user'
+  status: 'active' | 'inactive' | 'disabled'
+  position?: string
+  phone?: string
+  phoneNumber?: string
+  address?: string
+  profile_picture?: string
+  photoURL?: string
+  last_login_at?: string
+  lastLoginAt?: any
+  created_at?: string
+  telegramHandle?: string
+  note?: string
 }
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<User | null>(null)
-  const profile = ref<UserProfile | null>(null)
-  const loading = ref(true)
+  // State
+  const user = ref<LaravelUser | null>(null)
+  const token = ref<string | null>(localStorage.getItem('token'))
+  const loading = ref(true) // Start with loading true until first auth check
 
-  let _resolveInit: (value: unknown) => void
-  const initPromise = new Promise((resolve) => {
-    _resolveInit = resolve
-  })
+  // Try to restore user from localStorage immediately
+  try {
+    const savedUser = localStorage.getItem('user')
+    if (savedUser) {
+      user.value = JSON.parse(savedUser)
+    }
+  } catch (e) {
+    console.error('Failed to parse saved user:', e)
+  }
 
-  // Set initial state
-  const setUser = async (newUser: User | null) => {
-    user.value = newUser
-    
+  // Getters
+  const isAuthenticated = computed(() => !!token.value)
+  const isAdmin = computed(() => user.value?.role === 'admin' || user.value?.role === 'super_admin')
+  const isSuperAdmin = computed(() => user.value?.role === 'super_admin')
+  const userRole = computed(() => user.value?.role || 'guest')
+
+  // Actions
+  async function login(credentials: { email: string; password: string }) {
+    loading.value = true
     try {
-      if (newUser) {
-        // Fetch user profile from Firestore
-        const userRef = doc(db, 'users', newUser.uid)
-        const userDoc = await getDoc(userRef)
-        
-        if (userDoc.exists()) {
-          const data = userDoc.data() as UserProfile
-          profile.value = data
-          // Update last login & ensure createdAt exists
-          const updates: any = {
-            lastLoginAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-          }
-          if (!data.createdAt) {
-            updates.createdAt = serverTimestamp()
-          }
-          await updateDoc(userRef, updates)
-        } else {
-          // Create initial profile if it doesn't exist (first login)
-          const newProfile: UserProfile = {
-            uid: newUser.uid,
-            email: newUser.email,
-            displayName: newUser.displayName || newUser.email?.split('@')[0] || 'User',
-            photoURL: newUser.photoURL,
-            phoneNumber: newUser.phoneNumber,
-            role: 'staff', // Default to staff for safety
-            status: 'active',
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-            lastLoginAt: serverTimestamp(),
-          }
-          await setDoc(userRef, newProfile)
-          profile.value = newProfile
-        }
-      } else {
-        profile.value = null
-      }
+      const response = await authService.login(credentials)
+      
+      // Update State
+      user.value = response.data as any
+      token.value = response.token
+      
+      // Persist Session
+      localStorage.setItem('token', response.token)
+      localStorage.setItem('user', JSON.stringify(response.data))
+      
+      return response
     } catch (error) {
-      console.error('❌ [AuthStore] Error in setUser:', error)
+      throw error
     } finally {
       loading.value = false
-      if (_resolveInit) _resolveInit(true)
     }
   }
 
-  // Initialize auth listener
-  onAuthStateChanged(auth, async (newUser) => {
-    await setUser(newUser)
-  })
-
-  // Restore initAuth for compatibility and early initialization (empty now as onAuthStateChanged is global)
-  const initAuth = () => {}
-
-  const logout = async () => {
-    await signOut(auth)
-    user.value = null
-    profile.value = null
+  async function logout() {
+    try {
+      if (token.value) {
+        await authService.logout()
+      }
+    } finally {
+      // Clear State
+      user.value = null
+      token.value = null
+      
+      // Clear Persistence
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+    }
   }
 
-  const isAuthenticated = computed(() => !!user.value)
-  const isAdmin = computed(() => profile.value?.role === 'admin' || profile.value?.role === 'super_admin')
-  const isSuperAdmin = computed(() => profile.value?.role === 'super_admin')
-  const userRole = computed(() => profile.value?.role || 'guest')
+  // Initialize from Firebase listener
+  function initAuth() {
+    authService.onAuthStateChanged((firebaseUser) => {
+      if (firebaseUser) {
+        user.value = firebaseUser as LaravelUser
+        token.value = 'firebase-session' // Placeholder to maintain isAuthenticated logic
+        localStorage.setItem('user', JSON.stringify(firebaseUser))
+        localStorage.setItem('token', 'firebase-session')
+      } else {
+        user.value = null
+        token.value = null
+        localStorage.removeItem('user')
+        localStorage.removeItem('token')
+      }
+      loading.value = false // Done with initial check
+    })
+  }
 
   return {
     user,
-    profile,
+    token,
     loading,
-    setUser,
-    initAuth,
-    logout,
     isAuthenticated,
     isAdmin,
     isSuperAdmin,
     userRole,
-    initPromise
+    login,
+    logout,
+    initAuth
   }
 })

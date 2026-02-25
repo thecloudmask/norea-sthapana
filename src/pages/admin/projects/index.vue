@@ -79,7 +79,7 @@
         <CardContent class="flex-1 p-6 space-y-6">
            <div>
               <h3 class="text-xl font-semibold font-khmer text-foreground line-clamp-1 group-hover:text-primary transition-colors">{{ project.title }}</h3>
-              <p class="text-sm font-medium text-muted-foreground line-clamp-2 mt-2 leading-relaxed font-khmer">{{ stripHtml(project.description) }}</p>
+              <p class="text-sm font-medium text-muted-foreground line-clamp-2 mt-2 leading-relaxed font-khmer">{{ (project as any).strippedDescription }}</p>
            </div>
            
            <div class="space-y-4 bg-muted/30 p-4 rounded-2xl ring-1 ring-border">
@@ -281,7 +281,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { PlusIcon, FolderIcon, MoreVerticalIcon, PencilIcon, Trash2Icon, ArrowRightIcon, FolderOpenIcon, UploadIcon, QrCodeIcon, TrashIcon, ArrowUpCircleIcon, ArrowDownCircleIcon, SearchIcon } from 'lucide-vue-next'
 import { useProjects } from '~/composables/useProjects'
@@ -298,7 +298,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import StatusBadge from '~/components/StatusBadge.vue'
 
 
-const { projects, loading, fetchProjects, createProject, updateProject, deleteProject } = useProjects()
+const { projects, loading, fetchProjects, createProject, updateProject, deleteProject, recalculateProjectProgress } = useProjects()
 const { uploadImage } = useCloudinary()
 
 const route = useRoute()
@@ -344,15 +344,32 @@ const filteredProjects = computed(() => {
   if (statusFilter.value !== 'all') list = list.filter(p => p.status === statusFilter.value)
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase()
-    list = list.filter(p => p.title?.toLowerCase().includes(q) || stripHtml(p.description || '').toLowerCase().includes(q))
+    list = list.filter(p => p.title?.toLowerCase().includes(q) || (p as any).strippedDescription?.toLowerCase().includes(q))
   }
   return list
 })
 
+let unsubscribe: any
+
 onMounted(() => {
-   fetchProjects()
+   unsubscribe = fetchProjects()
    if (route.query.status) statusFilter.value = route.query.status as string
    if (route.query.q) searchQuery.value = route.query.q as string
+
+   // Proactive sweep: If projects list shows $0 but might have legacy data, trigger a refresh
+   watch(projects, (newProjects) => {
+      newProjects.forEach(p => {
+         // Only trigger if it looks empty, to avoid excessive writes
+         if (p.id && (p.currentAmount === 0 || !p.totalExpensesUsd)) {
+            console.log(`[Sweep] Checking financial data for project: ${p.title}`)
+            recalculateProjectProgress(p.id)
+         }
+      })
+   }, { once: true })
+})
+
+onUnmounted(() => {
+   if (unsubscribe) unsubscribe()
 })
 
 watch([statusFilter, searchQuery], () => {
@@ -431,10 +448,9 @@ const handleSave = async () => {
             ...formData.value,
             currentAmount: 0,
             startDate: new Date()
-         })
+         } as any)
       }
       showModal.value = false
-      await fetchProjects()
    } catch (e) {
       console.error(e)
    } finally {
@@ -461,16 +477,8 @@ const handleDelete = async () => {
    }
 }
 
-// Fetch projects on mount
-onMounted(() => {
-   fetchProjects()
-})
 
-const stripHtml = (html: string) => {
-    if (!html) return "";
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    return doc.body.textContent || "";
-}
+
 </script>
 
 <route lang="yaml">

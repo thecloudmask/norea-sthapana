@@ -5,10 +5,10 @@
          <div class="h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-primary"></div>
       </div>
   
-      <article v-else-if="article" class="animate-in fade-in duration-700">
+      <article v-else-if="ceremony" class="animate-in fade-in duration-700">
          <!-- Header Image -->
-         <div class="h-[350px] md:h-[500px] w-full relative overflow-hidden bg-slate-950 cursor-pointer group" @click="openLightbox(article.imageUrl || 'https://images.unsplash.com/photo-1507692049790-de58293a469d?q=80&w=2070&auto=format&fit=crop')">
-            <img :src="article.imageUrl || 'https://images.unsplash.com/photo-1507692049790-de58293a469d?q=80&w=2070&auto=format&fit=crop'" class="w-full h-full object-cover opacity-60 scale-105 transition-transform duration-1000" />
+         <div class="h-[350px] md:h-[500px] w-full relative overflow-hidden bg-slate-950 cursor-pointer group" @click="openLightbox(ceremony.imageUrl || 'https://images.unsplash.com/photo-1507692049790-de58293a469d?q=80&w=2070&auto=format&fit=crop')">
+            <img :src="ceremony.imageUrl || 'https://images.unsplash.com/photo-1507692049790-de58293a469d?q=80&w=2070&auto=format&fit=crop'" class="w-full h-full object-cover opacity-60 scale-105 transition-transform duration-1000" />
             <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
             <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <div class="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30 text-white">
@@ -18,17 +18,17 @@
             <div class="absolute bottom-0 left-0 w-full p-6 md:p-12">
                <div class="container max-w-5xl mx-auto space-y-6 text-left">
                   <div class="flex flex-wrap items-center gap-3">
-                     <Badge class="bg-primary text-white border-none shadow-xl shadow-primary/20 px-4 py-1.5 uppercase tracking-widest text-[10px] font-black w-fit">{{ getCategoryLabel(article.category) }}</Badge>
-                     <div v-if="article.location" class="flex items-center gap-2 text-white/80 text-[10px] font-black uppercase tracking-[0.2em] bg-white/10 px-4 py-1.5 rounded-full border border-white/5 backdrop-blur-sm shadow-lg shadow-black/20">
+                     <Badge class="bg-primary text-white border-none shadow-xl shadow-primary/20 px-4 py-1.5 uppercase tracking-widest text-[10px] font-black w-fit">{{ $t('ceremonies.title') }}</Badge>
+                     <div v-if="ceremony.location" class="flex items-center gap-2 text-white/80 text-[10px] font-black uppercase tracking-[0.2em] bg-white/10 px-4 py-1.5 rounded-full border border-white/5 backdrop-blur-sm shadow-lg shadow-black/20">
                         <MapPinIcon class="size-3 text-orange-400" />
-                        <span>{{ article.location }}</span>
+                        <span>{{ ceremony.location }}</span>
                      </div>
                   </div>
-                  <h1 class="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-tight drop-shadow-2xl font-khmer max-w-4xl">{{ article.title }}</h1>
+                  <h1 class="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-tight drop-shadow-2xl font-khmer max-w-4xl">{{ ceremony.title }}</h1>
                   <div class="flex items-center gap-6 mt-6 text-white/60 text-xs font-black uppercase tracking-widest text-left">
                      <div class="flex items-center gap-2">
                         <CalendarIcon class="h-4 w-4 text-primary" />
-                        <span class="tabular-nums">{{ formatDateRange(article.eventDate, article.endDate) }}</span>
+                        <span class="tabular-nums">{{ formatDateRange(ceremony.eventDate, ceremony.endDate) }}</span>
                      </div>
                   </div>
                </div>
@@ -39,33 +39,33 @@
             <!-- Sections -->
             <div class="space-y-8">
                 <!-- Invitation Section -->
-                <div v-if="article.content" class="bg-card rounded-3xl shadow-sm p-8 md:p-16 border border-border ring-1 ring-border/5">
+                <div v-if="ceremony.content" class="bg-card rounded-3xl shadow-sm p-8 md:p-16 border border-border ring-1 ring-border/5">
                     <div class="flex items-center gap-4 mb-10">
                         <div class="h-px flex-1 bg-border/60"></div>
                         <span class="text-xs md:text-sm uppercase font-black tracking-[0.2em] whitespace-nowrap text-primary/80">{{ $t('admin.ceremonies.invitation_tab') }}</span>
                         <div class="h-px flex-1 bg-border/60"></div>
                     </div>
-                    <div class="prose prose-xl dark:prose-invert max-w-none font-khmer leading-loose text-foreground/90 font-medium rik-editor-content" v-html="article.content"></div>
+                    <div class="prose prose-xl dark:prose-invert max-w-none font-khmer leading-loose text-foreground/90 font-medium rik-editor-content" v-html="ceremony.content"></div>
                 </div>
   
-                <!-- Schedule Section -->
-                <div v-if="article.schedule" class="bg-card rounded-3xl shadow-sm p-8 md:p-16 border border-border ring-1 ring-border/5">
+                 <!-- Schedule Section -->
+                <div v-if="ceremony.schedule" class="bg-card rounded-3xl shadow-sm p-8 md:p-16 border border-border ring-1 ring-border/5">
                     <div class="flex items-center gap-4 mb-10">
                         <div class="h-px flex-1 bg-border/60"></div>
                         <span class="text-xs md:text-sm uppercase font-black tracking-[0.2em] whitespace-nowrap text-primary/80">{{ $t('admin.ceremonies.schedule_tab') }}</span>
                         <div class="h-px flex-1 bg-border/60"></div>
                     </div>
-                    <div class="prose prose-xl dark:prose-invert max-w-none font-khmer leading-loose text-foreground/90 font-medium rik-editor-content" v-html="article.schedule"></div>
+                    <div class="prose prose-xl dark:prose-invert max-w-none font-khmer leading-loose text-foreground/90 font-medium rik-editor-content" v-html="ceremony.schedule"></div>
                 </div>
   
                 <!-- Committee Section -->
-                <div v-if="article.committee" class="bg-card rounded-3xl shadow-sm p-8 md:p-16 border border-border ring-1 ring-border/5">
+                <div v-if="ceremony.committee" class="bg-card rounded-3xl shadow-sm p-8 md:p-16 border border-border ring-1 ring-border/5">
                     <div class="flex items-center gap-4 mb-10">
                         <div class="h-px flex-1 bg-border/60"></div>
                         <span class="text-xs md:text-sm uppercase font-black tracking-[0.2em] whitespace-nowrap text-primary/80">{{ $t('admin.ceremonies.committee_tab') }}</span>
                         <div class="h-px flex-1 bg-border/60"></div>
                     </div>
-                    <div class="prose prose-xl dark:prose-invert max-w-none font-khmer leading-loose text-foreground/90 font-medium rik-editor-content" v-html="article.committee"></div>
+                    <div class="prose prose-xl dark:prose-invert max-w-none font-khmer leading-loose text-foreground/90 font-medium rik-editor-content" v-html="ceremony.committee"></div>
                 </div>
   
                 <!-- Action Footer -->
@@ -116,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { CalendarIcon, FacebookIcon, LinkIcon, ArrowLeftIcon, MapPinIcon, MaximizeIcon, XIcon } from 'lucide-vue-next'
 import { formatKhmerDate } from '~/utils/date'
 import { Badge } from '@/components/ui/badge'
@@ -124,27 +124,23 @@ import { Button } from '@/components/ui/button'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useHead } from '@unhead/vue'
-import { useArticles } from '~/composables/useArticles'
+import { useCeremonies } from '~/composables/useCeremonies'
 
 const route = useRoute()
 const { t } = useI18n()
 
-const article = ref<any>(null)
+const ceremony = ref<any>(null)
 const loading = ref(true)
-const { getArticle } = useArticles()
+const { fetchCeremony } = useCeremonies()
 
-const fetchArticleById = async (id: string) => {
+let unsubscribe: any
+
+const fetchCeremonyById = (id: string) => {
     loading.value = true
-    try {
-        const data = await getArticle(id)
-        if (data) {
-            article.value = data
-        }
-    } catch (e) {
-        console.error(e)
-    } finally {
+    unsubscribe = fetchCeremony(id, (data) => {
+        ceremony.value = data
         loading.value = false
-    }
+    })
 }
 
 const stripHtml = (html: string) => {
@@ -154,25 +150,29 @@ const stripHtml = (html: string) => {
 }
 
 useHead({
-  title: computed(() => article.value?.title ? `${article.value.title} - Narea Sthapana` : 'Narea Sthapana'),
+  title: computed(() => ceremony.value?.title ? `${ceremony.value.title} - Narea Sthapana` : 'Narea Sthapana'),
   meta: [
     { 
       name: 'description', 
-      content: computed(() => article.value?.content ? stripHtml(article.value.content).substring(0, 160) : '') 
+      content: computed(() => ceremony.value?.content ? stripHtml(ceremony.value.content).substring(0, 160) : '') 
     },
     { 
       property: 'og:title', 
-      content: computed(() => article.value?.title || 'Narea Sthapana') 
+      content: computed(() => ceremony.value?.title || 'Narea Sthapana') 
     },
     { 
       property: 'og:image', 
-      content: computed(() => article.value?.imageUrl || '') 
+      content: computed(() => ceremony.value?.imageUrl || '') 
     }
   ]
 })
 
 onMounted(() => {
-    fetchArticleById(route.params.id as string)
+    fetchCeremonyById(route.params.id as string)
+})
+
+onUnmounted(() => {
+    if (unsubscribe) unsubscribe()
 })
 
 const getCategoryLabel = (cat: string) => {

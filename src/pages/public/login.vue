@@ -23,7 +23,7 @@
                 placeholder="name@example.com"
                 type="email"
                 auto-capitalize="none"
-                auto-complete="email"
+                autocomplete="email"
                 auto-correct="off"
                 required
               />
@@ -35,7 +35,7 @@
                 v-model="password"
                 placeholder="••••••••"
                 type="password"
-                auto-complete="current-password"
+                autocomplete="current-password"
                 required
               />
             </div>
@@ -56,11 +56,9 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
-import { signInWithEmailAndPassword } from 'firebase/auth'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { auth } from '~/utils/firebase'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -76,7 +74,7 @@ const handleLogin = async () => {
   error.value = ''
   
   try {
-    await signInWithEmailAndPassword(auth, email.value, password.value)
+    await authStore.login({ email: email.value, password: password.value })
     router.push('/admin')
   } catch (err: any) {
     error.value = t('login.error_failed')

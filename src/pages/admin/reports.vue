@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useColorMode } from '@vueuse/core'
@@ -24,9 +24,10 @@ import { useDonations } from '~/composables/useDonations'
 import { useExpenses } from '~/composables/useExpenses'
 import { useProjects } from '~/composables/useProjects'
 import { useCeremonyFinance } from '~/composables/useCeremonyFinance'
-import { useArticles } from '~/composables/useArticles'
-import { format } from 'date-fns'
+import { useCeremonies } from '~/composables/useCeremonies'
+import { formatKhmerDate } from '~/utils/date'
 import { useKhrRate } from '~/composables/useKhrRate'
+import { format } from 'date-fns'
 
 const { t } = useI18n()
 const colorMode = useColorMode()
@@ -43,13 +44,9 @@ const { expenses, fetchAllExpenses: fetchAllProjectExpenses, loading: loadingExp
 const { projects, fetchProjects } = useProjects()
 
 const { 
-    incomes: ceremonyIncomes, 
-    expenses: ceremonyExpenses, 
-    fetchAllIncomes: fetchAllCeremonyIncomes, 
-    fetchAllExpenses: fetchAllCeremonyExpenses,
     loading: loadingCeremonyFinance 
 } = useCeremonyFinance()
-const { articles, fetchArticles, loading: loadingArticles } = useArticles()
+const { ceremonies, fetchCeremonies, loading: loadingCeremonies } = useCeremonies()
 
 // Filter States
 const selectedProject = ref('all')
@@ -63,31 +60,43 @@ const loading = computed(() =>
     loadingDonations.value || 
     loadingExpenses.value || 
     loadingCeremonyFinance.value || 
-    loadingArticles.value
+    loadingCeremonies.value
 )
-
-const ceremonies = computed(() => articles.value.filter(a => a.category === 'ceremony'))
 
 // Data Helpers
 const toDate = (date: any) => {
-  if (!date) return new Date(0)
-  return date.toDate ? date.toDate() : new Date(date)
+    if (!date) return new Date(0)
+    if (date.toDate) return date.toDate()
+    const d = new Date(date)
+    return isNaN(d.getTime()) ? new Date(0) : d
 }
 
 // Unified Active Data
 const activeIncomes = computed(() => {
     if (reportMode.value === 'projects') {
-        return donations.value.map(d => ({ ...d, _type: 'income', _source: 'project' }))
+        // Only records with projectId (Construction Projects)
+        return donations.value
+            .filter(d => !!(d.projectId || (d as any).project_id))
+            .map(d => ({ ...d, _type: 'income', _source: 'project' }))
     } else {
-        return ceremonyIncomes.value.map(i => ({ ...i, _type: 'income', _source: 'ceremony' }))
+        // Only records with ceremonyId (Ceremonies)
+        return donations.value
+            .filter(i => !!(i.ceremonyId || (i as any).ceremony_id))
+            .map(i => ({ ...i, _type: 'income', _source: 'ceremony' }))
     }
 })
 
 const activeExpenses = computed(() => {
     if (reportMode.value === 'projects') {
-        return expenses.value.map(e => ({ ...e, _type: 'expense', _source: 'project' }))
+        // Only records with projectId
+        return expenses.value
+            .filter(e => !!(e.projectId || (e as any).project_id))
+            .map(e => ({ ...e, _type: 'expense', _source: 'project' }))
     } else {
-        return ceremonyExpenses.value.map(e => ({ ...e, _type: 'expense', _source: 'ceremony' }))
+        // Only records with ceremonyId
+        return expenses.value
+            .filter(e => !!(e.ceremonyId || (e as any).ceremony_id))
+            .map(e => ({ ...e, _type: 'expense', _source: 'ceremony' }))
     }
 })
 
@@ -350,13 +359,26 @@ const printReport = () => {
     window.print()
 }
 
+let unsubDonations: any
+let unsubProjExpenses: any
+let unsubProjects: any
+let unsubCeremonies: any
+
 onMounted(() => {
-    fetchAllDonations()
-    fetchAllProjectExpenses()
-    fetchProjects()
-    fetchAllCeremonyIncomes()
-    fetchAllCeremonyExpenses()
-    fetchArticles()
+    unsubDonations = fetchAllDonations()
+    unsubProjExpenses = fetchAllProjectExpenses()
+    unsubProjects = fetchProjects()
+    unsubCeremonies = fetchCeremonies()
+    
+    // Add debugging
+    watch([donations, expenses, projects], () => {
+        console.log('[Admin Reports] Data update:', {
+            incomes: donations.value.length,
+            expenses: expenses.value.length,
+            projects: projects.value.length
+        })
+    }, { immediate: true })
+
     // Read URL params on mount
     if (route.query.mode) reportMode.value = route.query.mode as 'projects' | 'ceremonies'
     if (route.query.project) selectedProject.value = route.query.project as string
@@ -365,6 +387,13 @@ onMounted(() => {
     if (route.query.end) endDate.value = route.query.end as string
     if (route.query.q) searchQuery.value = route.query.q as string
     if (route.query.type) listType.value = route.query.type as 'all' | 'income' | 'expense'
+})
+
+onUnmounted(() => {
+    if (unsubDonations) unsubDonations()
+    if (unsubProjExpenses) unsubProjExpenses()
+    if (unsubProjects) unsubProjects()
+    if (unsubCeremonies) unsubCeremonies()
 })
 
 // Sync all filter states to URL
@@ -416,8 +445,8 @@ watch(reportMode, () => {
         <h1 class="text-2xl font-bold font-khmer uppercase mb-1">របាយការណ៍ហិរញ្ញវត្ថុ</h1>
         <h2 class="text-xl font-bold uppercase text-gray-600">Financial Report</h2>
         <div class="flex justify-center gap-8 mt-4 text-sm font-medium">
-            <p>From: {{ startDate ? format(new Date(startDate), 'dd/MM/yyyy') : 'Beginning' }}</p>
-            <p>To: {{ endDate ? format(new Date(endDate), 'dd/MM/yyyy') : 'Now' }}</p>
+            <p>From: {{ startDate ? formatKhmerDate(startDate, 'dd/MM/yyyy') : 'Beginning' }}</p>
+            <p>To: {{ endDate ? formatKhmerDate(endDate, 'dd/MM/yyyy') : 'Now' }}</p>
         </div>
     </div>
 
@@ -737,7 +766,7 @@ watch(reportMode, () => {
                         <!-- Mixed List -->
                         <tr v-for="item in displayedTransactions" :key="item.id" class="hover:bg-muted/30 transition-colors group">
                             <td class="p-4 px-6">
-                                <span class="text-xs font-medium tabular-nums text-muted-foreground/60">{{ format(toDate(item.createdAt), 'dd MMM yyyy HH:mm') }}</span>
+                                <span class="text-xs font-medium tabular-nums text-muted-foreground/60">{{ formatKhmerDate(item.createdAt, 'dd MMM yyyy HH:mm') }}</span>
                             </td>
                             <td class="p-4 px-6">
                                 <div class="flex flex-col">

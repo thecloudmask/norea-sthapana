@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-8">
     <!-- Summary Cards -->
-    <div v-if="showSummaryCards" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div v-if="showSummaryCards" class="grid grid-cols-1 md:grid-cols-4 gap-6">
       
       <!-- Total Income -->
       <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all hover:shadow-md">
@@ -77,6 +77,33 @@
            <div class="mt-4 flex items-center gap-1.5 text-xs font-normal text-blue-600/70 bg-blue-500/5 px-2.5 py-1 rounded-lg w-fit border border-blue-500/10">
             <ActivityIcon class="size-3.5" />
             <span>{{ $t('common.status_active') }}</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- Grand Total in USD -->
+      <Card class="rounded-3xl border-none ring-1 ring-border shadow-sm bg-card overflow-hidden group transition-all hover:shadow-md">
+        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-3 bg-muted/30">
+          <CardTitle class="text-[10px] font-normal text-muted-foreground/60 uppercase tracking-wider font-khmer">
+            Grand Total (USD)
+          </CardTitle>
+          <div class="h-10 w-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500 border border-orange-500/20 group-hover:bg-orange-500/20 transition-colors">
+            <DollarSignIcon class="h-5 w-5" />
+          </div>
+        </CardHeader>
+        <CardContent class="pt-6">
+          <div class="space-y-1">
+            <div class="text-3xl font-normal text-orange-500 tabular-nums tracking-tight">
+              ${{ grandTotalUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+            </div>
+            <div class="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-tighter space-y-0.5 mt-1">
+              <div>USD {{ summary.totalIncome.usd.toLocaleString(undefined, { minimumFractionDigits: 2 }) }}</div>
+              <div v-if="summary.totalIncome.khr > 0">KHR {{ summary.totalIncome.khr.toLocaleString() }}</div>
+            </div>
+          </div>
+          <div class="mt-4 flex items-center gap-1.5 text-xs font-normal text-orange-600/70 bg-orange-500/5 px-2.5 py-1 rounded-lg w-fit border border-orange-500/10">
+            <DollarSignIcon class="size-3.5" />
+            <span>Converted @ ៛{{ (khrRate || 4100).toLocaleString() }}/USD</span>
           </div>
         </CardContent>
       </Card>
@@ -205,7 +232,7 @@
                    {{ income.description || '-' }}
                 </TableCell>
                 <TableCell>
-                   <Badge variant="outline" class="font-normal text-[10px] bg-background border-border uppercase tracking-wider text-muted-foreground/80 rounded-md px-2 py-0.5">
+                   <Badge v-if="income.paymentMethod" variant="outline" class="font-normal text-[10px] bg-background border-border uppercase tracking-wider text-muted-foreground/80 rounded-md px-2 py-0.5">
                       {{ $t(`admin.ceremony_finance.payment_methods.${income.paymentMethod}`) }}
                    </Badge>
                 </TableCell>
@@ -282,11 +309,12 @@
                      </div>
                   </div>
                 </TableCell>
-                <TableCell class="hidden md:table-cell">
+                <TableCell v-if="expense.category" class="hidden md:table-cell">
                    <Badge variant="outline" class="font-normal text-[10px] bg-rose-50/50 border-rose-200 text-rose-700 rounded-md px-2 py-0.5 uppercase tracking-wider">
                       {{ $t(`admin.ceremony_finance.expense_categories.${expense.category}`) }}
                    </Badge>
                 </TableCell>
+                <TableCell v-else class="hidden md:table-cell text-muted-foreground">-</TableCell>
                  <TableCell class="text-sm text-muted-foreground">
                    {{ expense.vendor || '-' }}
                 </TableCell>
@@ -344,6 +372,10 @@
     <!-- View Income Details Modal -->
     <Dialog :open="!!selectedIncome" @update:open="(val) => !val && (selectedIncome = null)">
       <DialogContent class="max-w-2xl rounded-[32px] border-none shadow-2xl p-0 overflow-hidden bg-card max-h-[90vh] flex flex-col">
+        <DialogHeader class="sr-only">
+          <DialogTitle>{{ $t('admin.ceremony_finance.view_income') }}</DialogTitle>
+          <DialogDescription>{{ selectedIncome?.receiptNumber }}</DialogDescription>
+        </DialogHeader>
         <!-- Fixed Header -->
         <div class="bg-emerald-600 p-8 text-white relative h-32 flex items-end flex-shrink-0">
            <div class="absolute top-6 right-6 flex items-center gap-2">
@@ -368,9 +400,9 @@
                     {{ selectedIncome?.currency === 'USD' ? '$' : '៛' }}{{ selectedIncome?.amount.toLocaleString() }}
                  </div>
               </div>
-              <div class="space-y-1.5">
+              <div v-if="selectedIncome?.paymentMethod" class="space-y-1.5">
                  <Label class="text-[10px] uppercase tracking-widest text-muted-foreground font-normal">{{ $t('admin.ceremony_finance.payment_method') }}</Label>
-                 <Badge variant="secondary" class="rounded-lg px-3 py-1 bg-emerald-50 text-emerald-700 border-none font-normal uppercase text-[10px] tracking-wider">{{ $t(`admin.ceremony_finance.payment_methods.${selectedIncome?.paymentMethod}`) }}</Badge>
+                 <Badge variant="secondary" class="rounded-lg px-3 py-1 bg-emerald-50 text-emerald-700 border-none font-normal uppercase text-[10px] tracking-wider">{{ $t(`admin.ceremony_finance.payment_methods.${selectedIncome.paymentMethod}`) }}</Badge>
               </div>
               <div v-if="selectedIncome?.donorPhone" class="space-y-1.5">
                  <Label class="text-[10px] uppercase tracking-widest text-muted-foreground font-normal">{{ $t('admin.ceremony_finance.donor_phone') }}</Label>
@@ -406,6 +438,10 @@
     <!-- View Expense Details Modal -->
     <Dialog :open="!!selectedExpense" @update:open="(val) => !val && (selectedExpense = null)">
       <DialogContent class="max-w-2xl rounded-[32px] border-none shadow-2xl p-0 overflow-hidden bg-card max-h-[90vh] flex flex-col">
+        <DialogHeader class="sr-only">
+          <DialogTitle>{{ $t('admin.ceremony_finance.view_expense') }}</DialogTitle>
+          <DialogDescription>{{ selectedExpense?.expenseNumber }}</DialogDescription>
+        </DialogHeader>
         <!-- Fixed Header -->
         <div class="bg-rose-600 p-8 text-white relative h-32 flex items-end flex-shrink-0">
            <div class="absolute top-6 right-6 flex items-center gap-2">
@@ -430,9 +466,9 @@
                     {{ selectedExpense?.currency === 'USD' ? '$' : '៛' }}{{ selectedExpense?.amount.toLocaleString() }}
                  </div>
               </div>
-              <div class="space-y-1.5">
+              <div v-if="selectedExpense?.category" class="space-y-1.5">
                  <Label class="text-[10px] uppercase tracking-widest text-muted-foreground font-normal">{{ $t('admin.ceremony_finance.category') }}</Label>
-                 <Badge variant="secondary" class="rounded-lg px-3 py-1 bg-rose-50 text-rose-700 border-none font-normal uppercase text-[10px] tracking-wider">{{ $t(`admin.ceremony_finance.expense_categories.${selectedExpense?.category}`) }}</Badge>
+                 <Badge variant="secondary" class="rounded-lg px-3 py-1 bg-rose-50 text-rose-700 border-none font-normal uppercase text-[10px] tracking-wider">{{ $t(`admin.ceremony_finance.expense_categories.${selectedExpense.category}`) }}</Badge>
               </div>
               <div v-if="selectedExpense?.vendor" class="space-y-1.5">
                  <Label class="text-[10px] uppercase tracking-widest text-muted-foreground font-normal">{{ $t('admin.ceremony_finance.vendor') }}</Label>
@@ -498,7 +534,8 @@ import {
   DownloadIcon,
   PrinterIcon,
   PieChartIcon,
-  BarChart3Icon
+  BarChart3Icon,
+  DollarSignIcon
 } from 'lucide-vue-next'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -522,6 +559,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { useCeremonyFinance } from '~/composables/useCeremonyFinance'
+import { useKhrRate } from '~/composables/useKhrRate'
 import { formatKhmerDate } from '~/utils/date'
 import type { CeremonyIncome, CeremonyExpense } from '~/types/ceremonyFinance'
 
@@ -533,6 +571,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { t } = useI18n()
+const { khrRate } = useKhrRate()
 const emit = defineEmits(['add-income', 'add-expense', 'edit-income', 'edit-expense'])
 
 const {
@@ -541,7 +580,6 @@ const {
   summary,
   fetchIncomes,
   fetchExpenses,
-  searchIncomes,
   deleteIncome,
   deleteExpense
 } = useCeremonyFinance()
@@ -570,7 +608,17 @@ onUnmounted(() => {
 
 const filteredIncomes = computed(() => {
   if (!searchTerm.value.trim()) return incomes.value
-  return searchIncomes(props.ceremonyId, searchTerm.value)
+  const term = searchTerm.value.toLowerCase()
+  return incomes.value.filter(i =>
+    (i.donorName && i.donorName.toLowerCase().includes(term)) ||
+    (i.donorPhone && i.donorPhone.toLowerCase().includes(term)) ||
+    (i.receiptNumber && i.receiptNumber.toLowerCase().includes(term))
+  )
+})
+
+const grandTotalUsd = computed(() => {
+  const rate = khrRate.value || 4100
+  return summary.value.totalIncome.usd + (summary.value.totalIncome.khr / rate)
 })
 
 const filteredExpenses = computed(() => {

@@ -52,7 +52,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           vue: ['vue', 'vue-router', 'vue-i18n'],
-          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
           charts: ['apexcharts', 'vue3-apexcharts'],
           ui: ['@vueuse/core', '@unhead/vue']
         }
