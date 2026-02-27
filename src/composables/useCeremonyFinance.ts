@@ -268,13 +268,28 @@ export function useCeremonyFinance() {
   // ==================== COMPUTED SUMMARY ====================
 
   const summary = computed<CeremonyFinanceSummary>(() => {
+    const inventory: Record<string, { donatedQuantity: number, purchasedQuantity: number, totalQuantity: number }> = {}
+
     const totalIncome = incomes.value.reduce(
       (acc, income) => {
         if (income.currency === 'USD') {
-          acc.usd += Number(income.amount)
+          acc.usd += Number(income.amount || 0)
         } else {
-          acc.khr += Number(income.amount)
+          acc.khr += Number(income.amount || 0)
         }
+        
+        // Calculate donated inventory
+        if (income.items && income.items.length > 0) {
+          income.items.forEach(item => {
+             const lowerName = item.name.trim()
+             if (!inventory[lowerName]) {
+                 inventory[lowerName] = { donatedQuantity: 0, purchasedQuantity: 0, totalQuantity: 0 }
+             }
+             inventory[lowerName].donatedQuantity += Number(item.quantity || 0)
+             inventory[lowerName].totalQuantity += Number(item.quantity || 0)
+          })
+        }
+        
         return acc
       },
       { usd: 0, khr: 0 }
@@ -283,10 +298,21 @@ export function useCeremonyFinance() {
     const totalExpense = expenses.value.reduce(
       (acc, expense) => {
         if (expense.currency === 'USD') {
-          acc.usd += Number(expense.amount)
+          acc.usd += Number(expense.amount || 0)
         } else {
-          acc.khr += Number(expense.amount)
+          acc.khr += Number(expense.amount || 0)
         }
+        
+        // Calculate purchased inventory
+        if (expense.isInventoryPurchase && expense.itemName && expense.quantity) {
+             const lowerName = expense.itemName.trim()
+             if (!inventory[lowerName]) {
+                 inventory[lowerName] = { donatedQuantity: 0, purchasedQuantity: 0, totalQuantity: 0 }
+             }
+             inventory[lowerName].purchasedQuantity += Number(expense.quantity || 0)
+             inventory[lowerName].totalQuantity += Number(expense.quantity || 0)
+        }
+        
         return acc
       },
       { usd: 0, khr: 0 }
@@ -300,7 +326,8 @@ export function useCeremonyFinance() {
         khr: totalIncome.khr - totalExpense.khr
       },
       incomeCount: incomes.value.length,
-      expenseCount: expenses.value.length
+      expenseCount: expenses.value.length,
+      inventory
     }
   })
 

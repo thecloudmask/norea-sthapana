@@ -6,35 +6,91 @@
       </div>
   
       <article v-else-if="ceremony" class="animate-in fade-in duration-700">
-         <!-- Header Image -->
-         <div class="h-[350px] md:h-[500px] w-full relative overflow-hidden bg-slate-950 cursor-pointer group" @click="openLightbox(ceremony.imageUrl || 'https://images.unsplash.com/photo-1507692049790-de58293a469d?q=80&w=2070&auto=format&fit=crop')">
-            <img :src="ceremony.imageUrl || 'https://images.unsplash.com/photo-1507692049790-de58293a469d?q=80&w=2070&auto=format&fit=crop'" class="w-full h-full object-cover opacity-60 scale-105 transition-transform duration-1000" />
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
-            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <div class="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30 text-white">
-                    <MaximizeIcon class="h-8 w-8" />
+        <!-- Header Image -->
+        <div
+            class="h-[350px] md:h-[500px] w-full relative overflow-hidden bg-slate-950 group"
+            :class="{ 'cursor-pointer': ceremony.imageUrl }"
+            @click="ceremony.imageUrl && openLightbox(ceremony.imageUrl)"
+        >
+            <!-- Image -->
+            <img
+                v-if="ceremony.imageUrl"
+                :src="ceremony.imageUrl"
+                :alt="ceremony.title"
+                loading="lazy"
+                @error="imageError = true"
+                class="w-full h-full object-cover opacity-60 scale-105 transition-transform duration-1000"
+            />
+
+            <!-- Placeholder -->
+            <div
+                v-else
+                class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800"
+            >
+                <div class="flex flex-col items-center gap-4 text-white/40">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-off-icon lucide-image-off"><line x1="2" x2="22" y1="2" y2="22"/><path d="M10.41 10.41a2 2 0 1 1-2.83-2.83"/><line x1="13.5" x2="6" y1="13.5" y2="21"/><line x1="18" x2="21" y1="12" y2="15"/><path d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59"/><path d="M21 15V5a2 2 0 0 0-2-2H9"/></svg>
+                <span class="text-xs uppercase tracking-[0.3em] font-black">
+                    No Ceremony Image
+                </span>
                 </div>
             </div>
-            <div class="absolute bottom-0 left-0 w-full p-6 md:p-12">
-               <div class="container max-w-5xl mx-auto space-y-6 text-left">
-                  <div class="flex flex-wrap items-center gap-3">
-                     <Badge class="bg-primary text-white border-none shadow-xl shadow-primary/20 px-4 py-1.5 uppercase tracking-widest text-[10px] font-black w-fit">{{ $t('ceremonies.title') }}</Badge>
-                     <div v-if="ceremony.location" class="flex items-center gap-2 text-white/80 text-[10px] font-black uppercase tracking-[0.2em] bg-white/10 px-4 py-1.5 rounded-full border border-white/5 backdrop-blur-sm shadow-lg shadow-black/20">
-                        <MapPinIcon class="size-3 text-orange-400" />
-                        <span>{{ ceremony.location }}</span>
-                     </div>
-                  </div>
-                  <h1 class="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-tight drop-shadow-2xl font-khmer max-w-4xl">{{ ceremony.title }}</h1>
-                  <div class="flex items-center gap-6 mt-6 text-white/60 text-xs font-black uppercase tracking-widest text-left">
-                     <div class="flex items-center gap-2">
-                        <CalendarIcon class="h-4 w-4 text-primary" />
-                        <span class="tabular-nums">{{ formatDateRange(ceremony.eventDate, ceremony.endDate) }}</span>
-                     </div>
-                  </div>
-               </div>
+
+            <!-- Gradient Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+
+            <!-- Hover Zoom Icon (only if image exists) -->
+            <div
+                v-if="ceremony.imageUrl"
+                class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+                <div class="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30 text-white">
+                <MaximizeIcon class="h-8 w-8" />
+                </div>
             </div>
-         </div>
-  
+
+            <!-- Content -->
+            <div class="absolute bottom-0 left-0 w-full p-6 md:p-12">
+                <div class="container max-w-5xl mx-auto space-y-6 text-left">
+                <div class="flex flex-wrap items-center gap-3">
+                    <Badge
+                    class="bg-primary text-white border-none shadow-xl shadow-primary/20 px-4 py-1.5 uppercase tracking-widest text-[10px] font-black w-fit"
+                    >
+                    {{ $t('ceremonies.title') }}
+                    </Badge>
+
+                    <div
+                    v-if="ceremony.type && ceremony.type !== 'general'"
+                    class="bg-indigo-600/90 backdrop-blur-sm text-white shadow-xl px-4 py-1.5 uppercase tracking-widest text-[10px] font-black rounded-full font-khmer"
+                    >
+                    {{ getTypeName(ceremony.type) }}
+                    </div>
+
+                    <div
+                    v-if="ceremony.location"
+                    class="flex items-center gap-2 text-white/80 text-[10px] font-black uppercase tracking-[0.2em] bg-white/10 px-4 py-1.5 rounded-full border border-white/5 backdrop-blur-sm shadow-lg shadow-black/20"
+                    >
+                    <MapPinIcon class="size-3 text-orange-400" />
+                    <span>{{ ceremony.location }}</span>
+                    </div>
+                </div>
+
+                <h1
+                    class="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-tight drop-shadow-2xl font-khmer max-w-4xl"
+                >
+                    {{ ceremony.title }}
+                </h1>
+
+                <div class="flex items-center gap-6 mt-6 text-white/60 text-xs font-black uppercase tracking-widest">
+                    <div class="flex items-center gap-2">
+                    <CalendarIcon class="h-4 w-4 text-primary" />
+                    <span class="tabular-nums">
+                        {{ formatDateRange(ceremony.eventDate, ceremony.endDate) }}
+                    </span>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
          <div class="container max-w-5xl -mt-12 relative z-10 px-4 mx-auto">
             <!-- Sections -->
             <div class="space-y-8">
@@ -67,7 +123,8 @@
                     </div>
                     <div class="prose prose-xl dark:prose-invert max-w-none font-khmer leading-loose text-foreground/90 font-medium rik-editor-content" v-html="ceremony.committee"></div>
                 </div>
-  
+
+
                 <!-- Action Footer -->
                 <div class="bg-black dark:bg-white rounded-3xl p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-8">
                     <div class="space-y-1 text-center md:text-left">
@@ -131,6 +188,7 @@ const { t } = useI18n()
 
 const ceremony = ref<any>(null)
 const loading = ref(true)
+const imageError = ref(false)
 const { fetchCeremony } = useCeremonies()
 
 let unsubscribe: any
@@ -141,6 +199,16 @@ const fetchCeremonyById = (id: string) => {
         ceremony.value = data
         loading.value = false
     })
+}
+
+const getTypeName = (type: string | undefined) => {
+    switch (type) {
+        case 'kathen': return 'កឋិនទាន'
+        case 'vassa': return 'ចូល/ចេញវស្សា'
+        case 'phchoum_ben': return 'ភ្ជុំបិណ្ឌ'
+        case 'flower': return 'បុណ្យផ្កាប្រាក់'
+        default: return 'បុណ្យទូទៅ'
+    }
 }
 
 const stripHtml = (html: string) => {
@@ -175,12 +243,7 @@ onUnmounted(() => {
     if (unsubscribe) unsubscribe()
 })
 
-const getCategoryLabel = (cat: string) => {
-    switch (cat) {
-        case 'ceremony': return t('ceremonies.title')
-        default: return t('ceremonies.title')
-    }
-}
+
 
 const formatDateRange = (start: any, end: any) => {
     if (!start) return ''

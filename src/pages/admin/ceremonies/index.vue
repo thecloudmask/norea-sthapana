@@ -82,6 +82,9 @@
                      >
                         {{ item.status || 'draft' }}
                      </Badge>
+                     <Badge class="text-xs font-khmer font-medium text-white tracking-widest px-2.5 py-1 shadow-sm border-none bg-indigo-500/90 backdrop-blur-md">
+                        {{ getTypeName(item.type) }}
+                     </Badge>
                      <Badge v-if="item.isFeatured" class="uppercase text-[9px] font-semibold tracking-wider px-2.5 py-1 shadow-sm bg-orange-500 text-white border-none w-fit">
                         {{ $t('admin.ceremonies.featured_badge') }}
                      </Badge>
@@ -155,6 +158,23 @@
                                 <SelectItem value="published" class="rounded-lg font-semibold text-emerald-600">{{ $t('admin.forms.status_published') }}</SelectItem>
                                 <SelectItem value="completed" class="rounded-lg font-semibold text-blue-600">{{ $t('admin.forms.status_completed') || 'Completed' }}</SelectItem>
                                 <SelectItem value="archived" class="rounded-lg font-normal text-orange-600">{{ $t('admin.forms.status_archived') }}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <!-- Ceremony Type -->
+                    <div class="grid gap-2">
+                        <Label class="text-xs font-medium uppercase tracking-wider text-muted-foreground/80 font-khmer">ប្រភេទបុណ្យ (Ceremony Type) *</Label>
+                        <Select v-model="formData.type" required>
+                            <SelectTrigger class="rounded-xl border-border bg-muted/30 font-normal focus:bg-background transition-all h-11 text-left font-khmer">
+                                <SelectValue placeholder="ជ្រើសរើសប្រភេទបុណ្យ" />
+                            </SelectTrigger>
+                            <SelectContent class="bg-card border-border rounded-xl p-1 shadow-lg z-[100] font-khmer">
+                                <SelectItem value="general" class="rounded-lg font-normal">បុណ្យទូទៅ (General)</SelectItem>
+                                <SelectItem value="kathen" class="rounded-lg font-normal">កឋិនទាន (Kathen)</SelectItem>
+                                <SelectItem value="vassa" class="rounded-lg font-normal">ចូល/ចេញវស្សា (Vassa)</SelectItem>
+                                <SelectItem value="phchoum_ben" class="rounded-lg font-normal">ភ្ជុំបិណ្ឌ (Phchoum Ben)</SelectItem>
+                                <SelectItem value="flower" class="rounded-lg font-normal">បុណ្យផ្កា (Flower Festival)</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -348,8 +368,10 @@
                   :open="detailShowAddIncomeModal"
                   @update:open="(val: any) => !val && detailHandleCloseIncome()"
                   :ceremony-id="detailCeremony?.id || ''"
+                  :ceremony-type="detailCeremony?.type || 'general'"
                   :user-id="user?.id || ''"
                   :initial-data="detailEditingIncome"
+                  :existing-incomes="[]"
                   @success="() => {}"
                 />
 
@@ -436,6 +458,7 @@ const formData = ref({
   imageUrl: '',
   isFeatured: false,
   status: 'draft' as 'draft' | 'published' | 'completed' | 'archived',
+  type: 'general' as 'kathen' | 'vassa' | 'phchoum_ben' | 'flower' | 'general',
   location: ''
 })
 
@@ -501,6 +524,7 @@ const openCreateModal = () => {
     imageUrl: '',
     isFeatured: false,
     status: 'draft',
+    type: 'general',
     location: ''
   }
   eventDateInput.value = ''
@@ -523,6 +547,7 @@ const openEditModal = (item: any) => {
     imageUrl: item.imageUrl || '',
     isFeatured: item.isFeatured || false,
     status: item.status || 'draft',
+    type: item.type || 'general',
     location: item.location || ''
   }
   if (item.eventDate) {
@@ -614,6 +639,17 @@ const formatDateRange = (start: any, end: any) => {
     
     const startD = start.toDate ? start.toDate() : new Date(start)
     return `${formatKhmerDate(startD, 'dd')} - ${formattedEnd}`
+}
+
+const getTypeName = (type: string | undefined) => {
+    switch (type) {
+        case 'kathen': return 'កឋិនទាន'
+        case 'vassa': return 'ចូល/ចេញវស្សា'
+        case 'phchoum_ben': return 'ភ្ជុំបិណ្ឌ'
+        case 'flower': return 'បុណ្យផ្កា'
+        case 'general':
+        default: return 'បុណ្យទូទៅ'
+    }
 }
 
 const openDetail = async (id: string) => {

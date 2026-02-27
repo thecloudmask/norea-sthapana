@@ -109,6 +109,32 @@
       </Card>
     </div>
 
+    <!-- Inventory Section -->
+    <div v-if="showSummaryCards && Object.keys(summary.inventory || {}).length > 0" class="bg-card border border-border shadow-sm rounded-3xl p-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      <h3 class="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80 mb-5 font-khmer flex items-center gap-2">
+         <PackageIcon class="size-4 text-indigo-500" /> ស្ថានភាពវត្ថុទាន (Inventory Status)
+      </h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+         <div v-for="(item, key) in summary.inventory" :key="key" class="bg-indigo-50/50 dark:bg-indigo-950/20 rounded-2xl p-4 border border-indigo-100 dark:border-indigo-900/30">
+            <h4 class="font-khmer font-bold text-sm mb-3 text-indigo-900 dark:text-indigo-300 capitalize truncate" :title="String(key)">{{ key }}</h4>
+            <div class="space-y-1.5 text-xs">
+               <div class="flex items-center justify-between text-muted-foreground font-khmer">
+                 <span>ចូលបុណ្យ:</span>
+                 <span class="font-bold text-emerald-600 tabular-nums">+{{ item.donatedQuantity }}</span>
+               </div>
+               <div class="flex items-center justify-between text-muted-foreground font-khmer">
+                 <span>ទិញបន្ថែម:</span>
+                 <span class="font-bold text-blue-600 tabular-nums">+{{ item.purchasedQuantity }}</span>
+               </div>
+               <div class="flex items-center justify-between pt-2 mt-2 border-t border-indigo-200/60 dark:border-indigo-800/60 font-khmer">
+                 <span class="font-bold text-indigo-700 dark:text-indigo-400">សរុបមាន:</span>
+                 <span class="font-black text-sm text-indigo-700 dark:text-indigo-400 tabular-nums">{{ item.totalQuantity }}</span>
+               </div>
+            </div>
+         </div>
+      </div>
+    </div>
+
     <!-- Charts Section -->
     <div v-if="showSummaryCards && (incomes.length > 0 || expenses.length > 0)" class="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-3 duration-500">
         <!-- Income By Method -->
@@ -228,8 +254,16 @@
                      </div>
                   </div>
                 </TableCell>
-                <TableCell class="hidden md:table-cell text-sm text-muted-foreground max-w-[200px] truncate">
-                   {{ income.description || '-' }}
+                <TableCell class="hidden md:table-cell text-sm text-muted-foreground w-[250px]">
+                   <div class="space-y-2">
+                       <div class="line-clamp-2">{{ income.description || '-' }}</div>
+                       <div v-if="income.items && income.items.length > 0" class="flex flex-wrap gap-1.5 mt-1">
+                           <Badge v-for="(item, index) in income.items" :key="index" variant="secondary" class="font-normal font-khmer text-[10px] bg-indigo-50/80 text-indigo-700 border border-indigo-100 hover:bg-indigo-100/80 px-1.5 py-0 flex items-center gap-1 rounded-md">
+                               <PackageIcon class="size-2.5 opacity-70" />
+                               {{ item.name }}: <span class="font-bold tabular-nums ml-0.5">{{ item.quantity }}</span>
+                           </Badge>
+                       </div>
+                   </div>
                 </TableCell>
                 <TableCell>
                    <Badge v-if="income.paymentMethod" variant="outline" class="font-normal text-[10px] bg-background border-border uppercase tracking-wider text-muted-foreground/80 rounded-md px-2 py-0.5">
@@ -410,6 +444,25 @@
               </div>
            </div>
 
+           <!-- Offering Items Details -->
+           <div v-if="selectedIncome?.items && selectedIncome.items.length > 0" class="space-y-4 border-t border-border pt-6">
+              <Label class="text-[10px] uppercase tracking-widest text-muted-foreground font-normal flex items-center gap-1.5">
+                 <PackageIcon class="size-3.5" /> វត្ថុទាន (Offering Items)
+              </Label>
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                 <div v-for="(item, index) in selectedIncome.items" :key="index" class="bg-indigo-50/50 border border-indigo-100/50 rounded-xl p-3">
+                    <div class="font-khmer font-bold text-sm text-indigo-900 line-clamp-2" :title="item.name">{{ item.name }}</div>
+                    <div class="flex items-center justify-between mt-2 pt-2 border-t border-indigo-100">
+                       <span class="text-[10px] text-muted-foreground font-khmer uppercase tracking-wider">ចំនួន (QTY)</span>
+                       <div class="flex items-center gap-2">
+                           <span v-if="item.estimatedValue" class="text-xs text-indigo-500 font-medium">~${{ item.estimatedValue }}</span>
+                           <span class="font-bold text-indigo-700 tabular-nums text-sm">{{ item.quantity }}</span>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+
            <div v-if="selectedIncome?.description" class="space-y-2 border-t border-border pt-6">
               <Label class="text-[10px] uppercase tracking-widest text-muted-foreground font-normal">{{ $t('admin.ceremony_finance.description') }}</Label>
               <p class="text-sm text-muted-foreground leading-relaxed">{{ selectedIncome?.description }}</p>
@@ -535,7 +588,8 @@ import {
   PrinterIcon,
   PieChartIcon,
   BarChart3Icon,
-  DollarSignIcon
+  DollarSignIcon,
+  PackageIcon
 } from 'lucide-vue-next'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'

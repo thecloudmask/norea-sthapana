@@ -71,6 +71,12 @@
                            <HistoryIcon class="size-3" />
                            {{ $t('common.status_past') }}
                        </div>
+                        <!-- Ceremony Type Badge -->
+                        <span v-if="item.type && item.type !== 'general'" class="absolute font-khmer" :class="isPast(item.eventDate, item.endDate) ? 'top-[52px] left-4' : 'top-4 left-4'">
+                            <span class="bg-indigo-600/90 backdrop-blur-sm text-white px-3 py-1.5 rounded-xl text-[9px] font-bold border border-indigo-400/20 block">
+                                {{ getTypeName(item.type) }}
+                            </span>
+                        </span>
                    </div>
                    <CardContent class="flex-1 p-8 flex flex-col text-left space-y-4">
                        <div class="flex items-center gap-2 text-[10px] font-semibold text-primary uppercase tracking-[0.2em]">
@@ -211,5 +217,15 @@ const getDay = (date: any) => {
     if (!date) return ''
     const d = getDateObj(date)
     return toKhmerNumerals(d.getDate())
+}
+
+const getTypeName = (type: string | undefined) => {
+    switch (type) {
+        case 'kathen': return 'កឋិនទាន'
+        case 'vassa': return 'ចូល/ចេញវស្សា'
+        case 'phchoum_ben': return 'ភ្ជុំបិណ្ឌ'
+        case 'flower': return 'បុណ្យផ្កាប្រាក់'
+        default: return 'បុណ្យទូទៅ'
+    }
 }
 </script>

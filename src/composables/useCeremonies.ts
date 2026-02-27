@@ -34,6 +34,9 @@ export interface Ceremony {
   image_url?: string
   is_featured?: boolean
   created_at?: string
+  
+  // ប្រភេទបុណ្យ
+  type?: 'kathen' | 'vassa' | 'phchoum_ben' | 'flower' | 'general'
 }
 
 export const useCeremonies = () => {
@@ -58,6 +61,7 @@ export const useCeremonies = () => {
     is_featured: item.is_featured !== undefined ? item.is_featured : item.isFeatured,
     createdAt: item.createdAt || item.created_at,
     created_at: item.created_at || item.createdAt,
+    type: item.type || 'general',
     strippedContent: stripHtml(item.content || '')
   })
 

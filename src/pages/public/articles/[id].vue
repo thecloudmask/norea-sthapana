@@ -7,37 +7,87 @@
 
       <article v-else-if="article" class="animate-in fade-in duration-700">
          <!-- Header Image -->
-         <div class="h-[350px] md:h-[500px] w-full relative overflow-hidden bg-slate-950 cursor-pointer group" @click="openLightbox(article.imageUrl || 'https://images.unsplash.com/photo-1507692049790-de58293a469d?q=80&w=2070&auto=format&fit=crop')">
-            <img :src="article.imageUrl || 'https://images.unsplash.com/photo-1507692049790-de58293a469d?q=80&w=2070&auto=format&fit=crop'" class="w-full h-full object-cover opacity-60 scale-105 transition-transform duration-1000" />
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
-            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <div class="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30 text-white">
-                    <MaximizeIcon class="h-8 w-8" />
+        <div
+            class="h-[350px] md:h-[500px] w-full relative overflow-hidden bg-slate-950 group"
+            :class="{ 'cursor-pointer': article.imageUrl }"
+            @click="article.imageUrl && openLightbox(article.imageUrl)"
+            >
+            <!-- Image -->
+            <img
+                v-if="article.imageUrl"
+                :src="article.imageUrl"
+                :alt="article.title"
+                loading="lazy"
+                class="w-full h-full object-cover opacity-60 scale-105 transition-transform duration-1000"
+            />
+
+            <!-- Placeholder -->
+            <div
+                v-else
+                class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800"
+            >
+                <div class="flex flex-col items-center gap-4 text-white/40">
+                <NewspaperIcon class="h-14 w-14" />
+                <span class="text-xs uppercase tracking-[0.3em] font-black">
+                    No Article Image
+                </span>
                 </div>
             </div>
-            <div class="absolute bottom-0 left-0 w-full p-6 md:p-12">
-               <div class="container max-w-5xl mx-auto space-y-6 text-left">
-                  <div class="flex flex-wrap items-center gap-3">
-                     <Badge class="bg-primary text-white border-none shadow-xl shadow-primary/20 px-4 py-1.5 uppercase tracking-widest text-[10px] font-black w-fit">{{ getCategoryLabel(article.category) }}</Badge>
-                     <div v-if="article.location" class="flex items-center gap-2 text-white/80 text-[10px] font-black uppercase tracking-[0.2em] bg-white/10 px-4 py-1.5 rounded-full border border-white/5 backdrop-blur-sm shadow-lg shadow-black/20">
-                        <MapPinIcon class="size-3 text-orange-400" />
-                        <span>{{ article.location }}</span>
-                     </div>
-                  </div>
-                  <h1 class="text-3xl md:text-6xl font-black text-white leading-tight drop-shadow-2xl font-khmer max-w-4xl">{{ article.title }}</h1>
-                  <div class="flex items-center gap-6 mt-6 text-white/60 text-xs font-black uppercase tracking-widest">
-                     <div class="flex items-center gap-2">
-                        <CalendarIcon class="h-4 w-4 text-primary" />
-                        <span class="tabular-nums">{{ formatDate(article.createdAt) }}</span>
-                     </div>
-                     <div class="flex items-center gap-2">
-                         <UserIcon class="h-4 w-4 text-primary" />
-                         <span>{{ article.author || 'Admin' }}</span>
-                     </div>
-                  </div>
-               </div>
+
+            <!-- Gradient Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+
+            <!-- Hover Zoom Icon (only if image exists) -->
+            <div
+                v-if="article.imageUrl"
+                class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+                <div class="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30 text-white">
+                <MaximizeIcon class="h-8 w-8" />
+                </div>
             </div>
-         </div>
+
+            <!-- Content -->
+            <div class="absolute bottom-0 left-0 w-full p-6 md:p-12">
+                <div class="container max-w-5xl mx-auto space-y-6 text-left">
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <Badge
+                    class="bg-primary text-white border-none shadow-xl shadow-primary/20 px-4 py-1.5 uppercase tracking-widest text-[10px] font-black w-fit"
+                    >
+                    {{ getCategoryLabel(article.category) }}
+                    </Badge>
+
+                    <div
+                    v-if="article.location"
+                    class="flex items-center gap-2 text-white/80 text-[10px] font-black uppercase tracking-[0.2em] bg-white/10 px-4 py-1.5 rounded-full border border-white/5 backdrop-blur-sm shadow-lg shadow-black/20"
+                    >
+                    <MapPinIcon class="size-3 text-orange-400" />
+                    <span>{{ article.location }}</span>
+                    </div>
+                </div>
+
+                <h1
+                    class="text-3xl md:text-6xl font-black text-white leading-tight drop-shadow-2xl font-khmer max-w-4xl"
+                >
+                    {{ article.title }}
+                </h1>
+
+                <div class="flex items-center gap-6 mt-6 text-white/60 text-xs font-black uppercase tracking-widest">
+                    <div class="flex items-center gap-2">
+                    <CalendarIcon class="h-4 w-4 text-primary" />
+                    <span class="tabular-nums">{{ formatDate(article.createdAt) }}</span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                    <UserIcon class="h-4 w-4 text-primary" />
+                    <span>{{ article.author || 'Admin' }}</span>
+                    </div>
+                </div>
+
+                </div>
+            </div>
+        </div>
 
          <div class="container max-w-5xl -mt-12 relative z-10 px-4 mx-auto">
             <!-- Main Content Card -->

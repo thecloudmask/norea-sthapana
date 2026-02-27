@@ -63,6 +63,19 @@
             </Select>
           </div>
 
+          <!-- Inventory Purchase Toggle -->
+          <div class="flex items-start space-x-3 bg-indigo-50/50 dark:bg-indigo-950/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-900/30 transition-all">
+             <input type="checkbox" id="isInventoryPurchase" v-model="formData.isInventoryPurchase" class="w-5 h-5 mt-0.5 rounded border-indigo-300 text-indigo-600 focus:ring-indigo-600 dark:border-indigo-700 dark:bg-transparent dark:checked:bg-indigo-600 cursor-pointer" />
+             <div class="space-y-1.5 leading-none cursor-pointer select-none flex-1" @click="formData.isInventoryPurchase = !formData.isInventoryPurchase">
+               <Label class="text-xs font-bold text-indigo-900 dark:text-indigo-300 uppercase tracking-wider cursor-pointer block">
+                 ទិញវត្ថុបញ្ចូលស្តុកវិញ (Inventory Purchase)
+               </Label>
+               <p class="text-[10px] leading-relaxed text-indigo-700/80 dark:text-indigo-400/80 font-khmer">
+                 បើកជម្រើសនេះប្រសិនបើចំណាយនេះគឺដើម្បីទិញវត្ថុ (ឧ. ត្រៃ, ស្លាដក់, អង្ករ) មកបំពេញបន្ថែមក្នុងស្តុករបស់កម្មវិធីបុណ្យ។ ចំនួន (Quantity) នឹងបូកថែមទៅក្នុងស្តុក។
+               </p>
+             </div>
+          </div>
+
           <!-- Quantity & Unit Price -->
           <div class="grid grid-cols-2 gap-4">
             <div class="space-y-2.5">
@@ -289,6 +302,7 @@ const isEditing = computed(() => !!props.initialData)
 const formData = reactive<ExpenseFormData>({
   itemName: '',
   category: 'food',
+  isInventoryPurchase: false,
   amount: 0,
   currency: 'USD',
   quantity: undefined,
@@ -306,6 +320,7 @@ const closeModal = () => {
 
 const resetForm = () => {
   formData.itemName = ''
+  formData.isInventoryPurchase = false
   formData.amount = 0
   formData.quantity = undefined
   formData.unitPrice = undefined
@@ -334,6 +349,7 @@ watch(() => props.initialData, (val) => {
   if (val) {
     formData.itemName = val.itemName
     formData.category = val.category
+    formData.isInventoryPurchase = val.isInventoryPurchase || false
     formData.amount = val.amount
     formData.currency = val.currency
     formData.quantity = val.quantity

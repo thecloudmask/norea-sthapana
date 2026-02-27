@@ -91,8 +91,7 @@
           <div class="grid grid-cols-5 gap-4">
             <div class="col-span-3 space-y-2.5">
               <Label for="amount" class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 flex items-center justify-between">
-                <span>{{ $t('admin.ceremony_finance.amount') }}</span>
-                <span class="text-rose-500 text-sm">*</span>
+                <span>{{ $t('admin.ceremony_finance.amount') }} (អាចមិនដាក់បើចូលតែវត្ថុ)</span>
               </Label>
               <Input 
                 id="amount"
@@ -100,7 +99,6 @@
                 type="number"
                 step="0.01"
                 min="0"
-                required
                 :placeholder="$t('admin.ceremony_finance.form.enter_amount')"
                 class="rounded-xl border-border bg-muted/20 h-12 text-lg font-bold tabular-nums focus:ring-2 focus:ring-primary/20 transition-all py-3 px-4"
               />
@@ -108,7 +106,6 @@
             <div class="col-span-2 space-y-2.5">
               <Label for="currency" class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 flex items-center justify-between">
                 <span>{{ $t('admin.ceremony_finance.currency') }}</span>
-                <span class="text-rose-500 text-sm">*</span>
               </Label>
               <Select v-model="formData.currency" required>
                 <SelectTrigger class="rounded-xl border-border bg-muted/20 h-12 font-bold">
@@ -119,6 +116,42 @@
                   <SelectItem value="KHR" class="font-normal">{{ $t('common.currency_khr') }}</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+
+          <!-- Offering Items (វត្ថុទាន) -->
+          <div class="space-y-3 bg-muted/10 p-4 rounded-2xl border border-border/50">
+            <div class="flex items-center justify-between">
+               <Label class="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 flex items-center gap-1.5">
+                 <PackageIcon class="size-3.5" />
+                 វត្ថុទាន (Offering Items)
+               </Label>
+               <Button type="button" variant="outline" size="sm" @click="addOfferingItem" class="h-8 rounded-lg text-xs font-semibold bg-background">
+                  <PlusIcon class="size-3.5 mr-1" />
+                  បន្ថែមវត្ថុ
+               </Button>
+            </div>
+            
+            <div v-if="formData.items?.length" class="space-y-3 pt-2">
+               <div v-for="(item, index) in formData.items" :key="index" class="flex items-start gap-2 animate-in slide-in-from-top-2 duration-200">
+                  <div class="grid grid-cols-12 gap-2 flex-1">
+                     <div class="col-span-6">
+                        <Input v-model="item.name" :placeholder="itemPlaceholder" class="h-10 text-sm rounded-xl font-khmer bg-card" required />
+                     </div>
+                     <div class="col-span-3">
+                        <Input v-model.number="item.quantity" type="number" min="1" placeholder="ចំនួន" class="h-10 text-sm rounded-xl tabular-nums bg-card" required />
+                     </div>
+                     <div class="col-span-3">
+                        <Input v-model.number="item.estimatedValue" type="number" min="0" placeholder="តម្លៃស្មាន ($)" title="តម្លៃប៉ាន់ស្មានជាប្រាក់កម្រៃដុល្លារបើដឹង (ជាការស្ម័គ្រចិត្ត)" class="h-10 text-sm rounded-xl tabular-nums bg-card" />
+                     </div>
+                  </div>
+                  <Button type="button" variant="ghost" size="icon" @click="removeOfferingItem(index)" class="h-10 w-10 text-rose-500 hover:text-rose-600 hover:bg-rose-500/10 rounded-xl flex-shrink-0">
+                     <TrashIcon class="size-4" />
+                  </Button>
+               </div>
+            </div>
+            <div v-else class="text-xs text-muted-foreground italic text-center py-2 opacity-60">
+                មិនទាន់មានវត្ថុបន្ថែមនៅឡើយទេ
             </div>
           </div>
 
@@ -233,7 +266,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch, computed, nextTick } from 'vue'
-import { AlertTriangleIcon, SaveIcon, CheckCircle2Icon, TrashIcon } from 'lucide-vue-next'
+import { AlertTriangleIcon, SaveIcon, CheckCircle2Icon, TrashIcon, PlusIcon, PackageIcon } from 'lucide-vue-next'
 import { 
   Sheet, 
   SheetContent, 
@@ -260,6 +293,7 @@ const props = defineProps<{
   open: boolean
   ceremonyId: string
   userId: string
+  ceremonyType?: string
   initialData?: CeremonyIncome | null
   existingIncomes?: CeremonyIncome[]
 }>()
@@ -283,16 +317,41 @@ const duplicateWarning = ref<DuplicateCheckResult>({
 
 const isEditing = computed(() => !!props.initialData)
 
+const itemPlaceholder = computed(() => {
+  switch (props.ceremonyType) {
+    case 'kathen':
+      return 'ឈ្មោះវត្ថុ (ឧ. សំពត់ត្រៃចីវរ, ស្បង់, សាដក់...)'
+    case 'phchoum_ben':
+      return 'ឈ្មោះវត្ថុ (ឧ. ស្លាដក់, ទេយ្យទាន...)'
+    case 'flower':
+      return 'ឈ្មោះវត្ថុ (ឧ. មែកផ្កាប្រាក់, ស៊ីម៉ងត៍, ដែក, ខ្សាច់...)'
+    case 'vassa':
+      return 'ឈ្មោះវត្ថុ (ឧ. ទៀនព្រះវស្សា, សាដក, ប្រេង...)'
+    default:
+      return 'ឈ្មោះវត្ថុ (ឧ. ទៀន, ធូប, ភេសជ្ជៈ...)'
+  }
+})
+
 const formData = reactive<IncomeFormData>({
   donorName: '',
   donorPhone: '',
   amount: 0,
   currency: 'USD',
+  items: [],
   paymentMethod: 'cash',
   paymentMethodOther: '',
   description: '',
   receiptUrl: ''
 })
+
+const addOfferingItem = () => {
+  if (!formData.items) formData.items = []
+  formData.items.push({ name: '', quantity: 1 })
+}
+
+const removeOfferingItem = (index: number) => {
+  formData.items?.splice(index, 1)
+}
 
 const closeModal = () => {
   emit('update:open', false)
@@ -302,6 +361,7 @@ const resetForm = () => {
   formData.donorName = ''
   formData.donorPhone = ''
   formData.amount = 0
+  formData.items = []
   formData.description = ''
   formData.receiptUrl = ''
   // Stick values: currency, paymentMethod
@@ -330,8 +390,9 @@ watch(() => props.initialData, (val) => {
   if (val) {
     formData.donorName = val.donorName
     formData.donorPhone = val.donorPhone || ''
-    formData.amount = val.amount
+    formData.amount = val.amount || 0
     formData.currency = val.currency
+    formData.items = val.items ? JSON.parse(JSON.stringify(val.items)) : []
     formData.paymentMethod = val.paymentMethod
     formData.paymentMethodOther = val.paymentMethod === 'other' ? (val as any).paymentMethodOther || '' : '' 
     formData.description = val.description || ''
@@ -400,6 +461,15 @@ const handleImageUpload = async (event: any) => {
 }
 
 const handleSubmit = async () => {
+  if (formData.amount === 0 && (!formData.items || formData.items.length === 0)) {
+     toast({
+       title: 'មិនអាចរក្សាទុកបានទេ',
+       description: 'សូមបញ្ចូល ចំនួនទឹកប្រាក់ ឬ បន្ថែមវត្ថុទាន យ៉ាងហោចណាស់មួយ។',
+       variant: 'destructive'
+     })
+     return
+  }
+
   if (!isEditing.value && !forceSave.value) {
     checkDuplicate()
     

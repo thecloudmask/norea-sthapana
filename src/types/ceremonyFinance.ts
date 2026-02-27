@@ -22,6 +22,14 @@ export type ExpenseCategory =
   | 'music'
   | 'other'
 
+// តារាងទិន្នន័យចំណូល-ចំណាយ និងគ្រប់គ្រងស្តុក
+export interface OfferingItem {
+  id?: string
+  name: string
+  quantity: number
+  estimatedValue?: number // តម្លៃប៉ាន់ស្មានបើដឹង (ជាការស្ម័គ្រចិត្ត)
+}
+
 // Ceremony Income (ចំណូល)
 export interface CeremonyIncome {
   id: string
@@ -34,9 +42,12 @@ export interface CeremonyIncome {
   donorPhone?: string
   donorAddress?: string
   
-  // ហិរញ្ញវត្ថុ (Financial)
+  // ហិរញ្ញវត្ថុ (Financial - អាចជា 0 បើចូលតែវត្ថុ)
   amount: number
   currency: Currency
+  
+  // វត្ថុទាន (Offering Items - អាចអត់មានបើចូលតែបច្ច័យ)
+  items?: OfferingItem[]
   
   // វិធីបង់ប្រាក់ (Payment Method)
   paymentMethod: PaymentMethod
@@ -57,6 +68,9 @@ export interface CeremonyIncome {
 export interface CeremonyExpense {
   id: string
   expenseNumber: string // Auto-generated: "EXP-0001", "EXP-0002"...
+  
+  // ប្រភេទចំណាយ (isInventoryPurchase = ទិញវត្ថុបញ្ចូលស្តុកវិញ)
+  isInventoryPurchase?: boolean
   
   ceremonyId: string
   
@@ -88,6 +102,15 @@ export interface CeremonyExpense {
   updatedBy?: string
 }
 
+// Inventory Summary
+export interface InventorySummary {
+  [itemName: string]: {
+    donatedQuantity: number
+    purchasedQuantity: number
+    totalQuantity: number
+  }
+}
+
 // Summary Statistics
 export interface CeremonyFinanceSummary {
   totalIncome: {
@@ -104,6 +127,7 @@ export interface CeremonyFinanceSummary {
   }
   incomeCount: number
   expenseCount: number
+  inventory: InventorySummary
 }
 
 // Duplicate Check Result
@@ -120,6 +144,7 @@ export interface IncomeFormData {
   donorAddress?: string
   amount: number
   currency: Currency
+  items?: OfferingItem[]
   paymentMethod: PaymentMethod
   paymentMethodOther?: string
   description?: string
@@ -129,6 +154,7 @@ export interface IncomeFormData {
 export interface ExpenseFormData {
   itemName: string
   category: ExpenseCategory
+  isInventoryPurchase?: boolean
   amount: number
   currency: Currency
   quantity?: number
